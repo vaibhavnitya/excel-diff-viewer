@@ -12,7 +12,10 @@
     "tests/**/*.ts",
     "tests/**/*.tsx",
     "tsup.config.ts",
-    "vitest.config.ts"
+    "tsup.worker.config.ts",
+    "vitest.config.ts",
+    "vitest.browser.config.ts",
+    "vitest.workspace.ts"
   ],
   "exclude": ["dist", ".tsbuild", "node_modules"]
 }
