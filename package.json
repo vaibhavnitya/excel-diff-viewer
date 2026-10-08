@@ -1,0 +1,33 @@
+{
+  "name": "excel-diff-viewer",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Monorepo for excel-diff-viewer — view and diff Excel/CSV files in the browser.",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build --filter=./packages/*",
+    "build:demo": "turbo build --filter=demo",
+    "test": "turbo test",
+    "test:watch": "turbo test:watch",
+    "test:e2e": "playwright test",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "clean": "turbo clean && rm -rf node_modules",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "turbo build --filter=./packages/* && changeset publish"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.0",
+    "turbo": "^2.0.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
+  }
+}
