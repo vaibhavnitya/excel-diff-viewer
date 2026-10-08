@@ -5,7 +5,9 @@ export default defineConfig((options) => ({
   format: ['esm', 'cjs'],
   target: 'es2022',
   platform: 'neutral',
-  dts: true,
+  // Declarations emitted by `tsc -p tsconfig.build.json` (tsup dts struggles
+  // with composite + `.js` extension imports in this package).
+  dts: false,
   sourcemap: true,
   clean: !options.watch,
   splitting: false,
