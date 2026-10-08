@@ -62,6 +62,37 @@ Key-based, not position-based:
    - Both → compare `valueFields` with numeric tolerance; modified or unchanged
 5. Return a `DiffResult` with per-row status and per-field changes.
 
+**Wildcard matching (Phase 1):** keys are compared by **exact string equality**
+after both sides normalize blank optional key fields to `*`. A blank optional
+origin and a filled origin are different buckets (wildcard rule vs specific
+rule) and may coexist in the same rate card. Pattern matching (`*` matches any
+value on the other side) is explicitly out of scope — it creates ambiguity
+about which rule a row matches. If “find specific rules shadowed by a
+wildcard” is needed later, it will be a separate analysis layer on top of the
+raw diff, not part of key equality.
+
+## Normalization
+
+Cell values in a `Workbook` are `string | number | boolean | null` only.
+`Date` is never stored (mutable, unintuitive equality, poor JSON / Worker
+round-trips).
+
+**Date canonicalization at the parse boundary:** SheetJS `Date` objects, Excel
+date serial numbers, and recognizable date/datetime strings are converted to
+ISO 8601 strings before they leave the parser:
+
+- Date only → `'2024-01-15'`
+- Datetime → `'2024-01-15T10:30:00.000Z'`
+
+`normalize-date.ts` owns this conversion. ISO strings compare with `===`,
+sort lexicographically in chronological order for the canonical forms above,
+and can be parsed back to `Date` on demand in UI layers.
+
+**Numeric comparison** uses absolute and relative tolerance:
+`|a - b| <= max(absolute, relative * max(|a|, |b|))` with defaults
+`absolute: 1e-6`, `relative: 1e-9`. A bare number in the schema sets absolute
+only.
+
 ## Rendering modes
 
 - `mode="unified"` (default) — one row per key, old/new side by side.
@@ -97,7 +128,7 @@ Every failure has a stable `code`:
 
 - `FILE_TOO_LARGE`, `TOO_MANY_ROWS`, `TOO_MANY_COLUMNS`, `TOO_MANY_CELLS`
 - `UNSUPPORTED_FORMAT`, `PARSE_ERROR`
-- `INVALID_SCHEMA`, `DUPLICATE_KEYS`
+- `INVALID_SCHEMA`, `SCHEMA_INFERENCE_FAILED`, `DUPLICATE_KEYS`
 - `WORKER_UNAVAILABLE`, `CANCELLED`
 
 Components render default error UIs. Consumers can override via `renderError`
