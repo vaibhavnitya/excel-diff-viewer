@@ -1,0 +1,11 @@
+id,name,qty,price,active
+1,alpha,10,1.5,true
+2,bravo,20,2.5,false
+3,charlie,30,3.5,true
+4,delta,40,4.5,true
+5,echo,50,5.5,false
+6,foxtrot,60,6.5,true
+7,golf,70,7.5,true
+8,hotel,80,8.5,false
+9,india,90,9.5,true
+10,juliet,100,10.5,true
