@@ -7,6 +7,7 @@ export type {
   CellNormalizer,
   CellValue,
   DiffChange,
+  DiffControl,
   DiffError,
   DiffErrorCode,
   DiffResult,
@@ -41,4 +42,4 @@ export {
 
 export { parseFile } from './parsers/parse-file.js';
 export { inferSchema } from './schema/infer-schema.js';
-export { diffWorkbooks } from './diff/diff-workbooks.js';
+export { diffWorkbooks, diffWorkbooksAsync } from './diff/diff-workbooks.js';

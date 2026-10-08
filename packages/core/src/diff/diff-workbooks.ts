@@ -4,6 +4,7 @@ import { enforceWorkbookLimits } from '../limits/enforce-limits.js';
 import { err, ok } from '../result.js';
 import type {
   DiffChange,
+  DiffControl,
   DiffError,
   DiffResult,
   DiffRow,
@@ -17,6 +18,9 @@ import type {
 } from '../types.js';
 import { valuesEqual } from './compare-values.js';
 import { indexSheetByKey } from './index-by-key.js';
+
+/** Default keys processed per async chunk (DESIGN.md Performance). */
+export const DEFAULT_DIFF_CHUNK_SIZE = 5000;
 
 function pickSheet(workbook: Workbook, sheetName: string | undefined): Result<Sheet, DiffError> {
   if (sheetName !== undefined) {
@@ -76,14 +80,26 @@ function collectChanges(
   return changes;
 }
 
-/**
- * Key-based diff of two workbooks. Pure aside from reading inputs (no I/O).
- */
-export function diffWorkbooks(
+function defaultYield(): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 0);
+  });
+}
+
+type PreparedDiff = {
+  readonly headers: readonly string[];
+  readonly valueFields: readonly string[];
+  readonly schema: DiffWorkbooksOptions['schema'];
+  readonly sortedKeys: readonly RowKey[];
+  readonly byKeyA: ReadonlyMap<RowKey, { readonly row: Row }>;
+  readonly byKeyB: ReadonlyMap<RowKey, { readonly row: Row }>;
+};
+
+function prepareDiff(
   a: Workbook,
   b: Workbook,
   options: DiffWorkbooksOptions,
-): Result<DiffResult, DiffError> {
+): Result<PreparedDiff, DiffError> {
   const limitedA = enforceWorkbookLimits(a, options.limits);
   if (!limitedA.ok) {
     return limitedA;
@@ -140,70 +156,178 @@ export function diffWorkbooks(
   ]);
 
   const sortedKeys = [...allKeys].sort((x, y) => (x < y ? -1 : x > y ? 1 : 0));
-  const rows: DiffRow[] = [];
-  const stats: { added: number; removed: number; modified: number; unchanged: number } = {
-    added: 0,
-    removed: 0,
-    modified: 0,
-    unchanged: 0,
-  };
 
-  for (const key of sortedKeys) {
-    const left = indexedA.value.byKey.get(key);
-    const right = indexedB.value.byKey.get(key);
-
-    if (left !== undefined && right === undefined) {
-      rows.push({
-        key,
-        status: 'removed',
-        changes: [],
-        rowA: left.row,
-        rowB: undefined,
-      });
-      stats.removed += 1;
-      continue;
-    }
-
-    if (left === undefined && right !== undefined) {
-      rows.push({
-        key,
-        status: 'added',
-        changes: [],
-        rowA: undefined,
-        rowB: right.row,
-      });
-      stats.added += 1;
-      continue;
-    }
-
-    if (left !== undefined && right !== undefined) {
-      const changes = collectChanges(left.row, right.row, headers, valueFields, schema);
-      if (changes.length === 0) {
-        rows.push({
-          key,
-          status: 'unchanged',
-          changes: [],
-          rowA: left.row,
-          rowB: right.row,
-        });
-        stats.unchanged += 1;
-      } else {
-        rows.push({
-          key,
-          status: 'modified',
-          changes,
-          rowA: left.row,
-          rowB: right.row,
-        });
-        stats.modified += 1;
-      }
-    }
-  }
-
-  const resultStats: DiffStats = stats;
   return ok({
     headers,
+    valueFields,
+    schema,
+    sortedKeys,
+    byKeyA: indexedA.value.byKey,
+    byKeyB: indexedB.value.byKey,
+  });
+}
+
+function processKey(
+  key: RowKey,
+  prepared: PreparedDiff,
+  rows: DiffRow[],
+  stats: { added: number; removed: number; modified: number; unchanged: number },
+): void {
+  const left = prepared.byKeyA.get(key);
+  const right = prepared.byKeyB.get(key);
+
+  if (left !== undefined && right === undefined) {
+    rows.push({
+      key,
+      status: 'removed',
+      changes: [],
+      rowA: left.row,
+      rowB: undefined,
+    });
+    stats.removed += 1;
+    return;
+  }
+
+  if (left === undefined && right !== undefined) {
+    rows.push({
+      key,
+      status: 'added',
+      changes: [],
+      rowA: undefined,
+      rowB: right.row,
+    });
+    stats.added += 1;
+    return;
+  }
+
+  if (left !== undefined && right !== undefined) {
+    const changes = collectChanges(
+      left.row,
+      right.row,
+      prepared.headers,
+      prepared.valueFields,
+      prepared.schema,
+    );
+    if (changes.length === 0) {
+      rows.push({
+        key,
+        status: 'unchanged',
+        changes: [],
+        rowA: left.row,
+        rowB: right.row,
+      });
+      stats.unchanged += 1;
+    } else {
+      rows.push({
+        key,
+        status: 'modified',
+        changes,
+        rowA: left.row,
+        rowB: right.row,
+      });
+      stats.modified += 1;
+    }
+  }
+}
+
+function finishDiff(
+  prepared: PreparedDiff,
+  rows: DiffRow[],
+  stats: { added: number; removed: number; modified: number; unchanged: number },
+): Result<DiffResult, DiffError> {
+  const resultStats: DiffStats = stats;
+  return ok({
+    headers: prepared.headers,
     rows,
     stats: resultStats,
   });
+}
+
+/**
+ * Key-based diff of two workbooks (sync).
+ * Phase 1 behavior: one pass, no progress / cancellation hooks.
+ * Thin wrapper over the shared algorithm with no `DiffControl` (zero yield cost).
+ */
+export function diffWorkbooks(
+  a: Workbook,
+  b: Workbook,
+  options: DiffWorkbooksOptions,
+): Result<DiffResult, DiffError> {
+  const prepared = prepareDiff(a, b, options);
+  if (!prepared.ok) {
+    return prepared;
+  }
+
+  const rows: DiffRow[] = [];
+  const stats = { added: 0, removed: 0, modified: 0, unchanged: 0 };
+  for (const key of prepared.value.sortedKeys) {
+    processKey(key, prepared.value, rows, stats);
+  }
+  return finishDiff(prepared.value, rows, stats);
+}
+
+/**
+ * Async key-based diff with optional cooperative `DiffControl`.
+ * When `control` is omitted, short-circuits to the sync path (same result as
+ * `diffWorkbooks`, no microtask yield).
+ */
+export async function diffWorkbooksAsync(
+  a: Workbook,
+  b: Workbook,
+  options: DiffWorkbooksOptions,
+  control?: DiffControl,
+): Promise<Result<DiffResult, DiffError>> {
+  if (control === undefined) {
+    return diffWorkbooks(a, b, options);
+  }
+
+  const prepared = prepareDiff(a, b, options);
+  if (!prepared.ok) {
+    return prepared;
+  }
+
+  const { sortedKeys } = prepared.value;
+  const total = sortedKeys.length;
+  const chunkSize = control.chunkSize ?? DEFAULT_DIFF_CHUNK_SIZE;
+  const yieldBetween = control.yieldBetweenChunks ?? defaultYield;
+
+  const rows: DiffRow[] = [];
+  const stats = { added: 0, removed: 0, modified: 0, unchanged: 0 };
+
+  for (let i = 0; i < sortedKeys.length; i += chunkSize) {
+    if (control.isCancelled()) {
+      return err(
+        createDiffError('CANCELLED', 'Diff was cancelled before completion.', {
+          processed: i,
+          total,
+        }),
+      );
+    }
+
+    const end = Math.min(i + chunkSize, sortedKeys.length);
+    for (let j = i; j < end; j += 1) {
+      const key = sortedKeys[j];
+      if (key === undefined) {
+        continue;
+      }
+      processKey(key, prepared.value, rows, stats);
+    }
+
+    control.onProgress(end, total);
+
+    if (end < sortedKeys.length) {
+      await yieldBetween();
+    }
+  }
+
+  if (control.isCancelled()) {
+    return err(
+      createDiffError('CANCELLED', 'Diff was cancelled before completion.', {
+        processed: total,
+        total,
+      }),
+    );
+  }
+
+  return finishDiff(prepared.value, rows, stats);
 }

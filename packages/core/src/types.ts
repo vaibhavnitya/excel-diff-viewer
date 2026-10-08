@@ -177,13 +177,28 @@ export type DiffWorkbooksOptions = {
   readonly limits?: Partial<Limits>;
 };
 
+/**
+ * Cooperative control for `diffWorkbooksAsync` (Worker shell / long diffs).
+ * Sync `diffWorkbooks` ignores this and runs the algorithm in one pass.
+ */
+export type DiffControl = {
+  /** Checked between chunks; when true the async diff returns CANCELLED. */
+  readonly isCancelled: () => boolean;
+  /** Called after each chunk with keys processed so far and total keys. */
+  readonly onProgress: (processed: number, total: number) => void;
+  /** Keys per chunk before yield / progress. Default: 5000. */
+  readonly chunkSize?: number;
+  /** Yield between chunks. Default: `await new Promise(r => setTimeout(r, 0))`. */
+  readonly yieldBetweenChunks?: () => Promise<void>;
+};
+
 // ---------------------------------------------------------------------------
 // Errors
 // ---------------------------------------------------------------------------
 
 /**
  * Stable error codes (public API). Switch on `code`, not `message`.
- * `WORKER_*` codes are reserved for Phase 2 but listed for a stable taxonomy.
+ * `WORKER_*` / `CANCELLED` are used by the Worker shell (Phase 2+).
  */
 export type DiffErrorCode =
   | 'FILE_TOO_LARGE'
@@ -196,6 +211,7 @@ export type DiffErrorCode =
   | 'SCHEMA_INFERENCE_FAILED'
   | 'DUPLICATE_KEYS'
   | 'WORKER_UNAVAILABLE'
+  | 'WORKER_CRASHED'
   | 'CANCELLED';
 
 export type DiffError = {

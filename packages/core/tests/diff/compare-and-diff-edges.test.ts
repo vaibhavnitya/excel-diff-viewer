@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { valuesEqual, numbersEqual } from '../../src/diff/compare-values.js';
-import { diffWorkbooks } from '../../src/diff/diff-workbooks.js';
+import { diffWorkbooks, diffWorkbooksAsync } from '../../src/diff/diff-workbooks.js';
 import { resolveNumericTolerance } from '../../src/defaults.js';
-import type { DiffSchema, Workbook } from '../../src/types.js';
+import type { DiffControl, DiffSchema, Workbook } from '../../src/types.js';
 
 const tolerance = resolveNumericTolerance();
 
@@ -171,5 +171,52 @@ describe('findDuplicateKeysError without filename', () => {
       'a',
     );
     expect(error?.message.startsWith('File (side a)')).toBe(true);
+  });
+});
+
+describe('diffWorkbooksAsync DiffControl', () => {
+  function manyRows(n: number): Workbook {
+    const rows = Array.from({ length: n }, (_, i) => [`k${i}`, i] as const);
+    return wb(
+      ['id', 'val'],
+      rows.map((r) => [...r]),
+      'many.csv',
+    );
+  }
+
+  it('matches sync result when control is omitted', async () => {
+    const a = manyRows(10);
+    const b = manyRows(10);
+    const schema: DiffSchema = { keyFields: ['id'], valueFields: ['val'] };
+    const sync = diffWorkbooks(a, b, { schema });
+    const asyncResult = await diffWorkbooksAsync(a, b, { schema });
+    expect(asyncResult).toEqual(sync);
+  });
+
+  it('reports progress and can cancel between chunks', async () => {
+    const a = manyRows(20);
+    const b = manyRows(20);
+    const schema: DiffSchema = { keyFields: ['id'], valueFields: ['val'] };
+    const progress: Array<[number, number]> = [];
+    let cancelled = false;
+    const control: DiffControl = {
+      chunkSize: 5,
+      isCancelled: () => cancelled,
+      onProgress: (processed, total) => {
+        progress.push([processed, total]);
+        if (processed >= 10) {
+          cancelled = true;
+        }
+      },
+      yieldBetweenChunks: async () => {
+        /* no delay in unit test */
+      },
+    };
+    const result = await diffWorkbooksAsync(a, b, { schema }, control);
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.error.code).toBe('CANCELLED');
+    expect(progress.length).toBeGreaterThanOrEqual(2);
+    expect(progress[0]?.[1]).toBe(20);
   });
 });

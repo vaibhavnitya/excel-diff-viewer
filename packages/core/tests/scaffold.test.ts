@@ -5,6 +5,7 @@ import {
   DEFAULT_NUMERIC_TOLERANCE,
   createDiffError,
   diffWorkbooks,
+  diffWorkbooksAsync,
   err,
   inferSchema,
   isErr,
@@ -17,6 +18,7 @@ describe('@your-scope/excel-diff-core public API', () => {
   it('exports the Tier-3 engine entry points and Result helpers', () => {
     expect(typeof parseFile).toBe('function');
     expect(typeof diffWorkbooks).toBe('function');
+    expect(typeof diffWorkbooksAsync).toBe('function');
     expect(typeof inferSchema).toBe('function');
     expect(typeof ok).toBe('function');
     expect(typeof err).toBe('function');
