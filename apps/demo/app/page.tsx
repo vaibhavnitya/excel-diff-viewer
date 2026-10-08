@@ -3,16 +3,15 @@ import {
   SCAFFOLD_DEPENDENCIES as agGridDependencies,
 } from '@your-scope/excel-diff-ag-grid';
 import {
-  PACKAGE_NAME as corePackageName,
-  SCAFFOLD_DEPENDENCIES as coreDependencies,
-} from '@your-scope/excel-diff-core';
-import {
   PACKAGE_NAME as reactPackageName,
   SCAFFOLD_DEPENDENCIES as reactDependencies,
 } from '@your-scope/excel-diff-react';
 
 const layers = [
-  { name: corePackageName, dependsOn: coreDependencies },
+  {
+    name: '@your-scope/excel-diff-core' as const,
+    dependsOn: [] as const,
+  },
   { name: reactPackageName, dependsOn: reactDependencies },
   { name: agGridPackageName, dependsOn: agGridDependencies },
 ] as const;

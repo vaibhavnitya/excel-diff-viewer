@@ -1,18 +1,30 @@
 import { describe, expect, it } from 'vitest';
 import {
-  PACKAGE_NAME,
-  SCAFFOLD_DEPENDENCIES,
-  parseFile,
+  DEFAULT_KEY_CANDIDATES,
+  DEFAULT_LIMITS,
+  DEFAULT_NUMERIC_TOLERANCE,
+  createDiffError,
   diffWorkbooks,
+  err,
   inferSchema,
+  isErr,
+  isOk,
+  ok,
+  parseFile,
 } from '../src/index.js';
 
-describe('@your-scope/excel-diff-core', () => {
-  it('exports the public engine API', () => {
-    expect(PACKAGE_NAME).toBe('@your-scope/excel-diff-core');
-    expect(SCAFFOLD_DEPENDENCIES).toEqual([]);
+describe('@your-scope/excel-diff-core public API', () => {
+  it('exports the Tier-3 engine entry points and Result helpers', () => {
     expect(typeof parseFile).toBe('function');
     expect(typeof diffWorkbooks).toBe('function');
     expect(typeof inferSchema).toBe('function');
+    expect(typeof ok).toBe('function');
+    expect(typeof err).toBe('function');
+    expect(typeof isOk).toBe('function');
+    expect(typeof isErr).toBe('function');
+    expect(typeof createDiffError).toBe('function');
+    expect(DEFAULT_LIMITS.maxRows).toBeGreaterThan(0);
+    expect(DEFAULT_NUMERIC_TOLERANCE.absolute).toBe(1e-6);
+    expect(DEFAULT_KEY_CANDIDATES).toContain('origin');
   });
 });

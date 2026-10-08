@@ -1,7 +1,6 @@
-export const PACKAGE_NAME = '@your-scope/excel-diff-core' as const;
-
-/** Phase 0 scaffold marker retained for demo / sibling package compatibility. */
-export const SCAFFOLD_DEPENDENCIES: readonly string[] = [];
+// Public API. Everything exported here is part of the versioned
+// contract — breaking changes require a major version bump.
+// Internal helpers are not re-exported; see PRINCIPLES.md section 10.
 
 export type {
   CellComparator,
@@ -38,23 +37,8 @@ export {
   DEFAULT_KEY_CANDIDATES,
   DEFAULT_LIMITS,
   DEFAULT_NUMERIC_TOLERANCE,
-  mergeLimits,
-  resolveNumericTolerance,
 } from './defaults.js';
 
 export { parseFile } from './parsers/parse-file.js';
-export { detectFormat } from './parsers/detect-format.js';
-export { xlsxParser } from './parsers/xlsx.js';
-export { csvParser } from './parsers/csv.js';
-
 export { inferSchema } from './schema/infer-schema.js';
-export { buildKey } from './key/build-key.js';
 export { diffWorkbooks } from './diff/diff-workbooks.js';
-export { valuesEqual, numbersEqual } from './diff/compare-values.js';
-
-export { normalizeCell } from './normalize/normalize-cell.js';
-export { normalizeRow } from './normalize/normalize-row.js';
-export { normalizeString } from './normalize/normalize-string.js';
-export { normalizeNumber } from './normalize/normalize-number.js';
-export { normalizeDate } from './normalize/normalize-date.js';
-export { normalizeEmpty, isBlank } from './normalize/normalize-empty.js';
