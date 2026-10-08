@@ -7,7 +7,8 @@
   "sideEffects": false,
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -24,9 +25,11 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsup && tsc -p tsconfig.build.json",
-    "dev": "tsup --watch",
+    "build": "tsup --config tsup.worker.config.ts && tsup && tsc -p tsconfig.build.json",
+    "dev": "tsup --config tsup.worker.config.ts && tsup --watch",
     "test": "vitest run --coverage",
+    "test:node": "vitest run --project node --coverage",
+    "test:browser": "vitest run --project browser",
     "test:watch": "vitest",
     "lint": "eslint .",
     "typecheck": "tsc -b --pretty false",
@@ -40,7 +43,10 @@
   "devDependencies": {
     "@types/node": "^26.6.4",
     "@types/papaparse": "^5.5.2",
-    "@vitest/coverage-v8": "^2.1.1",
-    "tsx": "^4.23.15"
+    "@vitest/browser": "^2.1.9",
+    "@vitest/coverage-v8": "^2.1.9",
+    "playwright": "^1.48.0",
+    "tsx": "^4.23.15",
+    "vitest": "^2.1.9"
   }
 }

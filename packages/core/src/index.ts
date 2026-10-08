@@ -43,3 +43,6 @@ export {
 export { parseFile } from './parsers/parse-file.js';
 export { inferSchema } from './schema/infer-schema.js';
 export { diffWorkbooks, diffWorkbooksAsync } from './diff/diff-workbooks.js';
+
+export { createWorker, WorkerClient } from './worker/create-worker.js';
+export type { WorkerProgress } from './worker/create-worker.js';
