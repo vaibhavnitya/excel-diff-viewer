@@ -18,6 +18,6 @@ export type {
   DiffSchema,
   Limits,
   Workbook,
-} from '@your-scope/excel-diff-core';
+} from '@mojro/excel-diff-core';
 
-export type { DiffState, FileState } from '@your-scope/excel-diff-react';
+export type { DiffState, FileState } from '@mojro/excel-diff-react';

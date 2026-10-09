@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   type DiffSchema,
   type WorkerClient,
-} from '@your-scope/excel-diff-core';
+} from '@mojro/excel-diff-core';
 import {
   createProgressThrottle,
   type ProgressThrottle,

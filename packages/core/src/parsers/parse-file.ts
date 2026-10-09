@@ -22,7 +22,7 @@ const PARSERS: Readonly<Record<'xlsx' | 'csv', Parser>> = {
  *
  * @example
  * ```ts
- * import { parseFile } from '@your-scope/excel-diff-core';
+ * import { parseFile } from '@mojro/excel-diff-core';
  *
  * const bytes = new Uint8Array(await file.arrayBuffer());
  * const result = await parseFile(bytes, { filename: file.name });

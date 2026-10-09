@@ -33,15 +33,15 @@ Published as three npm packages in one monorepo:
 
 **Tier 1 (99% of users):**
 ```tsx
-import { ExcelViewer, ExcelDiffViewer } from '@your-scope/excel-diff-ui';
-import '@your-scope/excel-diff-ui/styles.css';
+import { ExcelViewer, ExcelDiffViewer } from '@mojro/excel-diff-ui';
+import '@mojro/excel-diff-ui/styles.css';
 <ExcelViewer file={file} />
 <ExcelDiffViewer fileA={a} fileB={b} schema={schema} />
 ```
 
 **Tier 2 (custom UIs):**
 ```tsx
-import { useExcelFile, useExcelDiff } from '@your-scope/excel-diff-react';
+import { useExcelFile, useExcelDiff } from '@mojro/excel-diff-react';
 ```
 
 **Tier 3 (engine access, Node use):**
@@ -52,7 +52,7 @@ import {
   diffWorkbooks,
   diffWorkbooksAsync,
   createWorker,
-} from '@your-scope/excel-diff-core';
+} from '@mojro/excel-diff-core';
 
 const a = await parseFile(bytesA, { filename: 'v1.xlsx' });
 const b = await parseFile(bytesB, { filename: 'v2.xlsx' });

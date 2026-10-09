@@ -15,7 +15,7 @@ import {
   parseFile,
 } from '../src/index.js';
 
-describe('@your-scope/excel-diff-core public API', () => {
+describe('@mojro/excel-diff-core public API', () => {
   it('exports the Tier-3 engine entry points and Result helpers', () => {
     expect(typeof parseFile).toBe('function');
     expect(typeof diffWorkbooks).toBe('function');

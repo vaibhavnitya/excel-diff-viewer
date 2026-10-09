@@ -16,7 +16,7 @@ export default defineConfig((options) => ({
     'react-dom',
     'ag-grid-community',
     'ag-grid-react',
-    '@your-scope/excel-diff-core',
-    '@your-scope/excel-diff-react',
+    '@mojro/excel-diff-core',
+    '@mojro/excel-diff-react',
   ],
 }));

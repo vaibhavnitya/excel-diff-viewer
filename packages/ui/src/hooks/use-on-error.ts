@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type { DiffError } from '@your-scope/excel-diff-core';
+import type { DiffError } from '@mojro/excel-diff-core';
 
 export function useOnError(
   error: DiffError | undefined,

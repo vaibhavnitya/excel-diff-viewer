@@ -11,34 +11,34 @@ Install the packages, import the CSS once, and render a viewer or diff in a few 
 npm:
 
 ```bash
-npm install @your-scope/excel-diff-ui @your-scope/excel-diff-react @your-scope/excel-diff-core react react-dom ag-grid-community ag-grid-react
+npm install @mojro/excel-diff-ui @mojro/excel-diff-react @mojro/excel-diff-core react react-dom ag-grid-community ag-grid-react
 ```
 
 yarn:
 
 ```bash
-yarn add @your-scope/excel-diff-ui @your-scope/excel-diff-react @your-scope/excel-diff-core react react-dom ag-grid-community ag-grid-react
+yarn add @mojro/excel-diff-ui @mojro/excel-diff-react @mojro/excel-diff-core react react-dom ag-grid-community ag-grid-react
 ```
 
 pnpm:
 
 ```bash
-pnpm add @your-scope/excel-diff-ui @your-scope/excel-diff-react @your-scope/excel-diff-core react react-dom ag-grid-community ag-grid-react
+pnpm add @mojro/excel-diff-ui @mojro/excel-diff-react @mojro/excel-diff-core react react-dom ag-grid-community ag-grid-react
 ```
 
-<Install packages="@your-scope/excel-diff-ui @your-scope/excel-diff-react @your-scope/excel-diff-core react react-dom ag-grid-community ag-grid-react" />
+<Install packages="@mojro/excel-diff-ui @mojro/excel-diff-react @mojro/excel-diff-core react react-dom ag-grid-community ag-grid-react" />
 
 ## Peer dependencies
 
 - **React 18+** (`react`, `react-dom`)
-- **AG Grid Community** (`ag-grid-community`, `ag-grid-react`) — required by `@your-scope/excel-diff-ui` only
+- **AG Grid Community** (`ag-grid-community`, `ag-grid-react`) — required by `@mojro/excel-diff-ui` only
 
 If you only need the engine or hooks, install `core` / `react` without AG Grid.
 
 ## CSS import
 
 ```tsx
-import '@your-scope/excel-diff-ui/styles.css';
+import '@mojro/excel-diff-ui/styles.css';
 ```
 
 Also import AG Grid theme CSS once in your app (see the demo root layout for a working example).
@@ -49,8 +49,8 @@ Also import AG Grid theme CSS once in your app (see the demo root layout for a w
 'use client';
 
 import { useState } from 'react';
-import { ExcelViewer } from '@your-scope/excel-diff-ui';
-import '@your-scope/excel-diff-ui/styles.css';
+import { ExcelViewer } from '@mojro/excel-diff-ui';
+import '@mojro/excel-diff-ui/styles.css';
 
 export function App() {
   const [file, setFile] = useState<File | null>(null);
@@ -68,7 +68,7 @@ export function App() {
 ```tsx
 'use client';
 
-import { ExcelDiffViewer } from '@your-scope/excel-diff-ui';
+import { ExcelDiffViewer } from '@mojro/excel-diff-ui';
 
 const schema = {
   keyFields: ['origin', 'destination', 'mode'],
@@ -97,9 +97,9 @@ export function DiffApp({ fileA, fileB }: { fileA: File | null; fileB: File | nu
 
 ```js
 transpilePackages: [
-  '@your-scope/excel-diff-core',
-  '@your-scope/excel-diff-react',
-  '@your-scope/excel-diff-ui',
+  '@mojro/excel-diff-core',
+  '@mojro/excel-diff-react',
+  '@mojro/excel-diff-ui',
 ],
 ```
 

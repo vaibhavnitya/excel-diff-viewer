@@ -1,6 +1,6 @@
 'use client';
 
-import { ExcelSplitViewer } from '@your-scope/excel-diff-ui';
+import { ExcelSplitViewer } from '@mojro/excel-diff-ui';
 
 import { FileUpload } from '@/components/file-upload';
 import { formatSplitProps, PropsPanel } from '@/components/props-panel';

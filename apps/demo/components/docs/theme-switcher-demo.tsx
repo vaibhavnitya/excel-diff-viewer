@@ -1,6 +1,6 @@
 'use client';
 
-import { ExcelViewer } from '@your-scope/excel-diff-ui';
+import { ExcelViewer } from '@mojro/excel-diff-ui';
 import { useMemo, useState, type CSSProperties } from 'react';
 
 import { Button } from '@/components/ui/button';

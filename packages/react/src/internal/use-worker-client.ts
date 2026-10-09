@@ -1,4 +1,4 @@
-import { createWorker, type WorkerClient } from '@your-scope/excel-diff-core';
+import { createWorker, type WorkerClient } from '@mojro/excel-diff-core';
 import { useCallback, useEffect, useRef, type MutableRefObject } from 'react';
 
 /**

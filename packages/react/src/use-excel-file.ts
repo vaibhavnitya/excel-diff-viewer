@@ -1,4 +1,4 @@
-import { type WorkerClient } from '@your-scope/excel-diff-core';
+import { type WorkerClient } from '@mojro/excel-diff-core';
 import { useEffect, useState } from 'react';
 import { createProgressThrottle } from './internal/progress-throttle.js';
 import { resolveFilename, toArrayBuffer } from './internal/to-array-buffer.js';

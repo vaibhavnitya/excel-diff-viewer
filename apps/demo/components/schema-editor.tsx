@@ -2,7 +2,7 @@
 
 import { HelpCircle } from 'lucide-react';
 import { useId, useState } from 'react';
-import type { DiffSchema } from '@your-scope/excel-diff-core';
+import type { DiffSchema } from '@mojro/excel-diff-core';
 
 import { MultiSelect } from '@/components/multi-select';
 import { Alert, AlertDescription } from '@/components/ui/alert';

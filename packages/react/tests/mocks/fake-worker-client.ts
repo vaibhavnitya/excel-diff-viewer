@@ -10,7 +10,7 @@ import {
   type Result,
   type Workbook,
   type WorkerProgress,
-} from '@your-scope/excel-diff-core';
+} from '@mojro/excel-diff-core';
 
 type Pending = {
   readonly correlationId: string;

@@ -5,7 +5,7 @@ import type {
   DiffSchema,
   Limits,
   ParseFileOptions,
-} from '@your-scope/excel-diff-core';
+} from '@mojro/excel-diff-core';
 
 export type ClassNameSlot =
   | 'root'

@@ -1,5 +1,5 @@
 {
-  "name": "@your-scope/excel-diff-core",
+  "name": "@mojro/excel-diff-core",
   "version": "0.0.0",
   "description": "Framework-agnostic Excel and CSV parse and diff engine.",
   "license": "MIT",

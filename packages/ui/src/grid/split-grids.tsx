@@ -7,7 +7,7 @@ import {
 } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { useCallback, useMemo, useRef } from 'react';
-import type { DiffRow, DiffSchema } from '@your-scope/excel-diff-core';
+import type { DiffRow, DiffSchema } from '@mojro/excel-diff-core';
 import type { ClassNameSlot } from '../types.js';
 import { formatCellValue } from '../utils/format-cell.js';
 import { gridContainerStyle } from '../utils/grid-container-style.js';

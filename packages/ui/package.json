@@ -1,5 +1,5 @@
 {
-  "name": "@your-scope/excel-diff-ui",
+  "name": "@mojro/excel-diff-ui",
   "version": "0.0.0",
   "description": "Drop-in Excel viewer and diff viewer components built on AG Grid.",
   "license": "MIT",
@@ -22,8 +22,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@your-scope/excel-diff-core": "*",
-    "@your-scope/excel-diff-react": "*"
+    "@mojro/excel-diff-core": "*",
+    "@mojro/excel-diff-react": "*"
   },
   "peerDependencies": {
     "ag-grid-community": "^36.2.0",

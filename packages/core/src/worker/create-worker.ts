@@ -51,7 +51,7 @@ function createUnderlyingWorker(): Worker {
   if (WORKER_SOURCE.length === 0) {
     throw createDiffError(
       'WORKER_UNAVAILABLE',
-      'Embedded Worker source is empty; rebuild @your-scope/excel-diff-core.',
+      'Embedded Worker source is empty; rebuild @mojro/excel-diff-core.',
     );
   }
 
@@ -80,7 +80,7 @@ function createUnderlyingWorker(): Worker {
  *
  * @example
  * ```ts
- * import { createWorker, inferSchema } from '@your-scope/excel-diff-core';
+ * import { createWorker, inferSchema } from '@mojro/excel-diff-core';
  *
  * const client = createWorker();
  * const a = await client.parse(bytesA, { filename: 'v1.xlsx' });
@@ -345,7 +345,7 @@ export class WorkerClient {
  *
  * @example
  * ```ts
- * import { createWorker } from '@your-scope/excel-diff-core';
+ * import { createWorker } from '@mojro/excel-diff-core';
  *
  * const client = createWorker();
  * try {

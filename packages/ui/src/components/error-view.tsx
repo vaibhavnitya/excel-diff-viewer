@@ -1,4 +1,4 @@
-import type { DiffError } from '@your-scope/excel-diff-core';
+import type { DiffError } from '@mojro/excel-diff-core';
 import {
   isReportableError,
   isWarningError,

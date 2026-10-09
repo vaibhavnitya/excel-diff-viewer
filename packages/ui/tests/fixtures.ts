@@ -5,7 +5,7 @@ import type {
   DiffSchema,
   RowKey,
   Workbook,
-} from '@your-scope/excel-diff-core';
+} from '@mojro/excel-diff-core';
 
 export const schema: DiffSchema = {
   keyFields: ['origin', 'destination'],

@@ -8,13 +8,13 @@ export default [
   boundaryConfig({
     message,
     paths: [
-      '@your-scope/excel-diff-ui',
+      '@mojro/excel-diff-ui',
       'ag-grid-community',
       'ag-grid-react',
       'next',
     ],
     patterns: [
-      '@your-scope/excel-diff-ui/**',
+      '@mojro/excel-diff-ui/**',
       'ag-grid-community/**',
       'ag-grid-react/**',
       'next/**',

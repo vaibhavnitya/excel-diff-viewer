@@ -26,7 +26,7 @@ Goal: parse a file and diff two files from Node, with full tests.
 - [ ] Vitest suite covers happy path + 10 edge cases
 - [ ] Published API types stable
 
-**Done when:** `npm test -w @your-scope/excel-diff-core` passes against real xlsx fixtures.
+**Done when:** `npm test -w @mojro/excel-diff-core` passes against real xlsx fixtures.
 
 ## Phase 2 — Worker layer (week 3)
 
@@ -61,7 +61,7 @@ Goal: parse a file and diff two files from Node, with full tests.
 - [x] `classNames` prop for overrides
 - [x] Default error UIs + `renderError` escape hatch
 - [x] Limits prop + enforcement
-- [x] Package renamed `@your-scope/excel-diff-ui` (was ag-grid)
+- [x] Package renamed `@mojro/excel-diff-ui` (was ag-grid)
 - [x] `<ExcelSplitViewer>` + CSV export (pulled into 4a)
 
 **Done when:** demo app's main pages work with real rate card files. (Phase 4b)

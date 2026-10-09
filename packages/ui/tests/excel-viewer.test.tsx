@@ -2,7 +2,7 @@ import './mock-hooks.js';
 import './mock-ag-grid.js';
 
 import { fireEvent, render, screen } from '@testing-library/react';
-import { useExcelFile } from '@your-scope/excel-diff-react';
+import { useExcelFile } from '@mojro/excel-diff-react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ExcelViewer } from '../src/excel-viewer.js';
 import { ALL_ERROR_CODES, makeError, workbook } from './fixtures.js';

@@ -1,6 +1,6 @@
 'use client';
 
-import { ExcelDiffViewer } from '@your-scope/excel-diff-ui';
+import { ExcelDiffViewer } from '@mojro/excel-diff-ui';
 
 import { FileUpload } from '@/components/file-upload';
 import { formatDiffProps, PropsPanel } from '@/components/props-panel';

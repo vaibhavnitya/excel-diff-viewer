@@ -1,5 +1,5 @@
 {
-  "name": "@your-scope/excel-diff-react",
+  "name": "@mojro/excel-diff-react",
   "version": "0.0.0",
   "description": "React hooks for loading and diffing Excel and CSV files.",
   "license": "MIT",
@@ -21,7 +21,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@your-scope/excel-diff-core": "*"
+    "@mojro/excel-diff-core": "*"
   },
   "peerDependencies": {
     "react": ">=18.0.0",

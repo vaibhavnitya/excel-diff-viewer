@@ -1,20 +1,20 @@
-# @your-scope/excel-diff-ui
+# @mojro/excel-diff-ui
 
 Drop-in React components for viewing and diffing Excel/CSV files, built on AG Grid.
 
 ## Install
 
 ```bash
-npm install @your-scope/excel-diff-ui ag-grid-community ag-grid-react
+npm install @mojro/excel-diff-ui ag-grid-community ag-grid-react
 ```
 
-Also install `@your-scope/excel-diff-react` and `@your-scope/excel-diff-core` (workspace / peer deps as published).
+Also install `@mojro/excel-diff-react` and `@mojro/excel-diff-core` (workspace / peer deps as published).
 
 ## Minimal usage
 
 ```tsx
-import { ExcelViewer, ExcelDiffViewer, ExcelSplitViewer } from '@your-scope/excel-diff-ui';
-import '@your-scope/excel-diff-ui/styles.css';
+import { ExcelViewer, ExcelDiffViewer, ExcelSplitViewer } from '@mojro/excel-diff-ui';
+import '@mojro/excel-diff-ui/styles.css';
 
 <ExcelViewer file={file} height={600} />
 <ExcelDiffViewer fileA={a} fileB={b} schema={schema} height={600} />

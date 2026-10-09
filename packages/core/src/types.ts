@@ -1,5 +1,5 @@
 /**
- * Public TypeScript contract for `@your-scope/excel-diff-core`.
+ * Public TypeScript contract for `@mojro/excel-diff-core`.
  * Types are the specification — implement against these, not the reverse.
  *
  * Parser-specific types live in `parsers/parser-contract.ts` (canonical)

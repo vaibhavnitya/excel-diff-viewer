@@ -5,7 +5,7 @@ import {
   createWorker,
   type DiffSchema,
   type WorkerClient,
-} from '@your-scope/excel-diff-core';
+} from '@mojro/excel-diff-core';
 import { useExcelDiff } from '../src/use-excel-diff.js';
 import {
   FakeWorkerClient,
@@ -13,9 +13,9 @@ import {
   defaultWorkbook,
 } from './mocks/fake-worker-client.js';
 
-vi.mock('@your-scope/excel-diff-core', async (importOriginal) => {
+vi.mock('@mojro/excel-diff-core', async (importOriginal) => {
   const actual =
-    await importOriginal<typeof import('@your-scope/excel-diff-core')>();
+    await importOriginal<typeof import('@mojro/excel-diff-core')>();
   return {
     ...actual,
     createWorker: vi.fn((): WorkerClient =>

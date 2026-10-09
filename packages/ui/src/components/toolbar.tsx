@@ -1,4 +1,4 @@
-import type { DiffStats } from '@your-scope/excel-diff-core';
+import type { DiffStats } from '@mojro/excel-diff-core';
 import type { ReactNode } from 'react';
 import { cx } from '../utils/cx.js';
 

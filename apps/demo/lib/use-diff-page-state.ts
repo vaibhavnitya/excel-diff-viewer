@@ -1,8 +1,8 @@
 'use client';
 
-import { inferSchema } from '@your-scope/excel-diff-core';
-import type { DiffSchema } from '@your-scope/excel-diff-core';
-import { useExcelFile } from '@your-scope/excel-diff-react';
+import { inferSchema } from '@mojro/excel-diff-core';
+import type { DiffSchema } from '@mojro/excel-diff-core';
+import { useExcelFile } from '@mojro/excel-diff-react';
 import { useEffect, useMemo, useState } from 'react';
 
 /**

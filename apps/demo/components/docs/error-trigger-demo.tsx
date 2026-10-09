@@ -1,7 +1,7 @@
 'use client';
 
-import type { DiffError, DiffErrorCode, DiffSchema } from '@your-scope/excel-diff-core';
-import { ExcelDiffViewer, ExcelViewer } from '@your-scope/excel-diff-ui';
+import type { DiffError, DiffErrorCode, DiffSchema } from '@mojro/excel-diff-core';
+import { ExcelDiffViewer, ExcelViewer } from '@mojro/excel-diff-ui';
 import { useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';

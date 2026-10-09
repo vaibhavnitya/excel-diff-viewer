@@ -9,7 +9,7 @@ import type { DiffError, DiffSchema, InferSchemaOptions, Result } from '../types
  *
  * @example
  * ```ts
- * import { inferSchema, parseFile } from '@your-scope/excel-diff-core';
+ * import { inferSchema, parseFile } from '@mojro/excel-diff-core';
  *
  * const parsed = await parseFile(bytes, { filename: 'rates.xlsx' });
  * if (!parsed.ok) throw new Error(parsed.error.message);

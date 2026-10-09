@@ -5,7 +5,7 @@ import { SiteNav } from '@/components/site-nav';
 import { ThemeProvider } from '@/components/theme-provider';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
-import '@your-scope/excel-diff-ui/styles.css';
+import '@mojro/excel-diff-ui/styles.css';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 import './globals.css';

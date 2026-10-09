@@ -7,7 +7,7 @@ for large-file stress tests.
 ## Regenerate
 
 ```bash
-npm run generate:fixtures -w @your-scope/excel-diff-core
+npm run generate:fixtures -w @mojro/excel-diff-core
 ```
 
 Source of truth: `fixtures/generate.ts`.

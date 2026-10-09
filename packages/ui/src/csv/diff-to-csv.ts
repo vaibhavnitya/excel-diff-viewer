@@ -1,4 +1,4 @@
-import type { CellValue, DiffResult, DiffSchema } from '@your-scope/excel-diff-core';
+import type { CellValue, DiffResult, DiffSchema } from '@mojro/excel-diff-core';
 import { formatCellValue } from '../utils/format-cell.js';
 
 function escapeCsvField(value: string): string {

@@ -36,9 +36,9 @@ const nextConfig = {
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   transpilePackages: [
-    '@your-scope/excel-diff-core',
-    '@your-scope/excel-diff-react',
-    '@your-scope/excel-diff-ui',
+    '@mojro/excel-diff-core',
+    '@mojro/excel-diff-react',
+    '@mojro/excel-diff-ui',
   ],
   eslint: {
     // Lint runs from the workspace ESLint config in CI. Next 14's built-in lint expects eslintrc.

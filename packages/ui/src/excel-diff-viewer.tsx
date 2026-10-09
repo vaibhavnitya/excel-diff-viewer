@@ -1,4 +1,4 @@
-import { useExcelDiff } from '@your-scope/excel-diff-react';
+import { useExcelDiff } from '@mojro/excel-diff-react';
 import { useEffect, useMemo, useState } from 'react';
 import { EmptyView } from './components/empty-view.js';
 import { ErrorView } from './components/error-view.js';

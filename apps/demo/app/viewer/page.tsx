@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ExcelViewer } from '@your-scope/excel-diff-ui';
+import { ExcelViewer } from '@mojro/excel-diff-ui';
 
 import { FileUpload } from '@/components/file-upload';
 import { formatViewerProps, PropsPanel } from '@/components/props-panel';

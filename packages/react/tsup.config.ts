@@ -11,6 +11,6 @@ export default defineConfig((options) => ({
   clean: !options.watch,
   splitting: false,
   treeshake: true,
-  external: ['react', 'react-dom', '@your-scope/excel-diff-core'],
+  external: ['react', 'react-dom', '@mojro/excel-diff-core'],
 }));
 

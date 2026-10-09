@@ -4,7 +4,7 @@ import type {
   FileFormat,
   Limits,
   Workbook,
-} from '@your-scope/excel-diff-core';
+} from '@mojro/excel-diff-core';
 
 export type FileState =
   | { readonly status: 'idle' }

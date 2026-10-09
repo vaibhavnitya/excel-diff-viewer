@@ -2,7 +2,7 @@ import './mock-hooks.js';
 import './mock-ag-grid.js';
 
 import { render } from '@testing-library/react';
-import { useExcelDiff, useExcelFile } from '@your-scope/excel-diff-react';
+import { useExcelDiff, useExcelFile } from '@mojro/excel-diff-react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ExcelDiffViewer } from '../src/excel-diff-viewer.js';
 import { ExcelSplitViewer } from '../src/excel-split-viewer.js';

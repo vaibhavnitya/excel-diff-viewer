@@ -1,4 +1,4 @@
-import type { DiffRow, DiffSchema } from '@your-scope/excel-diff-core';
+import type { DiffRow, DiffSchema } from '@mojro/excel-diff-core';
 import { formatCellValue } from './format-cell.js';
 
 function rowText(row: DiffRow, schema: DiffSchema, headers: readonly string[]): string {

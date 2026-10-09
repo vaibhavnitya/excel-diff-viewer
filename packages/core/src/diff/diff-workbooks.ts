@@ -250,7 +250,7 @@ function finishDiff(
  *
  * @example
  * ```ts
- * import { diffWorkbooks, inferSchema, parseFile } from '@your-scope/excel-diff-core';
+ * import { diffWorkbooks, inferSchema, parseFile } from '@mojro/excel-diff-core';
  *
  * const a = await parseFile(bytesA, { filename: 'v1.xlsx' });
  * const b = await parseFile(bytesB, { filename: 'v2.xlsx' });
@@ -289,7 +289,7 @@ export function diffWorkbooks(
  *
  * @example
  * ```ts
- * import { diffWorkbooksAsync } from '@your-scope/excel-diff-core';
+ * import { diffWorkbooksAsync } from '@mojro/excel-diff-core';
  *
  * const result = await diffWorkbooksAsync(a, b, { schema }, {
  *   isCancelled: () => false,

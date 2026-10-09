@@ -1,4 +1,4 @@
-import type { DiffPhase } from '@your-scope/excel-diff-react';
+import type { DiffPhase } from '@mojro/excel-diff-react';
 
 const LABELS: Record<DiffPhase, string> = {
   'parsing-a': 'Parsing file A',

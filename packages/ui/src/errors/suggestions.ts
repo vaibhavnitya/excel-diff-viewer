@@ -1,4 +1,4 @@
-import type { DiffError, DiffErrorCode } from '@your-scope/excel-diff-core';
+import type { DiffError, DiffErrorCode } from '@mojro/excel-diff-core';
 
 const SUGGESTIONS: Record<DiffErrorCode, string> = {
   FILE_TOO_LARGE:

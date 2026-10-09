@@ -1,4 +1,4 @@
-import { createDiffError, type DiffError } from '@your-scope/excel-diff-core';
+import { createDiffError, type DiffError } from '@mojro/excel-diff-core';
 
 function isDiffError(value: unknown): value is DiffError {
   return (

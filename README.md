@@ -10,14 +10,14 @@ View and diff Excel/CSV files in the browser. Built for React and Next.js — pa
 
 | Package | Description |
 | --- | --- |
-| [`@your-scope/excel-diff-core`](./packages/core) | Parsing + diff engine (framework-agnostic) |
-| [`@your-scope/excel-diff-react`](./packages/react) | React hooks for custom UIs |
-| [`@your-scope/excel-diff-ui`](./packages/ui) | Drop-in components using AG Grid |
+| [`@mojro/excel-diff-core`](./packages/core) | Parsing + diff engine (framework-agnostic) |
+| [`@mojro/excel-diff-react`](./packages/react) | React hooks for custom UIs |
+| [`@mojro/excel-diff-ui`](./packages/ui) | Drop-in components using AG Grid |
 
 ## Install
 
 ```bash
-npm install @your-scope/excel-diff-ui @your-scope/excel-diff-react @your-scope/excel-diff-core react react-dom ag-grid-community ag-grid-react
+npm install @mojro/excel-diff-ui @mojro/excel-diff-react @mojro/excel-diff-core react react-dom ag-grid-community ag-grid-react
 ```
 
 ## Minimal usage
@@ -26,8 +26,8 @@ npm install @your-scope/excel-diff-ui @your-scope/excel-diff-react @your-scope/e
 'use client';
 
 import { useState } from 'react';
-import { ExcelViewer, ExcelDiffViewer } from '@your-scope/excel-diff-ui';
-import '@your-scope/excel-diff-ui/styles.css';
+import { ExcelViewer, ExcelDiffViewer } from '@mojro/excel-diff-ui';
+import '@mojro/excel-diff-ui/styles.css';
 
 export function App() {
   const [file, setFile] = useState<File | null>(null);

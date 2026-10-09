@@ -10,7 +10,7 @@ import { DIFF_PROPS } from '@/lib/docs-props';
 ## Minimal usage
 
 ```tsx
-import { ExcelDiffViewer } from '@your-scope/excel-diff-ui';
+import { ExcelDiffViewer } from '@mojro/excel-diff-ui';
 
 const schema = {
   keyFields: ['origin', 'destination', 'mode'],
@@ -47,7 +47,7 @@ const rateCardSchema = {
 ### Infer vs hand-write
 
 ```ts
-import { inferSchema } from '@your-scope/excel-diff-core';
+import { inferSchema } from '@mojro/excel-diff-core';
 
 const inferred = inferSchema(headers);
 if (inferred.ok) {
@@ -65,7 +65,7 @@ See [Core concepts](/docs/core-concepts) for key / optional / tolerance details.
 The toolbar can include an export button (`enableCSVExport`). For your own UI, use the utility:
 
 ```tsx
-import { diffToCSV } from '@your-scope/excel-diff-ui';
+import { diffToCSV } from '@mojro/excel-diff-ui';
 
 function ExportButton({ diff }: { diff: DiffResult }) {
   return (

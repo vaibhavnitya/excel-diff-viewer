@@ -31,7 +31,7 @@ export default function StylingDocsPage() {
         <p className="text-muted-foreground">
           Defaults from{' '}
           <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em]">
-            @your-scope/excel-diff-ui/styles.css
+            @mojro/excel-diff-ui/styles.css
           </code>
           . Dark values apply under{' '}
           <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em]">

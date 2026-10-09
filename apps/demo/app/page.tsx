@@ -36,13 +36,13 @@ const features = [
 ] as const;
 
 const INSTALL =
-  'npm install @your-scope/excel-diff-ui @your-scope/excel-diff-react @your-scope/excel-diff-core react react-dom ag-grid-community ag-grid-react';
+  'npm install @mojro/excel-diff-ui @mojro/excel-diff-react @mojro/excel-diff-core react react-dom ag-grid-community ag-grid-react';
 
 const QUICK_EXAMPLE = `'use client';
 
 import { useState } from 'react';
-import { ExcelViewer } from '@your-scope/excel-diff-ui';
-import '@your-scope/excel-diff-ui/styles.css';
+import { ExcelViewer } from '@mojro/excel-diff-ui';
+import '@mojro/excel-diff-ui/styles.css';
 
 export function App() {
   const [file, setFile] = useState<File | null>(null);
@@ -145,7 +145,7 @@ export default function HomePage() {
             View on GitHub
           </a>
           <code className="rounded-md bg-muted px-2 py-1 text-xs text-foreground">
-            npm install @your-scope/excel-diff-ui
+            npm install @mojro/excel-diff-ui
           </code>
         </div>
       </footer>

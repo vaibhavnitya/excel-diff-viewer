@@ -1,13 +1,13 @@
-# @your-scope/excel-diff-core
+# @mojro/excel-diff-core
 
 Framework-agnostic Excel and CSV parsing and diff engine. Runs in Node and the browser.
 
-Depends on nothing else in this repo. React hooks live in `@your-scope/excel-diff-react`. Drop-in components live in `@your-scope/excel-diff-ui`.
+Depends on nothing else in this repo. React hooks live in `@mojro/excel-diff-react`. Drop-in components live in `@mojro/excel-diff-ui`.
 
 ## Install
 
 ```bash
-npm install @your-scope/excel-diff-core
+npm install @mojro/excel-diff-core
 ```
 
 ## Minimal usage
@@ -17,7 +17,7 @@ import {
   parseFile,
   inferSchema,
   diffWorkbooks,
-} from '@your-scope/excel-diff-core';
+} from '@mojro/excel-diff-core';
 
 const a = await parseFile(bytesA, { filename: 'v1.xlsx' });
 const b = await parseFile(bytesB, { filename: 'v2.xlsx' });

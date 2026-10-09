@@ -1,7 +1,7 @@
 import { themeQuartz, type ColDef } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { useMemo } from 'react';
-import type { Sheet } from '@your-scope/excel-diff-core';
+import type { Sheet } from '@mojro/excel-diff-core';
 import type { ClassNameSlot } from '../types.js';
 import { formatCellValue } from '../utils/format-cell.js';
 import { gridContainerStyle } from '../utils/grid-container-style.js';

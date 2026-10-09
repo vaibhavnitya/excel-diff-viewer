@@ -25,7 +25,7 @@ Demo runs at http://localhost:3000. Library edits hot-reload in the demo.
 
 Run tests in watch mode (one package):
 ```bash
-npm run test:watch --workspace=@your-scope/excel-diff-core
+npm run test:watch --workspace=@mojro/excel-diff-core
 ```
 
 Run all tests once:
@@ -72,7 +72,7 @@ layers and the demo.
 
 ## npm workspaces notes
 
-- Internal deps use `"*"` as the version (e.g. `"@your-scope/excel-diff-core": "*"`).
+- Internal deps use `"*"` as the version (e.g. `"@mojro/excel-diff-core": "*"`).
   npm resolves this to the local workspace package.
 - Run commands against specific workspaces with `--workspace=<name>` or `-w <name>`.
 - `npm install <pkg> -w <workspace-name>` installs to a specific workspace.

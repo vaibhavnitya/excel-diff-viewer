@@ -1,22 +1,22 @@
-# @your-scope/excel-diff-react
+# @mojro/excel-diff-react
 
 React hooks for loading and diffing Excel and CSV files. No grid and no opinionated DOM.
 
 **Requires React 18+** (`react` and `react-dom` are peer dependencies).
 
-Imports `@your-scope/excel-diff-core` only. Drop-in components live in `@your-scope/excel-diff-ui`.
+Imports `@mojro/excel-diff-core` only. Drop-in components live in `@mojro/excel-diff-ui`.
 
 ## Install
 
 ```bash
-npm install @your-scope/excel-diff-react @your-scope/excel-diff-core
+npm install @mojro/excel-diff-react @mojro/excel-diff-core
 ```
 
 ## Minimal usage
 
 ```tsx
-import { useExcelFile, useExcelDiff } from '@your-scope/excel-diff-react';
-import type { DiffSchema } from '@your-scope/excel-diff-react';
+import { useExcelFile, useExcelDiff } from '@mojro/excel-diff-react';
+import type { DiffSchema } from '@mojro/excel-diff-react';
 
 const fileState = useExcelFile(file);
 // idle | loading | success | error

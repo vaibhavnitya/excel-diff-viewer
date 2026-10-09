@@ -1,4 +1,4 @@
-import type { DiffSchema, Workbook } from '@your-scope/excel-diff-core';
+import type { DiffSchema, Workbook } from '@mojro/excel-diff-core';
 
 const HEADERS = ['origin', 'destination', 'mode', 'rate'] as const;
 
