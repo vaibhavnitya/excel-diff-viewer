@@ -51,24 +51,26 @@ Goal: parse a file and diff two files from Node, with full tests.
 
 **Done when:** demo app's custom-UI page works using only the hooks.
 
-## Phase 4 — AG Grid adapter (week 5)
+## Phase 4 — UI adapter (week 5)
 
-- [ ] `<ExcelViewer>` with sheet tabs, loading, errors
-- [ ] `<ExcelDiffViewer>` unified mode
-- [ ] Toolbar: stats, filter (show-only-changes), search
-- [ ] Cell highlighting via `cellClassRules`
-- [ ] CSS variables for theming
-- [ ] `classNames` prop for overrides
-- [ ] Default error UIs + `renderError` escape hatch
-- [ ] Limits prop + enforcement
+- [x] `<ExcelViewer>` with sheet tabs, loading, errors
+- [x] `<ExcelDiffViewer>` unified mode
+- [x] Toolbar: stats, filter (show-only-changes), search
+- [x] Cell highlighting via `cellClassRules`
+- [x] CSS variables for theming
+- [x] `classNames` prop for overrides
+- [x] Default error UIs + `renderError` escape hatch
+- [x] Limits prop + enforcement
+- [x] Package renamed `@your-scope/excel-diff-ui` (was ag-grid)
+- [x] `<ExcelSplitViewer>` + CSV export (pulled into 4a)
 
-**Done when:** demo app's main pages work with real rate card files.
+**Done when:** demo app's main pages work with real rate card files. (Phase 4b)
 
 ## Phase 5 — Split view + polish (week 6)
 
-- [ ] `mode="split"` with synced scroll + ghost rows
+- [x] Split viewer with synced scroll + ghost rows (shipped as `<ExcelSplitViewer>` in 4a)
 - [ ] `mode="sheet"` for raw side-by-side
-- [ ] Progress bars (determinate) during parse + diff
+- [x] Progress bars (determinate) during parse + diff (4a)
 - [ ] Keyboard nav parity with Excel basics
 - [ ] Storybook with every state
 

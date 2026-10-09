@@ -3,6 +3,6 @@
   "references": [
     { "path": "packages/core" },
     { "path": "packages/react" },
-    { "path": "packages/ag-grid" }
+    { "path": "packages/ui" }
   ]
 }

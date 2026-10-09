@@ -19,8 +19,8 @@ Published as three npm packages in one monorepo:
   diff algorithm, Web Worker wrapper, schema inference. Works in Node too.
 - **react** — React hooks (`useExcelFile`, `useExcelDiff`). Manages Worker
   lifecycle, cancellation, progress. No DOM styling.
-- **ag-grid** — Drop-in `<ExcelViewer>` and `<ExcelDiffViewer>` components.
-  Opinionated UI. AG Grid as peer dependency.
+- **ui** — Drop-in `<ExcelViewer>`, `<ExcelDiffViewer>`, and
+  `<ExcelSplitViewer>` components. Opinionated UI. AG Grid as peer dependency.
 
 ### Why split?
 
@@ -33,7 +33,8 @@ Published as three npm packages in one monorepo:
 
 **Tier 1 (99% of users):**
 ```tsx
-import { ExcelViewer, ExcelDiffViewer } from '@your-scope/excel-diff-ag-grid';
+import { ExcelViewer, ExcelDiffViewer } from '@your-scope/excel-diff-ui';
+import '@your-scope/excel-diff-ui/styles.css';
 <ExcelViewer file={file} />
 <ExcelDiffViewer fileA={a} fileB={b} schema={schema} />
 ```

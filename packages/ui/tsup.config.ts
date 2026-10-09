@@ -5,9 +5,18 @@ export default defineConfig((options) => ({
   format: ['esm', 'cjs'],
   target: 'es2022',
   platform: 'neutral',
-  dts: true,
+  // Declarations via `tsc -p tsconfig.build.json` (tsup dts + composite conflict).
+  dts: false,
   sourcemap: true,
   clean: !options.watch,
   splitting: false,
   treeshake: true,
+  external: [
+    'react',
+    'react-dom',
+    'ag-grid-community',
+    'ag-grid-react',
+    '@your-scope/excel-diff-core',
+    '@your-scope/excel-diff-react',
+  ],
 }));

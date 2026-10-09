@@ -1,11 +1,11 @@
 {
-  "name": "@your-scope/excel-diff-ag-grid",
+  "name": "@your-scope/excel-diff-ui",
   "version": "0.0.0",
   "description": "Drop-in Excel viewer and diff viewer components built on AG Grid.",
   "license": "MIT",
   "type": "module",
-  "sideEffects": false,
-  "files": ["dist", "README.md"],
+  "sideEffects": ["**/*.css", "*.css"],
+  "files": ["dist", "styles.css", "README.md", "LICENSE"],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -15,7 +15,8 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs",
       "default": "./dist/index.js"
-    }
+    },
+    "./styles.css": "./styles.css"
   },
   "publishConfig": {
     "access": "public"
@@ -25,15 +26,24 @@
     "@your-scope/excel-diff-react": "*"
   },
   "peerDependencies": {
+    "ag-grid-community": "^36.2.0",
+    "ag-grid-react": "^36.2.0",
     "react": ">=18",
     "react-dom": ">=18"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "ag-grid-community": "^36.2.0",
+    "ag-grid-react": "^36.2.0",
+    "happy-dom": "^15.11.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && tsc -p tsconfig.build.json",
     "dev": "tsup --watch",
     "test": "vitest run",
     "test:watch": "vitest",

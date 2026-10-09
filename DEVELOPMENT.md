@@ -44,7 +44,7 @@ npm run typecheck && npm run lint
 packages/
   core/        Parsing + diff engine
   react/       React hooks
-  ag-grid/     Drop-in components
+  ui/          Drop-in components (AG Grid)
 apps/
   demo/        Next.js demo (deployed to Vercel)
 e2e/           Playwright tests against demo

@@ -12,7 +12,7 @@
     "clean": "rimraf .next"
   },
   "dependencies": {
-    "@your-scope/excel-diff-ag-grid": "*",
+    "@your-scope/excel-diff-ui": "*",
     "@your-scope/excel-diff-core": "*",
     "@your-scope/excel-diff-react": "*",
     "next": "^14.2.15",

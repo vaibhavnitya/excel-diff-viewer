@@ -15,10 +15,10 @@ The three-package split exists to enforce boundaries that would otherwise
 blur. Keep them clean:
 
 - **core** must never import from `react` or any UI library. It must run in Node.
-- **react** must never import from `ag-grid` or render any opinionated DOM.
-- **ag-grid** is the only place AG Grid shows up.
+- **react** must never import from `ui` or render any opinionated DOM.
+- **ui** is the only place AG Grid shows up.
 
-**Test:** if you can't delete `packages/ag-grid` and still ship `core` + `react`,
+**Test:** if you can't delete `packages/ui` and still ship `core` + `react`,
 something has leaked. Fix it.
 
 ---
@@ -63,14 +63,14 @@ Pass those in as arguments or move the function to the shell.
 Dependencies point **inward**, never outward:
 
 ```
-ag-grid  →  react  →  core
-   ↓          ↓        ↓
+ui  →  react  →  core
+ ↓       ↓        ↓
  (deps on) (deps on) (depends on nothing in this repo)
 ```
 
 - `core` imports from nothing in this repo.
-- `react` imports from `core`, never from `ag-grid`.
-- `ag-grid` imports from `react` and `core`.
+- `react` imports from `core`, never from `ui`.
+- `ui` imports from `react` and `core`.
 
 Enforced by TypeScript project references + lint rules. If a PR adds an upward
 import, CI fails.
@@ -126,7 +126,7 @@ Treat it as a requirement from day one, not something to fix later:
 - **Measure before optimizing.** Vitest benchmarks for the diff algorithm;
   Playwright perf traces for the UI.
 - **Known-size budgets** (in `size-limit` config): `core` < 80 KB gz,
-  `react` < 10 KB gz on top, `ag-grid` adapter < 15 KB gz on top (excluding
+  `react` < 10 KB gz on top, `ui` adapter < 15 KB gz on top (excluding
   peer deps).
 - **No O(n²) algorithms on cell data.** If you need one, chunk it in the Worker
   and emit progress.
