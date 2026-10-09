@@ -9,3 +9,16 @@
   Should emit a final (total, total) event unconditionally.
 - Core exports should be re-audited before 1.0 — the Phase 1 cleanup 
   narrowed from 29 to ~15, but any additions since need review.
+
+## Lessons from Phase 4c (docs)
+
+- Demo smoke pages lived under `apps/demo/app/dev/` (not `_dev/`). Deleted
+  after docs landed; clear `apps/demo/.next` if typecheck still references
+  removed routes.
+- UI components accept `File | ArrayBuffer | null`, not in-memory
+  `Workbook`s — docs demos convert sample workbooks to CSV `File`s.
+- Some error codes (`WORKER_*`, `CANCELLED`, `SCHEMA_INFERENCE_FAILED`)
+  are awkward to force in an embedded demo; document them with copy plus a
+  happy-path viewer instead of fake throws.
+- Pin `@next/mdx` to the same major as `next` (14.x here); npm may otherwise
+  resolve a newer major.

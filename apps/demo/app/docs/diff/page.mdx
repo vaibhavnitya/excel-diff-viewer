@@ -1,0 +1,102 @@
+import { Callout } from '@/components/docs/callout';
+import { LiveDemo } from '@/components/docs/live-demo';
+import { PropsTable } from '@/components/docs/props-table';
+import { DIFF_PROPS } from '@/lib/docs-props';
+
+# Diff
+
+`<ExcelDiffViewer>` compares two files by business key, highlights added / removed / modified cells, and can export the result as CSV.
+
+## Minimal usage
+
+```tsx
+import { ExcelDiffViewer } from '@your-scope/excel-diff-ui';
+
+const schema = {
+  keyFields: ['origin', 'destination', 'mode'],
+  optionalKeyFields: ['destination'],
+  valueFields: ['rate'],
+};
+
+<ExcelDiffViewer
+  fileA={fileA}
+  fileB={fileB}
+  schema={schema}
+  height={600}
+/>
+```
+
+## Props
+
+<PropsTable rows={DIFF_PROPS} />
+
+## Schema configuration
+
+### Rate card example
+
+```ts
+const rateCardSchema = {
+  keyFields: ['origin', 'destination', 'mode'],
+  // Blank destination means “any destination” as its own bucket (*)
+  optionalKeyFields: ['destination'],
+  valueFields: ['rate'],
+  numericTolerance: { absolute: 0.01, relative: 1e-9 },
+};
+```
+
+### Infer vs hand-write
+
+```ts
+import { inferSchema } from '@your-scope/excel-diff-core';
+
+const inferred = inferSchema(headers);
+if (inferred.ok) {
+  // Good starting point for well-named columns
+  setSchema(inferred.value);
+}
+```
+
+Hand-write when inference misses your keys, when optional wildcards matter, or when value fields should be a subset of columns.
+
+See [Core concepts](/docs/core-concepts) for key / optional / tolerance details.
+
+## CSV export
+
+The toolbar can include an export button (`enableCSVExport`). For your own UI, use the utility:
+
+```tsx
+import { diffToCSV } from '@your-scope/excel-diff-ui';
+
+function ExportButton({ diff }: { diff: DiffResult }) {
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        const csv = diffToCSV(diff);
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'diff.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      }}
+    >
+      Download CSV
+    </button>
+  );
+}
+```
+
+<LiveDemo href="/diff">Try it live →</LiveDemo>
+
+## Common patterns
+
+- **Schema changes** — updating `schema` cancels in-flight work and re-diffs (latest-wins).
+- **showOnlyChanges** — hide unchanged rows when reviewing large cards.
+- **search** — use controlled `searchQuery` / `onSearchQueryChange` to sync with your chrome.
+
+<Callout type="tip">
+  The demo’s schema editor (`apps/demo/components/schema-editor.tsx`) is a good
+  reference for building schema UX on top of `DiffSchema`.
+</Callout>

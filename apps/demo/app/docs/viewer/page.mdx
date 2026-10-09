@@ -1,0 +1,71 @@
+import { Callout } from '@/components/docs/callout';
+import { LiveDemo } from '@/components/docs/live-demo';
+import { PropsTable } from '@/components/docs/props-table';
+import { VIEWER_PROPS } from '@/lib/docs-props';
+
+# Viewer
+
+`<ExcelViewer>` parses a single Excel or CSV file in a Worker and renders it as a searchable, sortable grid with sheet tabs.
+
+## Minimal usage
+
+```tsx
+import { ExcelViewer } from '@your-scope/excel-diff-ui';
+import '@your-scope/excel-diff-ui/styles.css';
+
+<ExcelViewer file={file} height={600} />
+```
+
+## Props
+
+<PropsTable rows={VIEWER_PROPS} />
+
+## Examples
+
+### Basic
+
+```tsx
+const [file, setFile] = useState<File | null>(null);
+
+<input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+<ExcelViewer file={file} height={600} />
+```
+
+### Sheet selection
+
+```tsx
+<ExcelViewer
+  file={file}
+  height={600}
+  defaultSheet="Rates"
+  onSheetChange={(name) => console.log('sheet', name)}
+/>
+```
+
+### Error handling
+
+```tsx
+<ExcelViewer
+  file={file}
+  height={600}
+  onError={(error) => analytics.capture('excel_error', { code: error.code })}
+  renderError={(error) => (
+    <div role="alert">
+      {error.code}: {error.message}
+    </div>
+  )}
+/>
+```
+
+<LiveDemo href="/viewer">Try it live →</LiveDemo>
+
+## Common pitfalls
+
+- **Height** — pass `height` or give the parent an explicit height. Unsized parents look broken.
+- **File lifecycle** — the hook terminates its Worker on unmount. Avoid keeping stale `File` references across navigations if you also clear component state.
+- **CSS** — forget the `styles.css` import and theming / layout will look unstyled.
+
+<Callout type="warn">
+  `file` accepts `File | ArrayBuffer | null`. Passing a parsed `Workbook` object
+  is not supported — use the hooks or core APIs if you already have a workbook.
+</Callout>

@@ -29,7 +29,7 @@ export default function SplitPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <FileUpload
           label="File A — before"
           file={fileA}
@@ -49,9 +49,9 @@ export default function SplitPage() {
         onSchemaChange={setSchema}
       />
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardContent className="p-0">
-          <div className="min-h-[600px] p-2">
+          <div className="min-h-[360px] overflow-x-auto p-2 sm:min-h-[600px]">
             <ExcelSplitViewer
               fileA={fileA}
               fileB={fileB}

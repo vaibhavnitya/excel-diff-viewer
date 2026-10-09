@@ -8,43 +8,38 @@ Drop-in React components for viewing and diffing Excel/CSV files, built on AG Gr
 npm install @your-scope/excel-diff-ui ag-grid-community ag-grid-react
 ```
 
-## Usage
+Also install `@your-scope/excel-diff-react` and `@your-scope/excel-diff-core` (workspace / peer deps as published).
+
+## Minimal usage
 
 ```tsx
 import { ExcelViewer, ExcelDiffViewer, ExcelSplitViewer } from '@your-scope/excel-diff-ui';
 import '@your-scope/excel-diff-ui/styles.css';
 
-<ExcelViewer file={file} />
-<ExcelDiffViewer fileA={a} fileB={b} schema={schema} />
-<ExcelSplitViewer fileA={a} fileB={b} schema={schema} />
+<ExcelViewer file={file} height={600} />
+<ExcelDiffViewer fileA={a} fileB={b} schema={schema} height={600} />
+<ExcelSplitViewer fileA={a} fileB={b} schema={schema} height={600} />
 ```
 
 Styling is opt-in via the CSS import. Theme with CSS variables (`--edv-*`) or override slots via the `classNames` prop.
 
-## Sizing
+## Public exports
 
-The components fill their parent container by default (`height: 100%`).
-Make sure the parent has an explicit height, or pass the `height` prop:
-
-```tsx
-// Pass explicit height
-<ExcelViewer file={file} height={600} />
-<ExcelViewer file={file} height="80vh" />
-
-// Or let it fill a sized parent
-<div style={{ height: 500 }}>
-  <ExcelViewer file={file} />
-</div>
-```
-
-A 400px minimum height is enforced as a safety net so the grid stays visible
-even if the parent is unsized.
+| Export | Description |
+| --- | --- |
+| `ExcelViewer` | Single-file grid with sheet tabs |
+| `ExcelDiffViewer` | Unified key-based diff grid + toolbar |
+| `ExcelSplitViewer` | Side-by-side aligned panes |
+| `diffToCSV` | Serialize a `DiffResult` to CSV |
+| Prop / slot types | `ExcelViewerProps`, `ClassNameSlot`, … |
 
 ## Peer dependencies
 
 - `react` / `react-dom` >= 18
 - `ag-grid-community` / `ag-grid-react` ^36.2.0
 
-## Architecture
+## Docs
 
-Depends on `@your-scope/excel-diff-react` (hooks) and `@your-scope/excel-diff-core` (types/engine). See `DESIGN.md` and `PRINCIPLES.md` in the monorepo root.
+Full guides: [http://localhost:3000/docs](http://localhost:3000/docs) (demo app). Deployed URL coming soon.
+
+See also `DESIGN.md` and `PRINCIPLES.md` in the monorepo root.

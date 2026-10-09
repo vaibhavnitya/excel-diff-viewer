@@ -1,0 +1,116 @@
+import { Callout } from '@/components/docs/callout';
+import { Install } from '@/components/docs/install';
+import { LiveDemo } from '@/components/docs/live-demo';
+
+# Getting started
+
+Install the packages, import the CSS once, and render a viewer or diff in a few lines.
+
+## Install
+
+npm:
+
+```bash
+npm install @your-scope/excel-diff-ui @your-scope/excel-diff-react @your-scope/excel-diff-core react react-dom ag-grid-community ag-grid-react
+```
+
+yarn:
+
+```bash
+yarn add @your-scope/excel-diff-ui @your-scope/excel-diff-react @your-scope/excel-diff-core react react-dom ag-grid-community ag-grid-react
+```
+
+pnpm:
+
+```bash
+pnpm add @your-scope/excel-diff-ui @your-scope/excel-diff-react @your-scope/excel-diff-core react react-dom ag-grid-community ag-grid-react
+```
+
+<Install packages="@your-scope/excel-diff-ui @your-scope/excel-diff-react @your-scope/excel-diff-core react react-dom ag-grid-community ag-grid-react" />
+
+## Peer dependencies
+
+- **React 18+** (`react`, `react-dom`)
+- **AG Grid Community** (`ag-grid-community`, `ag-grid-react`) — required by `@your-scope/excel-diff-ui` only
+
+If you only need the engine or hooks, install `core` / `react` without AG Grid.
+
+## CSS import
+
+```tsx
+import '@your-scope/excel-diff-ui/styles.css';
+```
+
+Also import AG Grid theme CSS once in your app (see the demo root layout for a working example).
+
+## Hello world — viewer
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+import { ExcelViewer } from '@your-scope/excel-diff-ui';
+import '@your-scope/excel-diff-ui/styles.css';
+
+export function App() {
+  const [file, setFile] = useState<File | null>(null);
+  return (
+    <>
+      <input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+      <ExcelViewer file={file} height={600} />
+    </>
+  );
+}
+```
+
+## Minimal diff
+
+```tsx
+'use client';
+
+import { ExcelDiffViewer } from '@your-scope/excel-diff-ui';
+
+const schema = {
+  keyFields: ['origin', 'destination', 'mode'],
+  optionalKeyFields: ['destination'],
+  valueFields: ['rate'],
+};
+
+export function DiffApp({ fileA, fileB }: { fileA: File | null; fileB: File | null }) {
+  return (
+    <ExcelDiffViewer
+      fileA={fileA}
+      fileB={fileB}
+      schema={schema}
+      height={600}
+    />
+  );
+}
+```
+
+## Next.js notes
+
+- Import the UI CSS (and AG Grid CSS) from the **root layout**, not from every page.
+- Components that take `File` state are **Client Components** (`'use client'`).
+- The Worker loads via a **Blob URL** embedded in core — no custom webpack Worker loader or `new URL(..., import.meta.url)` config is required.
+- Add the packages to `transpilePackages` in `next.config`:
+
+```js
+transpilePackages: [
+  '@your-scope/excel-diff-core',
+  '@your-scope/excel-diff-react',
+  '@your-scope/excel-diff-ui',
+],
+```
+
+<Callout type="tip">
+  Prefer an explicit `height` (or a sized parent). The grid fills its parent by
+  default; unsized parents collapse to a small minimum.
+</Callout>
+
+<LiveDemo href="/viewer">Try it live →</LiveDemo>
+
+## What's next
+
+- [Core concepts](/docs/core-concepts) — packages and schema
+- [Viewer](/docs/viewer) — full props reference

@@ -58,3 +58,34 @@
     min-height: 100vh;
   }
 }
+
+/* rehype-pretty-code dual theme (github-light / github-dark) */
+html:not(.dark) code[data-theme*=' '],
+html:not(.dark) code[data-theme*=' '] span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+
+html.dark code[data-theme*=' '],
+html.dark code[data-theme*=' '] span {
+  color: var(--shiki-dark);
+  background-color: var(--shiki-dark-bg);
+}
+
+.docs-prose pre [data-line] {
+  padding-inline: 0;
+}
+
+.docs-prose .anchor-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.docs-prose .anchor-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+html {
+  scroll-behavior: smooth;
+}

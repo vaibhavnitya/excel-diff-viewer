@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Columns2, FileSpreadsheet, GitCompare } from 'lucide-react';
 
+import { CopyButton } from '@/components/copy-button';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -34,6 +35,25 @@ const features = [
   },
 ] as const;
 
+const INSTALL =
+  'npm install @your-scope/excel-diff-ui @your-scope/excel-diff-react @your-scope/excel-diff-core react react-dom ag-grid-community ag-grid-react';
+
+const QUICK_EXAMPLE = `'use client';
+
+import { useState } from 'react';
+import { ExcelViewer } from '@your-scope/excel-diff-ui';
+import '@your-scope/excel-diff-ui/styles.css';
+
+export function App() {
+  const [file, setFile] = useState<File | null>(null);
+  return (
+    <>
+      <input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+      <ExcelViewer file={file} height={600} />
+    </>
+  );
+}`;
+
 export default function HomePage() {
   return (
     <div className="mx-auto flex min-h-[calc(100vh-3.5rem)] max-w-7xl flex-col px-4 py-10 sm:px-6">
@@ -54,6 +74,9 @@ export default function HomePage() {
             </Button>
             <Button asChild size="lg" variant="outline">
               <Link href="/diff">Compare two files</Link>
+            </Button>
+            <Button asChild size="lg" variant="ghost">
+              <Link href="/docs">Read the docs</Link>
             </Button>
           </div>
         </section>
@@ -76,6 +99,38 @@ export default function HomePage() {
               </CardContent>
             </Card>
           ))}
+        </section>
+
+        <section className="rounded-lg border bg-muted/30 p-6">
+          <h2 className="mb-4 text-lg font-semibold tracking-tight">
+            Quick start
+          </h2>
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Install</p>
+              <div className="flex items-start gap-2 rounded-md border bg-background p-3">
+                <pre className="min-w-0 flex-1 overflow-x-auto text-xs leading-relaxed">
+                  <code>{INSTALL}</code>
+                </pre>
+                <CopyButton text={INSTALL} />
+              </div>
+            </div>
+            <div className="space-y-2 lg:col-span-1">
+              <p className="text-sm font-medium">Minimal viewer</p>
+              <pre className="max-h-56 overflow-auto rounded-md border bg-background p-3 text-xs leading-relaxed">
+                <code>{QUICK_EXAMPLE}</code>
+              </pre>
+            </div>
+            <div className="flex flex-col justify-between gap-3">
+              <p className="text-sm text-muted-foreground">
+                Full guides for schema, hooks, styling, and errors live in the
+                docs.
+              </p>
+              <Button asChild variant="outline" className="w-fit">
+                <Link href="/docs">Read the docs →</Link>
+              </Button>
+            </div>
+          </div>
         </section>
       </main>
 

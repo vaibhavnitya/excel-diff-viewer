@@ -30,7 +30,7 @@ export default function DiffPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <FileUpload
           label="File A — before"
           file={fileA}
@@ -50,9 +50,9 @@ export default function DiffPage() {
         onSchemaChange={setSchema}
       />
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardContent className="p-0">
-          <div className="min-h-[600px] p-2">
+          <div className="min-h-[360px] p-2 sm:min-h-[600px]">
             <ExcelDiffViewer
               fileA={fileA}
               fileB={fileB}

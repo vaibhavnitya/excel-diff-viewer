@@ -1,0 +1,104 @@
+import { Callout } from '@/components/docs/callout';
+
+# Hooks
+
+For custom UIs — skip this page if you are using the shipped `<ExcelViewer>`, `<ExcelDiffViewer>`, or `<ExcelSplitViewer>` components.
+
+```tsx
+import { useExcelFile, useExcelDiff } from '@your-scope/excel-diff-react';
+```
+
+## useExcelFile
+
+```ts
+function useExcelFile(
+  file: File | ArrayBuffer | null,
+  options?: UseExcelFileOptions,
+): FileState;
+```
+
+### State shape
+
+```ts
+type FileState =
+  | { status: 'idle' }
+  | { status: 'loading'; progress: number }
+  | { status: 'success'; workbook: Workbook }
+  | { status: 'error'; error: DiffError };
+```
+
+### Example — wire to your own grid
+
+```tsx
+function MyViewer({ file }: { file: File | null }) {
+  const state = useExcelFile(file);
+
+  if (state.status === 'idle') return <p>Upload a file</p>;
+  if (state.status === 'loading') return <p>{Math.round(state.progress * 100)}%</p>;
+  if (state.status === 'error') return <p>{state.error.message}</p>;
+
+  const sheet = state.workbook.sheets[state.workbook.activeSheetIndex];
+  return <MyGrid headers={sheet.headers} rows={sheet.rows} />;
+}
+```
+
+### Lifecycle
+
+- One Worker per hook instance (created lazily)
+- Worker is terminated on unmount
+- Changing `file` cancels in-flight parse (latest-wins)
+
+## useExcelDiff
+
+```ts
+function useExcelDiff(
+  fileA: File | ArrayBuffer | null,
+  fileB: File | ArrayBuffer | null,
+  schema: DiffSchema | null,
+  options?: UseExcelDiffOptions,
+): DiffState;
+```
+
+### State shape
+
+```ts
+type DiffState =
+  | { status: 'idle' }
+  | { status: 'loading'; progress: number; phase: DiffPhase }
+  | {
+      status: 'success';
+      diff: DiffResult;
+      workbookA: Workbook;
+      workbookB: Workbook;
+    }
+  | { status: 'error'; error: DiffError };
+```
+
+`DiffPhase` is `'parsing-a' | 'parsing-b' | 'diffing'`. The hook stays `idle` until both files and a schema are non-null.
+
+### Example
+
+```tsx
+function MyDiff({ fileA, fileB, schema }) {
+  const state = useExcelDiff(fileA, fileB, schema);
+
+  if (state.status !== 'success') {
+    return <Status state={state} />;
+  }
+
+  return <MyDiffGrid diff={state.diff} />;
+}
+```
+
+## Latest-wins cancellation
+
+When props change (new file, new schema), the hook cancels the previous Worker request and starts fresh. You do not need to manage cancellation tokens yourself.
+
+<Callout type="tip" title="Reference implementation">
+  The demo pages are the best end-to-end examples:
+
+  - [`apps/demo/app/viewer/page.tsx`](https://github.com) — viewer wiring
+  - [`apps/demo/app/diff/page.tsx`](https://github.com) — diff + schema editor
+
+  (Replace the GitHub host with your fork once published.)
+</Callout>

@@ -1,0 +1,80 @@
+import { Callout } from '@/components/docs/callout';
+
+# Core concepts
+
+## What the library does
+
+- **Parse** Excel (`.xlsx` / `.xls`) and CSV in a Web Worker
+- **Display** sheets in a virtualized grid
+- **Diff** two workbooks by a business key (not row position), with numeric tolerance
+
+## What it does not do
+
+- Transform or reshape data for your backend
+- Mutate uploaded files or write Excel back to disk
+- Pattern-match wildcards across keys (blank optional keys become a distinct `*` bucket)
+
+## Three packages
+
+| Package | Use when |
+| --- | --- |
+| `@your-scope/excel-diff-core` | Node scripts, custom runtimes, or direct engine access (`parseFile`, `diffWorkbooks`, Workers) |
+| `@your-scope/excel-diff-react` | You bring your own grid / UI and only need hooks |
+| `@your-scope/excel-diff-ui` | You want drop-in `<ExcelViewer>`, `<ExcelDiffViewer>`, `<ExcelSplitViewer>` |
+
+Most apps start with **ui**. Drop to **react** for custom chrome. Reach for **core** for server-side or non-React use.
+
+## The schema
+
+Diffing rate cards needs a schema so “same row” means the same business rule, not the same Excel row index.
+
+```ts
+const schema = {
+  keyFields: ['origin', 'destination', 'mode'],
+  optionalKeyFields: ['destination'],
+  valueFields: ['rate'],
+  numericTolerance: { absolute: 1e-6, relative: 1e-9 },
+};
+```
+
+### keyFields
+
+Columns that form the composite business key. Rows with matching key values are treated as the same logical row.
+
+### optionalKeyFields
+
+A subset of `keyFields`. When an optional key is blank after normalization, that segment becomes `*` in the composite key. Blank and filled values are **different buckets** (wildcard rule vs specific rule) — exact string equality, not “`*` matches anything”.
+
+### valueFields
+
+Columns compared after keys match. Changes here produce `modified` status with per-field before/after values.
+
+### numericTolerance
+
+Numbers are equal when:
+
+```
+|a - b| <= max(absolute, relative * max(|a|, |b|))
+```
+
+Defaults: `absolute: 1e-6`, `relative: 1e-9`. A bare number sets absolute only.
+
+## Keyed matching (sketch)
+
+```
+File A                         File B
+------                         ------
+US|UK|air  rate=12.5           US|UK|air  rate=13.0   → modified
+US|DE|ocean rate=8.0           US|DE|ocean rate=8.0   → unchanged
+CA|UK|air  rate=14.0           CA|UK|air  rate=14.0   → unchanged
+US|*|air   rate=10.0           US|*|air   rate=10.0   → unchanged
+MX|US|truck rate=6.25          (missing)              → removed
+(missing)                      FR|US|air  rate=15.5   → added
+```
+
+Keys are built from `keyFields` (optional blanks → `*`), then A and B are indexed and walked as a union.
+
+<Callout type="info">
+  Full component API, CSV export, and schema inference live on the
+  [Diff](/docs/diff) page.
+</Callout>

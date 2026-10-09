@@ -1,0 +1,68 @@
+import { Callout } from '@/components/docs/callout';
+import { ErrorTriggerDemo } from '@/components/docs/error-trigger-demo';
+
+# Errors
+
+Failures are values with a stable `code`. Switch on `code` for logic; show
+`message` to humans. Components render a default error UI; override with
+`renderError` and observe with `onError`.
+
+## Error codes
+
+| Code | When it fires | Default UI | Recovery |
+| --- | --- | --- | --- |
+| `FILE_TOO_LARGE` | File exceeds `limits.maxFileSizeBytes` | Error panel + suggestion | Split the file or raise the limit |
+| `TOO_MANY_ROWS` | Sheet exceeds `limits.maxRows` | Error panel | Filter/split or raise `maxRows` |
+| `TOO_MANY_COLUMNS` | Sheet exceeds `limits.maxColumns` | Error panel | Drop columns or raise `maxColumns` |
+| `TOO_MANY_CELLS` | Rows × columns exceeds `limits.maxCells` | Error panel | Reduce size or raise `maxCells` |
+| `UNSUPPORTED_FORMAT` | Not xlsx / xls / csv | Error panel | Re-export to a supported format |
+| `PARSE_ERROR` | Parser could not read the file | Error panel (reportable) | Re-export; file may be corrupt |
+| `INVALID_SCHEMA` | Required key blank / schema invalid | Error panel | Fix the file or mark keys optional |
+| `DUPLICATE_KEYS` | Two rows share a business key | Warning-styled panel | Deduplicate or adjust key fields |
+| `WORKER_UNAVAILABLE` | Worker could not be constructed | Error panel | Use a Worker-capable environment |
+| `WORKER_CRASHED` | Worker terminated unexpectedly | Error panel (reportable) | Retry; try a smaller file |
+| `SCHEMA_INFERENCE_FAILED` | `inferSchema` found no keys | Error panel | Pass an explicit schema |
+| `CANCELLED` | Latest-wins cancelled prior work | Usually not sticky | Transient; new request continues |
+
+## Custom renderError
+
+```tsx
+<ExcelViewer
+  file={file}
+  height={600}
+  renderError={(error) => (
+    <div className="rounded border border-red-300 bg-red-50 p-4">
+      <strong>{error.code}</strong>
+      <p>{error.message}</p>
+    </div>
+  )}
+/>
+```
+
+## onError for analytics
+
+```tsx
+<ExcelDiffViewer
+  fileA={a}
+  fileB={b}
+  schema={schema}
+  onError={(error) => {
+    Sentry.captureMessage(error.message, {
+      tags: { code: error.code },
+      extra: error.details,
+    });
+  }}
+/>
+```
+
+<Callout type="info">
+  `onError` does not replace the UI — use it for logging. Pair with
+  `renderError` when you need custom chrome.
+</Callout>
+
+## Trigger each error
+
+Buttons below provoke errors (or explain codes that cannot be forced safely in
+the demo).
+
+<ErrorTriggerDemo />

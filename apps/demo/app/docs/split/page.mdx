@@ -1,0 +1,42 @@
+import { Callout } from '@/components/docs/callout';
+import { LiveDemo } from '@/components/docs/live-demo';
+import { PropsTable } from '@/components/docs/props-table';
+import { SPLIT_PROPS } from '@/lib/docs-props';
+
+# Split
+
+`<ExcelSplitViewer>` shows before and after side by side with rows aligned on shared keys and ghost rows for gaps. Prefer it when you want visual inspection without unified color highlighting.
+
+## When to pick split over diff
+
+- Reviewers want Excel-like left/right comparison
+- You care about row alignment more than a single unified change list
+- Diff colors are noisy for your audience
+
+Use `<ExcelDiffViewer>` when you want one grid with added / removed / modified status and cell-level change highlighting.
+
+## Minimal usage
+
+```tsx
+import { ExcelSplitViewer } from '@your-scope/excel-diff-ui';
+
+<ExcelSplitViewer
+  fileA={fileA}
+  fileB={fileB}
+  schema={schema}
+  height={600}
+  labelA="Before"
+  labelB="After"
+/>
+```
+
+## Props
+
+<PropsTable rows={SPLIT_PROPS} />
+
+<LiveDemo href="/split">Try it live →</LiveDemo>
+
+<Callout type="info">
+  Split still needs a schema to align keys. Ghost rows appear where a key exists
+  on only one side.
+</Callout>

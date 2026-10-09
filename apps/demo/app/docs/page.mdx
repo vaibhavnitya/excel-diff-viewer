@@ -1,0 +1,32 @@
+import Link from 'next/link';
+import { Install } from '@/components/docs/install';
+import { DOCS_NAV } from '@/lib/docs-nav';
+
+# Documentation
+
+Guides for viewing and diffing Excel/CSV files with `@your-scope/excel-diff-*`.
+Start with install if you just want a working component; dig into schema and
+hooks when you need a custom UI.
+
+<Install packages="@your-scope/excel-diff-ui @your-scope/excel-diff-react @your-scope/excel-diff-core react react-dom ag-grid-community ag-grid-react" />
+
+## Sections
+
+<div className="not-prose my-6 grid gap-3 sm:grid-cols-2">
+  {DOCS_NAV.filter((item) => item.href !== '/docs').map((item) => (
+    <Link
+      key={item.href}
+      href={item.href}
+      className="rounded-lg border p-4 transition-colors hover:bg-accent/50"
+    >
+      <div className="font-medium text-foreground">{item.title}</div>
+      <p className="mt-1 text-sm text-muted-foreground">{item.description}</p>
+    </Link>
+  ))}
+</div>
+
+## Live demos
+
+- [Viewer](/viewer) — open a single file
+- [Diff](/diff) — key-based compare with schema editor
+- [Split](/split) — side-by-side aligned panes

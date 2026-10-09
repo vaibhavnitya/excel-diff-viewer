@@ -24,12 +24,12 @@ export default function ViewerPage() {
         label="File"
         file={file}
         onFileChange={setFile}
-        className="max-w-xl"
+        className="w-full max-w-xl"
       />
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardContent className="p-0">
-          <div className="min-h-[600px] p-2">
+          <div className="min-h-[360px] p-2 sm:min-h-[600px]">
             <ExcelViewer file={file} height={600} />
           </div>
         </CardContent>
