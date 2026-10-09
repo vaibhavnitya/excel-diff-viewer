@@ -31,7 +31,16 @@ function toArrayBuffer(input: ParseInput): ArrayBuffer {
   return copy.buffer;
 }
 
-function createUnderlyingWorker(): { worker: Worker; blobUrl: string | null } {
+/**
+ * Construct a Worker from an embedded Blob URL.
+ *
+ * Blob URLs work across bundlers (Next.js, Vite, CRA, Remix, plain HTML).
+ * Native `new Worker(new URL(..., import.meta.url))` is bundler-dependent and
+ * often resolves to an unusable `file://` URL inside Next.js output — so Blob
+ * is the sole path. The Worker source is embedded in the main bundle at build
+ * time (`__EMBEDDED_WORKER__`); main-bundle size is a Phase 6 concern.
+ */
+function createUnderlyingWorker(): Worker {
   if (typeof Worker === 'undefined') {
     throw createDiffError(
       'WORKER_UNAVAILABLE',
@@ -39,57 +48,26 @@ function createUnderlyingWorker(): { worker: Worker; blobUrl: string | null } {
     );
   }
 
-  // Primary: co-located worker resolved via import.meta.url.
-  // - Published `dist/index.js` loads sibling `worker.js` (tsup Worker entry).
-  // - Vitest/Vite against `src/` loads `worker.ts` so the browser project works
-  //   without a pre-build.
-  const workerModule =
-    import.meta.url.includes('/src/') || import.meta.url.includes('\\src\\')
-      ? './worker.ts'
-      : './worker.js';
-
-  try {
-    const worker = new Worker(new URL(workerModule, import.meta.url), {
-      type: 'module',
-    });
-    return { worker, blobUrl: null };
-  } catch (cause) {
-    // Only construction-time SyntaxError / ReferenceError trigger fallback
-    // (e.g. environments that cannot resolve import.meta.url Worker URLs).
-    // Other failures (security, network) propagate as WORKER_UNAVAILABLE.
-    const isFallbackCase =
-      cause instanceof SyntaxError || cause instanceof ReferenceError;
-    if (!isFallbackCase) {
-      throw createDiffError(
-        'WORKER_UNAVAILABLE',
-        'Failed to construct Worker from import.meta.url.',
-        { cause: String(cause) },
-      );
-    }
-  }
-
-  // Fallback: inline Blob URL carrying the Worker bundle as a string.
-  // Trade-off: loses source maps; may bloat the initial main-thread bundle
-  // because WORKER_SOURCE embeds the full self-contained worker.js text.
   if (WORKER_SOURCE.length === 0) {
     throw createDiffError(
       'WORKER_UNAVAILABLE',
-      'Blob URL Worker fallback has no embedded worker source.',
+      'Embedded Worker source is empty; rebuild @your-scope/excel-diff-core.',
     );
   }
 
-  const blob = new Blob([WORKER_SOURCE], { type: 'text/javascript' });
+  const blob = new Blob([WORKER_SOURCE], { type: 'application/javascript' });
   const blobUrl = URL.createObjectURL(blob);
   try {
-    const worker = new Worker(blobUrl, { type: 'module' });
-    return { worker, blobUrl };
+    return new Worker(blobUrl);
   } catch (cause) {
-    URL.revokeObjectURL(blobUrl);
     throw createDiffError(
       'WORKER_UNAVAILABLE',
-      'Failed to construct Worker from Blob URL fallback.',
+      'Failed to construct Worker from Blob URL.',
       { cause: String(cause) },
     );
+  } finally {
+    // Script bytes are already handed to the Worker; free the Blob URL.
+    URL.revokeObjectURL(blobUrl);
   }
 }
 
@@ -117,7 +95,6 @@ function createUnderlyingWorker(): { worker: Worker; blobUrl: string | null } {
  */
 export class WorkerClient {
   private worker: Worker | null;
-  private blobUrl: string | null;
   private current: Pending | null;
   private nextId: number;
   private readonly progressListeners: Set<(progress: WorkerProgress) => void>;
@@ -128,9 +105,7 @@ export class WorkerClient {
     this.nextId = 0;
     this.progressListeners = new Set();
     this.terminated = false;
-    const created = createUnderlyingWorker();
-    this.worker = created.worker;
-    this.blobUrl = created.blobUrl;
+    this.worker = createUnderlyingWorker();
     this.worker.addEventListener('message', this.handleMessage);
     this.worker.addEventListener('error', this.handleWorkerError);
     this.worker.addEventListener('messageerror', this.handleMessageError);
@@ -215,10 +190,6 @@ export class WorkerClient {
       this.worker.removeEventListener('messageerror', this.handleMessageError);
       this.worker.terminate();
       this.worker = null;
-    }
-    if (this.blobUrl !== null) {
-      URL.revokeObjectURL(this.blobUrl);
-      this.blobUrl = null;
     }
   }
 
@@ -344,10 +315,6 @@ export class WorkerClient {
         this.worker.removeEventListener('messageerror', this.handleMessageError);
         this.worker.terminate();
         this.worker = null;
-      }
-      if (this.blobUrl !== null) {
-        URL.revokeObjectURL(this.blobUrl);
-        this.blobUrl = null;
       }
     }
   }

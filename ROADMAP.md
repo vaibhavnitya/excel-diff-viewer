@@ -35,7 +35,7 @@ Goal: parse a file and diff two files from Node, with full tests.
 - [ ] Transferable ArrayBuffers in
 - [ ] Chunked diff with progress events
 - [ ] Cancellation on new request
-- [ ] Blob URL fallback for environments without `import.meta.url`
+- [x] Blob URL primary Worker construction (embedded source; no native `import.meta.url` path)
 - [ ] Tested in Vitest browser mode
 
 **Done when:** Worker parses a 20MB file + diffs 100k rows without blocking UI.

@@ -124,7 +124,15 @@ only.
 ## Performance
 
 - **Workers**: all parsing + diff off main thread. Core owns the Worker,
-  React hooks own its lifecycle.
+  React hooks own its lifecycle. Construction uses a **Blob URL** as the
+  primary (and only) path: the Worker bundle is embedded in the main package
+  entry and revived with `URL.createObjectURL(new Blob([...], { type:
+  'application/javascript' }))`. This works universally across bundlers
+  (Next.js, Vite, CRA, Remix, plain HTML). Native `import.meta.url` Worker
+  URLs are intentionally not used — they are bundler-dependent and commonly
+  resolve to unusable `file://` URLs (e.g. inside Next.js). Main-bundle size
+  from the embedded Worker (currently ~778KB) will be addressed in Phase 6
+  via lazy-loaded parsers.
 - **Transferable objects**: file bytes transferred to Worker, not copied.
 - **Dense arrays** for storage; objects materialized lazily per visible row.
 - **Chunked diff** in Worker (~5k keys per chunk, progress reported between).
