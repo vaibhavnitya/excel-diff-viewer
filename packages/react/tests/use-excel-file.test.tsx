@@ -3,6 +3,7 @@ import { StrictMode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   createDiffError,
+  createWorker,
   err,
   ok,
   type WorkerClient,
@@ -18,8 +19,9 @@ vi.mock('@your-scope/excel-diff-core', async (importOriginal) => {
     await importOriginal<typeof import('@your-scope/excel-diff-core')>();
   return {
     ...actual,
-    createWorker: (): WorkerClient =>
+    createWorker: vi.fn((): WorkerClient =>
       new FakeWorkerClient() as unknown as WorkerClient,
+    ),
   };
 });
 
@@ -30,10 +32,33 @@ function buffer(label = 'a.xlsx'): ArrayBuffer {
 describe('useExcelFile', () => {
   beforeEach(() => {
     FakeWorkerClient.reset();
+    vi.mocked(createWorker).mockImplementation(
+      () => new FakeWorkerClient() as unknown as WorkerClient,
+    );
   });
 
   afterEach(() => {
     vi.useRealTimers();
+  });
+
+  it('surfaces Worker construction failure as WORKER_UNAVAILABLE', () => {
+    vi.mocked(createWorker).mockImplementationOnce(() => {
+      throw createDiffError(
+        'WORKER_UNAVAILABLE',
+        'Web Workers are not available in this environment.',
+      );
+    });
+
+    const file = buffer();
+    const { result } = renderHook(({ file: f }) => useExcelFile(f), {
+      initialProps: { file: file as ArrayBuffer | null },
+    });
+
+    expect(result.current.status).toBe('error');
+    if (result.current.status !== 'error') {
+      throw new Error('expected error');
+    }
+    expect(result.current.error.code).toBe('WORKER_UNAVAILABLE');
   });
 
   it('transitions idle → loading → success for a valid file', async () => {

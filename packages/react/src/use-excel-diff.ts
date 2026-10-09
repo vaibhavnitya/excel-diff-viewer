@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react';
-import type { DiffSchema } from '@your-scope/excel-diff-core';
+import {
+  type DiffSchema,
+  type WorkerClient,
+} from '@your-scope/excel-diff-core';
 import {
   createProgressThrottle,
   type ProgressThrottle,
 } from './internal/progress-throttle.js';
 import { resolveFilename, toArrayBuffer } from './internal/to-array-buffer.js';
+import { toWorkerUnavailableError } from './internal/to-worker-unavailable-error.js';
 import { useWorkerClient } from './internal/use-worker-client.js';
 import type { DiffPhase, DiffState, UseExcelDiffOptions } from './types.js';
 
@@ -34,7 +38,14 @@ export function useExcelDiff(
     }
 
     const runId = ++generationRef.current;
-    const client = getClient();
+
+    let client: WorkerClient;
+    try {
+      client = getClient();
+    } catch (cause) {
+      setState({ status: 'error', error: toWorkerUnavailableError(cause) });
+      return;
+    }
 
     let phase: DiffPhase = 'parsing-a';
     let throttle: ProgressThrottle = createProgressThrottle((pct) => {

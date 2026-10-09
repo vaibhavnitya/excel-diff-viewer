@@ -1,6 +1,8 @@
+import { type WorkerClient } from '@your-scope/excel-diff-core';
 import { useEffect, useState } from 'react';
 import { createProgressThrottle } from './internal/progress-throttle.js';
 import { resolveFilename, toArrayBuffer } from './internal/to-array-buffer.js';
+import { toWorkerUnavailableError } from './internal/to-worker-unavailable-error.js';
 import { useWorkerClient } from './internal/use-worker-client.js';
 import type { FileState, UseExcelFileOptions } from './types.js';
 
@@ -26,7 +28,15 @@ export function useExcelFile(
     }
 
     const runId = ++generationRef.current;
-    const client = getClient();
+
+    let client: WorkerClient;
+    try {
+      client = getClient();
+    } catch (cause) {
+      setState({ status: 'error', error: toWorkerUnavailableError(cause) });
+      return;
+    }
+
     setState({ status: 'loading', progress: 0 });
 
     const throttle = createProgressThrottle((pct) => {
