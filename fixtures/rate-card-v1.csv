@@ -1,0 +1,6 @@
+origin,destination,base_rate,min_charge
+US,NYC,10,5
+US,LAX,12,5
+,EU,20,8
+UK,LON,15,6
+CA,TOR,11,5

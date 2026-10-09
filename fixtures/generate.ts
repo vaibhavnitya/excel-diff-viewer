@@ -90,6 +90,8 @@ const rateV2 = [
 
 writeXlsx('rate-card-v1.xlsx', rateV1);
 writeXlsx('rate-card-v2.xlsx', rateV2);
+writeCsv('rate-card-v1.csv', rateV1);
+writeCsv('rate-card-v2.csv', rateV2);
 
 writeXlsx('edge-cases/duplicate-keys.xlsx', [
   rateHeaders,

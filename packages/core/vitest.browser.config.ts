@@ -14,7 +14,10 @@ export default defineConfig({
   },
   test: {
     name: 'browser',
-    include: ['tests/worker/**/*.test.ts'],
+    include: [
+      'tests/worker/**/*.test.ts',
+      'tests/integration/end-to-end-worker.test.ts',
+    ],
     // Playwright + Worker can keep the Vite server alive after the run.
     teardownTimeout: 10_000,
     browser: {

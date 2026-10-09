@@ -6,7 +6,7 @@ export default defineConfig({
     name: 'node',
     environment: 'node',
     include: ['tests/**/*.test.ts'],
-    exclude: ['tests/worker/**'],
+    exclude: ['tests/worker/**', 'tests/integration/end-to-end-worker.test.ts'],
     coverage: {
       provider: 'v8',
       include: ['src/diff/**/*.ts', 'src/normalize/**/*.ts'],
