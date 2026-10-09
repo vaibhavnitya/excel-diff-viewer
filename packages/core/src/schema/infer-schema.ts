@@ -6,6 +6,17 @@ import type { DiffError, DiffSchema, InferSchemaOptions, Result } from '../types
 /**
  * Infer key/value fields from headers using a case-insensitive candidate list.
  * Zero matches → SCHEMA_INFERENCE_FAILED (does not guess).
+ *
+ * @example
+ * ```ts
+ * import { inferSchema, parseFile } from '@your-scope/excel-diff-core';
+ *
+ * const parsed = await parseFile(bytes, { filename: 'rates.xlsx' });
+ * if (!parsed.ok) throw new Error(parsed.error.message);
+ * const inferred = inferSchema(parsed.value.sheets[0].headers);
+ * if (!inferred.ok) throw new Error(inferred.error.message);
+ * const schema = inferred.value;
+ * ```
  */
 export function inferSchema(
   headers: readonly string[],

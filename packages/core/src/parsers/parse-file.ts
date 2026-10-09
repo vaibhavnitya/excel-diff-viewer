@@ -19,6 +19,16 @@ const PARSERS: Readonly<Record<'xlsx' | 'csv', Parser>> = {
 /**
  * Parse xlsx or csv bytes into a typed `Workbook`.
  * Async for a stable API (Worker / shell can await uniformly).
+ *
+ * @example
+ * ```ts
+ * import { parseFile } from '@your-scope/excel-diff-core';
+ *
+ * const bytes = new Uint8Array(await file.arrayBuffer());
+ * const result = await parseFile(bytes, { filename: file.name });
+ * if (!result.ok) throw new Error(result.error.message);
+ * const workbook = result.value;
+ * ```
  */
 export async function parseFile(
   input: ParseInput,

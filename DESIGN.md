@@ -44,23 +44,45 @@ import { useExcelFile, useExcelDiff } from '@your-scope/excel-diff-react';
 ```
 
 **Tier 3 (engine access, Node use):**
-```tsx
-import { parseFile, diffWorkbooks, inferSchema } from '@your-scope/excel-diff-core';
+```ts
+import {
+  parseFile,
+  inferSchema,
+  diffWorkbooks,
+  diffWorkbooksAsync,
+  createWorker,
+} from '@your-scope/excel-diff-core';
+
+const a = await parseFile(bytesA, { filename: 'v1.xlsx' });
+const b = await parseFile(bytesB, { filename: 'v2.xlsx' });
+const inferred = inferSchema(a.value.sheets[0].headers);
+// Diff takes DiffWorkbooksOptions — not a bare DiffSchema:
+//   { schema, sheetName?, limits? }
+const sync = diffWorkbooks(a.value, b.value, { schema: inferred.value });
+// Async adds an optional DiffControl as the fourth argument (not inside options):
+const asyncResult = await diffWorkbooksAsync(a.value, b.value, { schema: inferred.value }, {
+  isCancelled: () => false,
+  onProgress: (processed, total) => {},
+});
 ```
 
 ## Diff algorithm
 
-Key-based, not position-based:
+Key-based, not position-based. Callers pass workbooks plus
+`DiffWorkbooksOptions` (`{ schema, sheetName?, limits? }`):
 
 1. Normalize each cell (trim, lowercase for strings, parse numbers, dates).
-2. Build composite key from `schema.keyFields`. Optional fields that are blank
-   become wildcard (`*`); still a distinct bucket from a filled value.
+2. Build composite key from `options.schema.keyFields`. Optional fields that
+   are blank become wildcard (`*`); still a distinct bucket from a filled value.
 3. Index both files by key into `Map`s.
 4. Walk the union of keys:
    - Only in A → removed
    - Only in B → added
    - Both → compare `valueFields` with numeric tolerance; modified or unchanged
 5. Return a `DiffResult` with per-row status and per-field changes.
+
+`diffWorkbooksAsync` uses the same options object; cooperative chunking /
+progress / cancellation use a separate `DiffControl` argument.
 
 **Wildcard matching (Phase 1):** keys are compared by **exact string equality**
 after both sides normalize blank optional key fields to `*`. A blank optional

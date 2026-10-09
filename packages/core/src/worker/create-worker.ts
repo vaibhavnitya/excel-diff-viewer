@@ -99,6 +99,21 @@ function createUnderlyingWorker(): { worker: Worker; blobUrl: string | null } {
  * A new `parse()` / `diff()` call cancels any in-flight request on this client
  * with `CANCELLED`, then starts the new one. For concurrent work, call
  * `createWorker()` more than once (one client per in-flight operation).
+ *
+ * @example
+ * ```ts
+ * import { createWorker, inferSchema } from '@your-scope/excel-diff-core';
+ *
+ * const client = createWorker();
+ * const a = await client.parse(bytesA, { filename: 'v1.xlsx' });
+ * const b = await client.parse(bytesB, { filename: 'v2.xlsx' });
+ * if (!a.ok || !b.ok) throw new Error('parse failed');
+ * const inferred = inferSchema(a.value.sheets[0].headers);
+ * if (!inferred.ok) throw new Error(inferred.error.message);
+ * // WorkerClient.diff takes schema directly (wraps `{ schema }` for the engine).
+ * const diffed = await client.diff(a.value, b.value, inferred.value);
+ * client.terminate();
+ * ```
  */
 export class WorkerClient {
   private worker: Worker | null;
@@ -357,9 +372,21 @@ export class WorkerClient {
 
 /**
  * Spin up one Worker-backed client.
- * @throws never — construction failures surface as DiffError on first call,
- *   except Worker construction which throws DiffError synchronously so
- *   callers can catch WORKER_UNAVAILABLE immediately.
+ *
+ * Construction throws a `DiffError` value (not an `Error` instance) with code
+ * `WORKER_UNAVAILABLE` when Workers cannot be created.
+ *
+ * @example
+ * ```ts
+ * import { createWorker } from '@your-scope/excel-diff-core';
+ *
+ * const client = createWorker();
+ * try {
+ *   const parsed = await client.parse(bytes, { filename: 'rates.xlsx' });
+ * } finally {
+ *   client.terminate();
+ * }
+ * ```
  */
 export function createWorker(): WorkerClient {
   return new WorkerClient();

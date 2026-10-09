@@ -247,6 +247,18 @@ function finishDiff(
  * Key-based diff of two workbooks (sync).
  * Phase 1 behavior: one pass, no progress / cancellation hooks.
  * Thin wrapper over the shared algorithm with no `DiffControl` (zero yield cost).
+ *
+ * @example
+ * ```ts
+ * import { diffWorkbooks, inferSchema, parseFile } from '@your-scope/excel-diff-core';
+ *
+ * const a = await parseFile(bytesA, { filename: 'v1.xlsx' });
+ * const b = await parseFile(bytesB, { filename: 'v2.xlsx' });
+ * if (!a.ok || !b.ok) throw new Error('parse failed');
+ * const inferred = inferSchema(a.value.sheets[0].headers);
+ * if (!inferred.ok) throw new Error(inferred.error.message);
+ * const result = diffWorkbooks(a.value, b.value, { schema: inferred.value });
+ * ```
  */
 export function diffWorkbooks(
   a: Workbook,
@@ -270,6 +282,21 @@ export function diffWorkbooks(
  * Async key-based diff with optional cooperative `DiffControl`.
  * When `control` is omitted, short-circuits to the sync path (same result as
  * `diffWorkbooks`, no microtask yield).
+ *
+ * `options` is {@link DiffWorkbooksOptions} (`{ schema, sheetName?, limits? }`).
+ * Progress / cancellation live on the separate `control` argument (not inside
+ * `options`).
+ *
+ * @example
+ * ```ts
+ * import { diffWorkbooksAsync } from '@your-scope/excel-diff-core';
+ *
+ * const result = await diffWorkbooksAsync(a, b, { schema }, {
+ *   isCancelled: () => false,
+ *   onProgress: (processed, total) => console.log(processed, total),
+ *   chunkSize: 5000,
+ * });
+ * ```
  */
 export async function diffWorkbooksAsync(
   a: Workbook,

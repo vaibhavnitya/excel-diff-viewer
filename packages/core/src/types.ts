@@ -170,6 +170,12 @@ export type DiffResult = {
   readonly stats: DiffStats;
 };
 
+/**
+ * Options for `diffWorkbooks` / `diffWorkbooksAsync`.
+ * Pass as the third argument: `diffWorkbooks(a, b, { schema, sheetName?, limits? })`.
+ * Cooperative progress / cancellation for the async form use a separate
+ * {@link DiffControl} fourth argument — not this object.
+ */
 export type DiffWorkbooksOptions = {
   readonly schema: DiffSchema;
   /** Sheet name; defaults to each workbook's active sheet. */
@@ -179,7 +185,8 @@ export type DiffWorkbooksOptions = {
 
 /**
  * Cooperative control for `diffWorkbooksAsync` (Worker shell / long diffs).
- * Sync `diffWorkbooks` ignores this and runs the algorithm in one pass.
+ * Passed as the fourth argument: `diffWorkbooksAsync(a, b, options, control)`.
+ * Sync `diffWorkbooks` has no control parameter.
  */
 export type DiffControl = {
   /** Checked between chunks; when true the async diff returns CANCELLED. */
