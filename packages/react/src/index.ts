@@ -1,6 +1,22 @@
-export const PACKAGE_NAME = '@your-scope/excel-diff-react' as const;
+// Public API. Hooks + types only — engine functions stay in core.
+// PRINCIPLES.md §10: smallest possible surface.
 
-/** Scaffold marker. Hook exports arrive in a later phase. */
-export const SCAFFOLD_DEPENDENCIES: readonly string[] = [
-  '@your-scope/excel-diff-core',
-];
+export { useExcelFile } from './use-excel-file.js';
+export { useExcelDiff } from './use-excel-diff.js';
+
+export type {
+  DiffPhase,
+  DiffState,
+  FileState,
+  UseExcelDiffOptions,
+  UseExcelFileOptions,
+} from './types.js';
+
+export type {
+  DiffError,
+  DiffResult,
+  DiffSchema,
+  ParseFileOptions,
+  Result,
+  Workbook,
+} from '@your-scope/excel-diff-core';
