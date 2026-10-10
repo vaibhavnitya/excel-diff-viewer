@@ -1,0 +1,142 @@
+import { StylingBreadcrumb } from '@/components/docs/styling-breadcrumb';
+import { CSS_VARIABLES } from '@/lib/docs-props';
+
+<StylingBreadcrumb current="Custom Themes" />
+
+# Custom Themes
+
+Build your own look without a design system: override `--edv-*` CSS variables,
+pass a typed `theme` prop, or combine both with `classNames`.
+
+## `--edv-*` CSS variable reference
+
+<div className="overflow-x-auto not-prose">
+  <table className="w-full min-w-[40rem] border-collapse text-sm">
+    <thead className="border-b bg-muted/50">
+      <tr>
+        <th className="px-3 py-2 text-left font-medium">Variable</th>
+        <th className="px-3 py-2 text-left font-medium">Light default</th>
+        <th className="px-3 py-2 text-left font-medium">Dark default</th>
+        <th className="px-3 py-2 text-left font-medium">Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      {CSS_VARIABLES.map((row) => (
+        <tr key={row.name} className="border-b align-top">
+          <td className="px-3 py-2 font-mono text-xs">{row.name}</td>
+          <td className="px-3 py-2 font-mono text-xs text-muted-foreground">
+            {row.light}
+          </td>
+          <td className="px-3 py-2 font-mono text-xs text-muted-foreground">
+            {row.dark}
+          </td>
+          <td className="px-3 py-2 text-muted-foreground">{row.description}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+## `Theme` type reference
+
+Every field is optional. Only set what you want to override.
+
+| Path | Type | Maps to |
+| --- | --- | --- |
+| `colors.bg` | `string` | `--edv-bg-color` |
+| `colors.fg` | `string` | `--edv-text-color` |
+| `colors.border` | `string` | `--edv-border-color` |
+| `colors.headerBg` | `string` | `--edv-header-bg` |
+| `colors.headerFg` | `string` | `--edv-header-fg` |
+| `colors.rowHoverBg` | `string` | `--edv-row-hover-bg` |
+| `colors.keyColumnBg` | `string` | `--edv-key-column-bg` |
+| `colors.added` / `addedFg` | `string` | `--edv-added-bg` / `--edv-added-fg` |
+| `colors.removed` / `removedFg` | `string` | `--edv-removed-bg` / `--edv-removed-fg` |
+| `colors.modified` / `modifiedFg` | `string` | `--edv-modified-bg` / `--edv-modified-fg` |
+| `colors.errorBg` / `errorFg` | `string` | `--edv-error-bg` / `--edv-error-fg` |
+| `colors.loadingBg` | `string` | `--edv-loading-bg` |
+| `colors.toolbarBg` | `string` | `--edv-toolbar-bg` |
+| `typography.fontFamily` | `string` | `--edv-font-family` |
+| `typography.fontSize` | `string \| number` | `--edv-font-size` (`N` → `Npx`) |
+| `typography.headerWeight` | `number` | `--edv-header-weight` |
+| `spacing.rowHeight` | `number` | `--edv-row-height` + AG Grid `rowHeight` |
+| `spacing.headerHeight` | `number` | `--edv-header-height` + AG Grid `headerHeight` |
+| `spacing.cellPadding` | `string` | `--edv-cell-padding` |
+| `shape.borderRadius` | `string \| number` | `--edv-border-radius` |
+
+## Example: CSS variables only
+
+```css
+/* loaded after @mojro/excel-diff-ui/styles.css */
+.my-app .edv-root,
+[data-edv-component] {
+  --edv-bg-color: #f8fafc;
+  --edv-header-bg: #0f172a;
+  --edv-header-fg: #f8fafc;
+  --edv-added-bg: #dcfce7;
+  --edv-removed-bg: #fee2e2;
+  --edv-modified-bg: #fef3c7;
+  --edv-border-radius: 6px;
+}
+```
+
+```tsx
+<ExcelViewer file={file} height={600} classNames={{ root: 'edv-root' }} />
+```
+
+## Example: `theme` prop
+
+```tsx
+import { ExcelDiffViewer, type Theme } from '@mojro/excel-diff-ui';
+
+const theme: Theme = {
+  colors: {
+    bg: '#ffffff',
+    fg: '#0f172a',
+    border: '#cbd5e1',
+    headerBg: '#1e293b',
+    headerFg: '#f8fafc',
+    added: '#bbf7d0',
+    addedFg: '#14532d',
+    removed: '#fecaca',
+    removedFg: '#7f1d1d',
+    modified: '#fde68a',
+    modifiedFg: '#78350f',
+  },
+  typography: { fontFamily: 'Georgia, serif', fontSize: 14, headerWeight: 700 },
+  spacing: { rowHeight: 36, headerHeight: 40 },
+  shape: { borderRadius: 8 },
+};
+
+<ExcelDiffViewer
+  fileA={a}
+  fileB={b}
+  schema={schema}
+  height={600}
+  theme={theme}
+/>
+```
+
+## Example: `theme` + `classNames`
+
+Use `theme` for tokens and `classNames` for one-off layout or Tailwind utilities:
+
+```tsx
+<ExcelDiffViewer
+  fileA={a}
+  fileB={b}
+  schema={schema}
+  height={600}
+  theme={{
+    colors: { added: '#d1fae5', removed: '#fee2e2', modified: '#fef3c7' },
+    shape: { borderRadius: 4 },
+  }}
+  classNames={{
+    root: 'shadow-sm ring-1 ring-slate-200',
+    toolbar: 'px-3 py-2',
+    keyColumn: 'font-semibold',
+  }}
+/>
+```
+
+For design-system adapters, see [MUI](/docs/styling/mui) and [Carbon](/docs/styling/carbon). For AG Grid chrome themes, see [AG Grid Themes](/docs/styling/ag-grid-themes).

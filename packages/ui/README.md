@@ -23,6 +23,8 @@ import '@mojro/excel-diff-ui/styles.css';
 
 Styling is opt-in via the CSS import. Theme with CSS variables (`--edv-*`), the typed `theme` prop (design tokens → CSS vars on the root), or override slots via the `classNames` prop. The library does not bundle design systems.
 
+Design-system integration (MUI, Carbon, etc.) belongs in your app. The demo documents copy-paste adapters at `/docs/styling/mui` and `/docs/styling/carbon`.
+
 ## Public exports
 
 | Export | Description |

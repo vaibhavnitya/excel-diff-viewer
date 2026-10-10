@@ -205,8 +205,11 @@ Consumers who want their design system reflected in the viewer pass a typed
 imported in library packages.
 
 Design-system-specific integration (e.g. mapping an MUI theme to our `Theme`)
-lives in **consumer** code. The demo app may ship example adapter helpers that
-consumers copy — not import from `@mojro/excel-diff-ui`.
+lives in **consumer** code. The demo app ships copy-paste MUI and Carbon
+adapter helpers under `apps/demo/examples/` and interactive guides at
+`/docs/styling/mui` and `/docs/styling/carbon` — consumers copy those helpers
+into their app; they are not published as npm packages and must not be imported
+from `@mojro/excel-diff-ui`.
 
 **Precedence (lowest → highest):**
 

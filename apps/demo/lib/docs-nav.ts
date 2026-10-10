@@ -2,6 +2,7 @@ export type DocsNavItem = {
   readonly href: string;
   readonly title: string;
   readonly description: string;
+  readonly children?: readonly DocsNavItem[];
 };
 
 export const DOCS_NAV: readonly DocsNavItem[] = [
@@ -48,7 +49,34 @@ export const DOCS_NAV: readonly DocsNavItem[] = [
   {
     href: '/docs/styling',
     title: 'Styling',
-    description: 'CSS variables, theme prop, classNames, and dark mode',
+    description: 'CSS variables, theme prop, classNames, and design-system guides',
+    children: [
+      {
+        href: '/docs/styling/basics',
+        title: 'Basics',
+        description: 'CSS variables, theme prop, and presets',
+      },
+      {
+        href: '/docs/styling/ag-grid-themes',
+        title: 'AG Grid Themes',
+        description: 'Quartz, Alpine, Balham, Material',
+      },
+      {
+        href: '/docs/styling/mui',
+        title: 'MUI Integration',
+        description: 'Map MUI themes to EDV Theme',
+      },
+      {
+        href: '/docs/styling/carbon',
+        title: 'Carbon Integration',
+        description: 'Map Carbon themes to EDV Theme',
+      },
+      {
+        href: '/docs/styling/custom',
+        title: 'Custom Themes',
+        description: 'Full --edv-* and Theme reference',
+      },
+    ],
   },
   {
     href: '/docs/errors',
@@ -57,7 +85,18 @@ export const DOCS_NAV: readonly DocsNavItem[] = [
   },
 ] as const;
 
+function flattenNav(items: readonly DocsNavItem[]): DocsNavItem[] {
+  const out: DocsNavItem[] = [];
+  for (const item of items) {
+    out.push(item);
+    if (item.children) {
+      out.push(...flattenNav(item.children));
+    }
+  }
+  return out;
+}
+
 export function docsTitleForPath(pathname: string): string {
-  const exact = DOCS_NAV.find((item) => item.href === pathname);
+  const exact = flattenNav(DOCS_NAV).find((item) => item.href === pathname);
   return exact?.title ?? 'Docs';
 }

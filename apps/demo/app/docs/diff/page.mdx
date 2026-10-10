@@ -32,10 +32,10 @@ const schema = {
 
 ## Schema configuration
 
-### Rate card example
+### Sample schema example
 
 ```ts
-const rateCardSchema = {
+const sampleSchema = {
   keyFields: ['origin', 'destination', 'mode'],
   // Blank destination means “any destination” as its own bucket (*)
   optionalKeyFields: ['destination'],
@@ -90,10 +90,14 @@ function ExportButton({ diff }: { diff: DiffResult }) {
 
 <LiveDemo href="/diff">Try it live →</LiveDemo>
 
+## Styling / Theme
+
+Diff status colors come from `--edv-added-*` / `--edv-removed-*` / `--edv-modified-*` (or the `theme` prop). See [Styling basics](/docs/styling/basics), [MUI](/docs/styling/mui), and [Carbon](/docs/styling/carbon).
+
 ## Common patterns
 
 - **Schema changes** — updating `schema` cancels in-flight work and re-diffs (latest-wins).
-- **showOnlyChanges** — hide unchanged rows when reviewing large cards.
+- **showOnlyChanges** — hide unchanged rows when reviewing large sheets.
 - **search** — use controlled `searchQuery` / `onSearchQueryChange` to sync with your chrome.
 
 <Callout type="tip">

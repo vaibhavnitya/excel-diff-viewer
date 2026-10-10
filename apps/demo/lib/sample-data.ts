@@ -2,7 +2,7 @@ import type { DiffSchema, Workbook } from '@mojro/excel-diff-core';
 
 const HEADERS = ['origin', 'destination', 'mode', 'rate'] as const;
 
-/** Sample “before” rate card — 5 rows, 4 columns. */
+/** Sample “before” workbook — 5 rows, 4 columns. */
 export const SAMPLE_WORKBOOK_A: Workbook = {
   sheets: [
     {
@@ -21,7 +21,7 @@ export const SAMPLE_WORKBOOK_A: Workbook = {
   meta: { format: 'csv', filename: 'rates-before.csv' },
 };
 
-/** Sample “after” rate card — added / removed / modified rows. */
+/** Sample “after” workbook — added / removed / modified rows. */
 export const SAMPLE_WORKBOOK_B: Workbook = {
   sheets: [
     {

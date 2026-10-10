@@ -39,6 +39,10 @@ const nextConfig = {
     '@mojro/excel-diff-core',
     '@mojro/excel-diff-react',
     '@mojro/excel-diff-ui',
+    '@mui/material',
+    '@mui/system',
+    '@mui/utils',
+    '@carbon/react',
   ],
   eslint: {
     // Lint runs from the workspace ESLint config in CI. Next 14's built-in lint expects eslintrc.

@@ -1,6 +1,6 @@
 # excel-diff-viewer
 
-View and diff Excel/CSV files in the browser. Built for React and Next.js — parse and compare rate cards (or any tabular workbook) with key-based matching, numeric tolerance, and Web Workers so the UI stays responsive.
+View and diff Excel/CSV files in the browser. Built for React and Next.js — parse and compare tabular workbooks with key-based matching, numeric tolerance, and Web Workers so the UI stays responsive.
 
 **Status:** Early development — not yet published to npm.
 

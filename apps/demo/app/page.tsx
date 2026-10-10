@@ -66,7 +66,7 @@ export default function HomePage() {
             Compare and inspect Excel and CSV files in your browser. Fast,
             framework-agnostic, no backend required. Drop in a viewer, a
             key-based diff, or a split pane — powered by Web Workers so large
-            rate cards stay responsive while you explore changes.
+            sheets stay responsive while you explore changes.
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
             <Button asChild size="lg">
