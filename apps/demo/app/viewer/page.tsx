@@ -30,7 +30,10 @@ export default function ViewerPage() {
       <Card className="overflow-hidden">
         <CardContent className="p-0">
           <div className="min-h-[360px] p-2 sm:min-h-[600px]">
-            <ExcelViewer file={file} height={600} />
+            <ExcelViewer 
+              file={file}
+              height={600} 
+              />
           </div>
         </CardContent>
       </Card>

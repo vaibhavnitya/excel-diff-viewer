@@ -64,6 +64,12 @@ export const VIEWER_PROPS: readonly PropRow[] = [
     type: 'CSSProperties',
     description: 'Inline styles on the root element.',
   },
+  {
+    name: 'agGridProps',
+    type: 'Partial<AgGridReactProps>',
+    description:
+      'Passthrough to AgGridReact after library defaults. columnDefs are user-replaceable; rowData/getRowId are locked. See Filtering & sorting.',
+  },
 ];
 
 export const DIFF_PROPS: readonly PropRow[] = [
@@ -162,6 +168,12 @@ export const DIFF_PROPS: readonly PropRow[] = [
     type: 'CSSProperties',
     description: 'Inline styles on the root element.',
   },
+  {
+    name: 'agGridProps',
+    type: 'Partial<AgGridReactProps>',
+    description:
+      'Passthrough to AgGridReact after library defaults. Diff columnDefs, rowData, getRowId, and getRowClass are locked. See Filtering & sorting.',
+  },
 ];
 
 export const SPLIT_PROPS: readonly PropRow[] = [
@@ -248,6 +260,12 @@ export const SPLIT_PROPS: readonly PropRow[] = [
     name: 'style',
     type: 'CSSProperties',
     description: 'Inline styles on the root element.',
+  },
+  {
+    name: 'agGridProps',
+    type: 'Partial<AgGridReactProps>',
+    description:
+      'Passthrough to both panes after library defaults. columnDefs, rowData, getRowId, and getRowClass are locked; scroll handlers are composed. See Filtering & sorting.',
   },
 ];
 

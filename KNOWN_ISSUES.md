@@ -1,5 +1,9 @@
 ## Known issues to address in Phase 6 polish
 
+- **AG Grid-locked by design (Phase 5):** the UI package is an AG Grid adapter.
+  A portable grid abstraction (swap Glide / TanStack behind the same component
+  API) was considered and rejected. Bring-your-own-grid remains the Tier 2 hooks
+  path (`@mojro/excel-diff-react`). See `DESIGN.md` and `/docs/filtering-and-sorting`.
 - Main bundle size: ~778 KB (includes embedded Worker source with SheetJS 
   and Papa Parse). Mitigation: lazy-load parsers via dynamic import so 
   CSV-only consumers don't pay the xlsx cost.

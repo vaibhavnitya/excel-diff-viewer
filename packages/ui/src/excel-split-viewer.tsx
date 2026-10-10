@@ -28,6 +28,7 @@ export function ExcelSplitViewer({
   renderEmpty,
   style,
   height,
+  agGridProps,
 }: ExcelSplitViewerProps) {
   const state = useExcelDiff(fileA, fileB, schema, { limits });
   useOnError(state.status === 'error' ? state.error : undefined, onError);
@@ -89,6 +90,7 @@ export function ExcelSplitViewer({
               labelB={labelB}
               classNames={classNames}
               height={height}
+              agGridProps={agGridProps}
             />
           )}
         </>

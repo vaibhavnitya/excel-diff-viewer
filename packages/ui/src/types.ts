@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
+import type { AgGridReactProps } from 'ag-grid-react';
 import type {
   DiffError,
   DiffResult,
@@ -22,6 +23,16 @@ export type ClassNameSlot =
   | 'modifiedRow'
   | 'keyColumn';
 
+/**
+ * Passthrough to the underlying `<AgGridReact>` after library defaults and
+ * locked props are applied. See `/docs/filtering-and-sorting`.
+ *
+ * Row type varies by viewer (`SheetRow` / `DiffGridRow` / `SplitRow`);
+ * `any` keeps CommonProps shared across components.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- shared across heterogeneous grid row types
+export type AgGridPropsPassthrough = Partial<AgGridReactProps<any>>;
+
 export type CommonProps = {
   classNames?: Partial<Record<ClassNameSlot, string>>;
   limits?: Partial<Limits>;
@@ -32,6 +43,11 @@ export type CommonProps = {
   style?: CSSProperties;
   /** Explicit grid height (e.g. 600, "80vh"). Defaults to filling the parent. */
   height?: number | string;
+  /**
+   * AG Grid props passed through to `<AgGridReact>` after library defaults
+   * and locked settings (rowData, getRowId, diff column structure, etc.).
+   */
+  agGridProps?: AgGridPropsPassthrough;
 };
 
 export type ExcelViewerProps = CommonProps & {

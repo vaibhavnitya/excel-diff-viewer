@@ -6,6 +6,7 @@ import { useExcelDiff } from '@mojro/excel-diff-react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ExcelDiffViewer } from '../src/excel-diff-viewer.js';
 import { diffResult, schema, workbook } from './fixtures.js';
+import { getLastAgGridProps, resetCapturedAgGridProps } from './mock-ag-grid.js';
 
 const useExcelDiffMock = vi.mocked(useExcelDiff);
 
@@ -13,6 +14,7 @@ describe('ExcelDiffViewer', () => {
   beforeEach(() => {
     useExcelDiffMock.mockReset();
     useExcelDiffMock.mockReturnValue({ status: 'idle' });
+    resetCapturedAgGridProps();
   });
 
   it('renders diff rows with status classes', () => {
@@ -104,5 +106,32 @@ describe('ExcelDiffViewer', () => {
     expect(createObjectURL).toHaveBeenCalled();
     expect(click).toHaveBeenCalled();
     vi.restoreAllMocks();
+  });
+
+  it('does not replace diff columnDefs when agGridProps.columnDefs is set', () => {
+    useExcelDiffMock.mockReturnValue({
+      status: 'success',
+      diff: diffResult(),
+      workbookA: workbook(['A']),
+      workbookB: workbook(['B']),
+    });
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(
+      <ExcelDiffViewer
+        fileA={new ArrayBuffer(8)}
+        fileB={new ArrayBuffer(8)}
+        schema={schema}
+        agGridProps={{
+          columnDefs: [{ field: 'hacked', headerName: 'Hacked' }],
+        }}
+      />,
+    );
+    const cols = getLastAgGridProps()?.columnDefs ?? [];
+    expect(cols.some((c) => c.field === 'status')).toBe(true);
+    expect(cols.some((c) => c.field === 'hacked')).toBe(false);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('agGridProps.columnDefs is locked'),
+    );
+    warn.mockRestore();
   });
 });

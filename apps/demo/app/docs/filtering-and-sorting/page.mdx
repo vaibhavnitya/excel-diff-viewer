@@ -1,0 +1,176 @@
+import { Callout } from '@/components/docs/callout';
+
+# Filtering and sorting
+
+The UI package does not ship custom filter, search, or sort chrome. Grid
+interaction comes from **AG Grid**. The viewers are thin adapters: they parse
+workbooks, map rows into AG Grid’s shape, apply diff coloring / ghost rows, then
+render `<AgGridReact>`.
+
+Use `agGridProps` to turn on filtering, floating filters, sidebars, pagination,
+selection, pinning, and anything else AG Grid supports.
+
+Want a different grid (Glide, TanStack)? Use `@mojro/excel-diff-react` hooks and
+build your own component — do not expect a portable grid abstraction in `ui`.
+
+## Default behavior
+
+Out of the box, generated columns are:
+
+- **sortable** (except split view — see below)
+- **filterable** with a type-detected filter
+- **resizable**
+- `floatingFilter: false` (opt in via `agGridProps`)
+- `minWidth: 100`
+
+Column filter types are inferred from the first 100 non-null raw cell values:
+
+| Detected type | Filter |
+| --- | --- |
+| All finite numbers | `agNumberColumnFilter` |
+| All ISO date / datetime strings (Phase 1 canonical forms) | `agDateColumnFilter` |
+| Anything else / empty | `agTextColumnFilter` |
+
+**Split view** keeps `sortable: false` by default so left/right panes stay row-aligned.
+You can enable sorting via `agGridProps.defaultColDef`, accepting possible visual desync.
+
+Toolbar controls on `<ExcelDiffViewer>` (`showOnlyChanges`, `searchQuery`) still
+pre-filter `rowData` before it reaches AG Grid. Column filters apply on top of that set.
+
+## The `agGridProps` prop
+
+```tsx
+<ExcelViewer
+  file={file}
+  height={600}
+  agGridProps={{
+    sideBar: true,
+    pagination: true,
+    paginationPageSize: 50,
+    defaultColDef: { floatingFilter: true },
+  }}
+/>
+```
+
+Merge order:
+
+1. Library defaults (`theme`, `defaultColDef`, row height, …)
+2. Your `agGridProps` (shallow; **`defaultColDef` is deep-merged**, your keys win)
+3. Library **locked** props (always win; attempts log a `console.warn` in development)
+
+## Common recipes
+
+### Enable floating filters
+
+```tsx
+agGridProps={{
+  defaultColDef: { floatingFilter: true },
+}}
+```
+
+### Sidebar with columns + filters panels
+
+```tsx
+agGridProps={{
+  sideBar: {
+    toolPanels: ['columns', 'filters'],
+  },
+}}
+```
+
+Community sideBar may require the panels you need from AG Grid’s module set.
+`AllCommunityModule` is registered by the library.
+
+### Row selection
+
+```tsx
+agGridProps={{
+  rowSelection: { mode: 'multiRow' },
+}}
+```
+
+(Exact `rowSelection` shape follows your installed `ag-grid-community` version.)
+
+### Pagination
+
+```tsx
+agGridProps={{
+  pagination: true,
+  paginationPageSize: 100,
+}}
+```
+
+### Pin a column (ExcelViewer)
+
+Replace or extend `columnDefs` — on the plain viewer, **your `columnDefs` replace
+the auto-generated ones**:
+
+```tsx
+agGridProps={{
+  columnDefs: [
+    { field: 'origin', pinned: 'left', filter: 'agTextColumnFilter' },
+    { field: 'rate', filter: 'agNumberColumnFilter' },
+  ],
+}}
+```
+
+On diff / split, `columnDefs` are locked (status / ghost structure). Prefer
+pinning via AG Grid’s column state API after `onGridReady`, or accept the library
+column set.
+
+### Context menu / click handlers
+
+```tsx
+agGridProps={{
+  onCellClicked: (event) => console.log(event.colDef?.field, event.value),
+  onRowClicked: (event) => console.log(event.data),
+}}
+```
+
+### Change the theme
+
+The library defaults to AG Grid’s `themeQuartz` object (Theming API). Override:
+
+```tsx
+import { themeAlpine } from 'ag-grid-community';
+
+agGridProps={{
+  theme: themeAlpine,
+}}
+```
+
+## Locked props
+
+Attempts to set these via `agGridProps` are ignored (dev warning):
+
+| Prop | ExcelViewer | ExcelDiffViewer | ExcelSplitViewer |
+| --- | --- | --- | --- |
+| `rowData` | locked | locked | locked (both panes) |
+| `getRowId` | locked (`__rowIndex`) | locked (`__key`) | locked (`__key`) |
+| `columnDefs` | **user wins** (full replace) | locked | locked |
+| `getRowClass` | — | locked (status classes) | locked (ghost rows) |
+
+**Split composition:** `onGridReady` and `onBodyScroll` always run library scroll-sync
+first, then your handlers if provided.
+
+Diff cell coloring lives in locked `columnDefs` (`cellClassRules` / cell renderer).
+Top-level `rowClassRules` from the user are allowed and additive; they do not replace
+`getRowClass`.
+
+## Enterprise features
+
+Enterprise modules (`ag-grid-enterprise`) are supported if you install and register
+them yourself. The library only registers `AllCommunityModule`. Features like
+range selection, Excel export, or the enterprise sidebar work when your app loads
+enterprise — they are not required peer dependencies.
+
+## Full AG Grid reference
+
+See the [AG Grid React data grid](https://www.ag-grid.com/react-data-grid/) docs for
+the complete prop list. Anything not in the locked table above can be passed through
+`agGridProps`.
+
+<Callout type="info">
+  Architectural rationale lives in `DESIGN.md` (“Viewers are AG Grid adapters”).
+  For a different grid stack, start from `@mojro/excel-diff-react`.
+</Callout>

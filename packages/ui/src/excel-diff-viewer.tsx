@@ -31,6 +31,7 @@ export function ExcelDiffViewer({
   renderEmpty,
   style,
   height,
+  agGridProps,
 }: ExcelDiffViewerProps) {
   const state = useExcelDiff(fileA, fileB, schema, { limits });
   useOnError(state.status === 'error' ? state.error : undefined, onError);
@@ -122,6 +123,7 @@ export function ExcelDiffViewer({
               schema={schema}
               classNames={classNames}
               height={height}
+              agGridProps={agGridProps}
             />
           )}
         </>

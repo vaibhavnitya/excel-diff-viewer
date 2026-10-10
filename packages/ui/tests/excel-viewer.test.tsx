@@ -6,6 +6,7 @@ import { useExcelFile } from '@mojro/excel-diff-react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ExcelViewer } from '../src/excel-viewer.js';
 import { ALL_ERROR_CODES, makeError, workbook } from './fixtures.js';
+import { getLastAgGridProps, resetCapturedAgGridProps } from './mock-ag-grid.js';
 
 const useExcelFileMock = vi.mocked(useExcelFile);
 
@@ -13,6 +14,7 @@ describe('ExcelViewer', () => {
   beforeEach(() => {
     useExcelFileMock.mockReset();
     useExcelFileMock.mockReturnValue({ status: 'idle' });
+    resetCapturedAgGridProps();
   });
 
   it('renders a workbook and sheet tabs for multi-sheet files', () => {
@@ -83,5 +85,56 @@ describe('ExcelViewer', () => {
     useExcelFileMock.mockReturnValue({ status: 'error', error });
     render(<ExcelViewer file={new ArrayBuffer(8)} onError={onError} />);
     expect(onError).toHaveBeenCalledWith(error);
+  });
+
+  it('passes agGridProps.sideBar through to AgGridReact', () => {
+    useExcelFileMock.mockReturnValue({
+      status: 'success',
+      workbook: workbook(['Only']),
+    });
+    render(
+      <ExcelViewer
+        file={new ArrayBuffer(8)}
+        agGridProps={{ sideBar: true }}
+      />,
+    );
+    expect(getLastAgGridProps()?.sideBar).toBe(true);
+  });
+
+  it('ignores user rowData (locked) and warns in development', () => {
+    useExcelFileMock.mockReturnValue({
+      status: 'success',
+      workbook: workbook(['Only']),
+    });
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    render(
+      <ExcelViewer
+        file={new ArrayBuffer(8)}
+        agGridProps={{
+          rowData: [{ __rowIndex: 99, origin: 'HACKED' }],
+        }}
+      />,
+    );
+    const props = getLastAgGridProps();
+    expect(props?.rowData).toBeDefined();
+    expect(props?.rowData?.[0]).toMatchObject({ origin: 'US' });
+    expect(props?.rowData?.[0]).not.toMatchObject({ origin: 'HACKED' });
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('agGridProps.rowData is locked'),
+    );
+    warn.mockRestore();
+  });
+
+  it('uses agNumberColumnFilter for numeric columns in generated columnDefs', () => {
+    useExcelFileMock.mockReturnValue({
+      status: 'success',
+      workbook: workbook(['Only']),
+    });
+    render(<ExcelViewer file={new ArrayBuffer(8)} />);
+    const cols = getLastAgGridProps()?.columnDefs ?? [];
+    const rateCol = cols.find((c) => c.field === 'base_rate');
+    expect(rateCol?.filter).toBe('agNumberColumnFilter');
+    const originCol = cols.find((c) => c.field === 'origin');
+    expect(originCol?.filter).toBe('agTextColumnFilter');
   });
 });

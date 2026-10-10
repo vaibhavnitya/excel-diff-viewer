@@ -23,6 +23,7 @@ export function ExcelViewer({
   renderEmpty,
   style,
   height,
+  agGridProps,
 }: ExcelViewerProps) {
   const state = useExcelFile(file, {
     filename: options?.filename,
@@ -111,7 +112,12 @@ export function ExcelViewer({
             onSheetChange={handleSheetChange}
             className={slotClass('sheetTabs', classNames)}
           />
-          <SheetGrid sheet={sheet} classNames={classNames} height={height} />
+          <SheetGrid
+            sheet={sheet}
+            classNames={classNames}
+            height={height}
+            agGridProps={agGridProps}
+          />
         </>
       ) : null}
 

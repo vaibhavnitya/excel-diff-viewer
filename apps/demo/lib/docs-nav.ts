@@ -36,6 +36,11 @@ export const DOCS_NAV: readonly DocsNavItem[] = [
     description: 'Side-by-side ExcelSplitViewer',
   },
   {
+    href: '/docs/filtering-and-sorting',
+    title: 'Filtering & sorting',
+    description: 'agGridProps, defaults, and locked AG Grid settings',
+  },
+  {
     href: '/docs/hooks',
     title: 'Hooks',
     description: 'useExcelFile and useExcelDiff for custom UIs',

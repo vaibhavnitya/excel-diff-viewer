@@ -24,6 +24,14 @@ import { Callout } from '@/components/docs/callout';
 
 Most apps start with **ui**. Drop to **react** for custom chrome. Reach for **core** for server-side or non-React use.
 
+## AG Grid is the UI
+
+`<ExcelViewer>`, `<ExcelDiffViewer>`, and `<ExcelSplitViewer>` are **adapters**:
+they turn parsed workbooks into AG Grid row/column shapes, apply diff coloring
+or ghost rows, then render `<AgGridReact>`. Filtering, sorting, pinning, sidebars,
+and pagination are configured with `agGridProps` — the library does not rebuild
+those UIs. Details: [Filtering & sorting](/docs/filtering-and-sorting).
+
 ## The schema
 
 Diffing rate cards needs a schema so “same row” means the same business rule, not the same Excel row index.

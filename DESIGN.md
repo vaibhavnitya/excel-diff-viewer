@@ -165,11 +165,43 @@ Every failure has a stable `code`:
 Components render default error UIs. Consumers can override via `renderError`
 and log via `onError`.
 
+## Viewers are AG Grid adapters (Phase 5)
+
+`<ExcelViewer>`, `<ExcelDiffViewer>`, and `<ExcelSplitViewer>` are adapters —
+not a portable grid framework. Each component:
+
+1. Transforms parsed `Workbook` / `DiffResult` data into AG Grid’s required shape
+2. Applies library-owned presentation (diff status coloring, key columns, split
+   ghost rows, scroll sync)
+3. Renders `<AgGridReact>`
+
+Consumers who want AG Grid features (filtering, sorting, pinning, grouping,
+sidebars, pagination, editing) pass them through `agGridProps`, which is merged
+**after** library defaults and **before** library-locked props.
+
+The library does **not** build custom filter / search / sort UIs that duplicate
+AG Grid. Toolbar affordances that remain (`showOnlyChanges`, CSV download, and
+the optional diff `searchQuery`) are product-level controls over which rows enter
+the grid, not replacements for column filters.
+
+Users who need a different grid (Glide, TanStack Table, etc.) use hooks from
+`@mojro/excel-diff-react` and build their own component. A portable grid
+abstraction was considered and rejected — it would either be a thin lie over AG
+Grid or an underpowered lowest-common-denominator API.
+
+**Locked vs user-wins** (summary; full table in `/docs/filtering-and-sorting`):
+
+- Always locked: `rowData`, `getRowId`
+- Diff / split locked: `columnDefs`, `getRowClass` (status / ghost)
+- ExcelViewer: `columnDefs` are user-replaceable
+- `defaultColDef` is deep-merged (user keys win); theme defaults to `themeQuartz`
+
 ## Decisions log
 
 - **TypeScript, not JS** — consumers can be JS; the engine's correctness demands types.
 - **MIT license** — maximum adoption. SheetJS Community (Apache 2.0) and Papa Parse (MIT) are compatible.
 - **Peer dep for AG Grid** — don't force the dep or the version.
+- **AG Grid-first UI (Phase 5)** — viewers are adapters; feature surface via `agGridProps`, not custom grid chrome.
 - **CSS variables for theming** — no CSS-in-JS runtime; easier to override.
 - **Changesets for versioning** — supports independent-but-linked packages.
 - **npm workspaces (not pnpm)** — simpler for contributors; `workspace:*` not used.

@@ -6,15 +6,43 @@ vi.mock('ag-grid-community', () => ({
   themeQuartz: {},
 }));
 
+export type CapturedAgGridProps = {
+  rowData?: Array<Record<string, unknown>>;
+  columnDefs?: Array<{
+    field?: string;
+    headerName?: string;
+    filter?: string | boolean;
+    pinned?: string;
+  }>;
+  sideBar?: unknown;
+  defaultColDef?: Record<string, unknown>;
+  getRowClass?: (params: {
+    data?: Record<string, unknown>;
+  }) => string | undefined;
+  getRowId?: (params: { data: Record<string, unknown> }) => string;
+  [key: string]: unknown;
+};
+
+let lastAgGridProps: CapturedAgGridProps | null = null;
+const allAgGridProps: CapturedAgGridProps[] = [];
+
+export function getLastAgGridProps(): CapturedAgGridProps | null {
+  return lastAgGridProps;
+}
+
+export function getAllAgGridProps(): readonly CapturedAgGridProps[] {
+  return allAgGridProps;
+}
+
+export function resetCapturedAgGridProps(): void {
+  lastAgGridProps = null;
+  allAgGridProps.length = 0;
+}
+
 vi.mock('ag-grid-react', () => ({
-  AgGridReact: (props: {
-    rowData?: Array<Record<string, unknown>>;
-    columnDefs?: Array<{ field?: string; headerName?: string }>;
-    getRowClass?: (params: {
-      data?: Record<string, unknown>;
-    }) => string | undefined;
-    getRowId?: (params: { data: Record<string, unknown> }) => string;
-  }) => {
+  AgGridReact: (props: CapturedAgGridProps) => {
+    lastAgGridProps = props;
+    allAgGridProps.push(props);
     const rows = props.rowData ?? [];
     const cols = props.columnDefs ?? [];
     return (

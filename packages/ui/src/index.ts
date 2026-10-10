@@ -4,6 +4,7 @@ export { ExcelSplitViewer } from './excel-split-viewer.js';
 export { diffToCSV } from './csv/diff-to-csv.js';
 
 export type {
+  AgGridPropsPassthrough,
   ClassNameSlot,
   CommonProps,
   ExcelDiffViewerProps,
