@@ -1,6 +1,12 @@
 # Styling
 
-The UI package ships static CSS. Theme with CSS variables, the typed `theme` prop, or slot overrides via `classNames`. There is **no CSS-in-JS runtime** and **no bundled design system**.
+The UI package ships static CSS. Theme with CSS variables, the typed `theme`
+prop, or slot overrides via `classNames`. There is **no CSS-in-JS runtime** and
+**no bundled design system**.
+
+Authoritative detail — precedence, adapter pattern, and when to use each lever —
+lives in the monorepo `DESIGN.md` → **Theming philosophy**. This section is a
+map of the guides.
 
 ## Theming layers
 
@@ -15,12 +21,16 @@ Precedence (lowest → highest):
 
 ## No bundled design systems
 
-`@mojro/excel-diff-ui` never imports MUI, Carbon, Tailwind, or similar. Map your design tokens to the EDV `Theme` shape in **your** app. The demo ships copy-paste adapter helpers under `apps/demo/examples/` — copy them; do not import them from an npm package.
+`@mojro/excel-diff-ui` never imports MUI, Carbon, Tailwind, or similar. Map your
+design tokens to the EDV `Theme` shape in **your** app. The demo ships
+copy-paste adapter helpers under `apps/demo/examples/` — copy them; do not
+import them from an npm package.
 
 ## Guides
 
+- [Decision guide](/docs/styling/decision-guide) — when to use CSS variables, `theme`, `classNames`, or AG Grid themes
 - [Basics](/docs/styling/basics) — CSS variables, `theme` prop, interactive presets
 - [AG Grid Themes](/docs/styling/ag-grid-themes) — Quartz, Alpine, Balham, Material
 - [MUI Integration](/docs/styling/mui) — map MUI themes with `createThemeFromMui`
-- [Carbon Integration](/docs/styling/carbon) — map Carbon themes with `createThemeFromCarbon`
-- [Custom Themes](/docs/styling/custom) — full `--edv-*` and `Theme` reference
+- [Carbon Integration](/docs/styling/carbon) — map Carbon Design System themes with `createThemeFromCarbon`
+- [Custom Themes](/docs/styling/custom) — full `--edv-*` and `Theme` reference (source of truth for the variable table)

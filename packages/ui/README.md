@@ -21,9 +21,49 @@ import '@mojro/excel-diff-ui/styles.css';
 <ExcelSplitViewer fileA={a} fileB={b} schema={schema} height={600} />
 ```
 
-Styling is opt-in via the CSS import. Theme with CSS variables (`--edv-*`), the typed `theme` prop (design tokens → CSS vars on the root), or override slots via the `classNames` prop. The library does not bundle design systems.
+Styling is opt-in via the CSS import. The library does not bundle design systems.
 
-Design-system integration (MUI, Carbon, etc.) belongs in your app. The demo documents copy-paste adapters at `/docs/styling/mui` and `/docs/styling/carbon`.
+## Theme
+
+Pass a typed `Theme` (every field optional) to map design tokens onto `--edv-*`
+CSS variables on the component root:
+
+```tsx
+import { ExcelViewer, type Theme } from '@mojro/excel-diff-ui';
+
+const theme: Theme = {
+  colors: {
+    added: '#dcfce7',
+    modified: '#fef3c7',
+    removed: '#fee2e2',
+    headerBg: '#f5f5f5',
+  },
+  typography: { fontSize: 14, headerWeight: 600 },
+  spacing: { rowHeight: 36, headerHeight: 40 },
+  shape: { borderRadius: 4 },
+};
+
+<ExcelViewer file={file} height={600} theme={theme} />
+```
+
+You can also override `--edv-*` in your CSS, or target slots with `classNames`.
+Precedence and when to use each lever: monorepo `DESIGN.md` → **Theming
+philosophy**, and the demo [decision guide](http://localhost:3000/docs/styling/decision-guide).
+
+**Full `--edv-*` CSS variable reference** (single source of truth in docs):
+[Custom Themes](http://localhost:3000/docs/styling/custom).
+
+### Design system integration
+
+Map your kit’s tokens to `Theme` in **your** app (copy-paste adapters — not
+published from this package):
+
+- [MUI Integration](http://localhost:3000/docs/styling/mui)
+- [Carbon Integration](http://localhost:3000/docs/styling/carbon)
+- [Custom Themes](http://localhost:3000/docs/styling/custom) — build without a kit
+
+AG Grid’s own look is separate: pass `agGridProps.theme` (see
+[AG Grid Themes](http://localhost:3000/docs/styling/ag-grid-themes)).
 
 ## Public exports
 

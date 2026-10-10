@@ -43,6 +43,14 @@ import '@mojro/excel-diff-ui/styles.css';
 
 Also import AG Grid theme CSS once in your app (see the demo root layout for a working example).
 
+## Theming (brief)
+
+The UI package is design-system-agnostic: override `--edv-*` CSS variables, pass
+a typed `theme` prop, or map MUI / Carbon tokens with a consumer adapter.
+Details: [Styling](/docs/styling) and the
+[decision guide](/docs/styling/decision-guide). Philosophy:
+monorepo `DESIGN.md`.
+
 ## Hello world — viewer
 
 ```tsx
@@ -114,3 +122,4 @@ transpilePackages: [
 
 - [Core concepts](/docs/core-concepts) — packages and schema
 - [Viewer](/docs/viewer) — full props reference
+- [Styling](/docs/styling) — CSS variables, `theme` prop, MUI / Carbon

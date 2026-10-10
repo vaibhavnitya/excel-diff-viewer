@@ -69,13 +69,24 @@ export default function CarbonStylingDocsPage() {
           Carbon Integration
         </h1>
         <p className="leading-relaxed text-muted-foreground">
-          Carbon styles are imported only on this page. Site chrome (nav,
-          sidebar) stays on shadcn/ui. The preview uses Carbon&apos;s{' '}
+          Carbon Design System styles are imported only on this page. Site
+          chrome (nav, sidebar) stays on shadcn/ui. The preview uses Carbon&apos;s{' '}
           <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em]">
             Theme
           </code>{' '}
           wrapper; EDV colors come from a copy-paste adapter keyed by theme
-          name.
+          name. Precedence and philosophy: monorepo{' '}
+          <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em]">
+            DESIGN.md
+          </code>{' '}
+          → Theming philosophy. Also see the{' '}
+          <a
+            href="/docs/styling/decision-guide"
+            className="font-medium text-foreground underline-offset-4 hover:underline"
+          >
+            decision guide
+          </a>
+          .
         </p>
       </header>
 
@@ -148,6 +159,38 @@ export default function CarbonStylingDocsPage() {
           <code>{usageSnippet}</code>
         </pre>
       </details>
+
+      <section className="space-y-2 text-sm text-muted-foreground">
+        <h2 className="text-lg font-semibold tracking-tight text-foreground">
+          Next steps
+        </h2>
+        <ul className="list-disc space-y-1 pl-5">
+          <li>
+            <a
+              href="/docs/styling"
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+            >
+              Styling overview
+            </a>
+          </li>
+          <li>
+            <a
+              href="/docs/styling/mui"
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+            >
+              MUI Integration
+            </a>
+          </li>
+          <li>
+            <a
+              href="/docs/styling/custom"
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+            >
+              Custom Themes
+            </a>
+          </li>
+        </ul>
+      </section>
     </div>
   );
 }

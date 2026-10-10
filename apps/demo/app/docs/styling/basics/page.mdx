@@ -1,45 +1,33 @@
 import { ThemeSwitcherDemo } from '@/components/docs/theme-switcher-demo';
 import { StylingBreadcrumb } from '@/components/docs/styling-breadcrumb';
-import { CSS_VARIABLES } from '@/lib/docs-props';
 
 <StylingBreadcrumb current="Basics" />
 
 # Basics
 
-Theme the viewer with `--edv-*` CSS variables, the typed `theme` prop, or override slots via `classNames`. No CSS-in-JS runtime and no bundled design systems.
+Theme the viewer with `--edv-*` CSS variables, the typed `theme` prop, or
+override slots via `classNames`. No CSS-in-JS runtime and no bundled design
+systems. Precedence and philosophy: monorepo `DESIGN.md` → **Theming
+philosophy**. For “which lever should I use?”, see the
+[decision guide](/docs/styling/decision-guide).
 
 ## CSS variables
 
-Defaults from `@mojro/excel-diff-ui/styles.css`. Dark values apply under `:root[data-theme='dark']`. For the full reference with purpose notes, see [Custom Themes](/docs/styling/custom).
+Defaults ship in `@mojro/excel-diff-ui/styles.css`. Dark values apply under
+`:root[data-theme='dark']`.
 
-<div className="overflow-x-auto">
-  <table className="w-full min-w-[40rem] border-collapse text-sm">
-    <thead className="border-b bg-muted/50">
-      <tr>
-        <th className="px-3 py-2 text-left font-medium">Variable</th>
-        <th className="px-3 py-2 text-left font-medium">Light</th>
-        <th className="px-3 py-2 text-left font-medium">Dark</th>
-        <th className="px-3 py-2 text-left font-medium">Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      {CSS_VARIABLES.map((row) => (
-        <tr key={row.name} className="border-b align-top">
-          <td className="px-3 py-2 font-mono text-xs text-foreground">
-            {row.name}
-          </td>
-          <td className="px-3 py-2 font-mono text-xs text-muted-foreground">
-            {row.light}
-          </td>
-          <td className="px-3 py-2 font-mono text-xs text-muted-foreground">
-            {row.dark}
-          </td>
-          <td className="px-3 py-2 text-muted-foreground">{row.description}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
+**Full `--edv-*` reference** (light/dark defaults and purpose notes):
+[Custom Themes](/docs/styling/custom).
+
+```css
+/* loaded after @mojro/excel-diff-ui/styles.css */
+:root {
+  --edv-added-bg: #dcfce7;
+  --edv-removed-bg: #fee2e2;
+  --edv-modified-bg: #fef3c7;
+  --edv-border-radius: 6px;
+}
+```
 
 ## Interactive theme switcher
 
@@ -49,7 +37,10 @@ Pick a preset. The viewer and the CSS override block update together.
 
 ## theme prop
 
-Pass a typed `Theme` object to set `--edv-*` variables as inline styles on the component root. Every field is optional — omit what you do not want to override. Map MUI / Carbon / etc. tokens in your app (see [MUI](/docs/styling/mui) and [Carbon](/docs/styling/carbon) for copy-paste adapters).
+Pass a typed `Theme` object to set `--edv-*` variables as inline styles on the
+component root. Every field is optional — omit what you do not want to override.
+Map MUI / Carbon / etc. tokens in your app (see [MUI](/docs/styling/mui) and
+[Carbon](/docs/styling/carbon) for copy-paste adapters).
 
 ```tsx
 import { ExcelViewer, type Theme } from '@mojro/excel-diff-ui';
@@ -69,7 +60,9 @@ const theme: Theme = {
 <ExcelViewer file={file} height={600} theme={theme} />
 ```
 
-Precedence (low → high): stylesheet defaults → dark mode → consumer CSS → `theme` → `classNames` → `style`. `spacing.rowHeight` / `headerHeight` also feed AG Grid; explicit `agGridProps.rowHeight` still wins.
+Precedence (low → high): stylesheet defaults → dark mode → consumer CSS →
+`theme` → `classNames` → `style`. `spacing.rowHeight` / `headerHeight` also feed
+AG Grid; explicit `agGridProps.rowHeight` still wins.
 
 ## classNames prop
 
@@ -89,14 +82,21 @@ Override named slots without fighting the default stylesheet:
 />
 ```
 
-Slots: `root`, `toolbar`, `grid`, `sheetTabs`, `error`, `loading`, `addedCell`, `removedCell`, `modifiedCell`, `addedRow`, `removedRow`, `modifiedRow`, `keyColumn`.
+Slots: `root`, `toolbar`, `grid`, `sheetTabs`, `error`, `loading`, `addedCell`,
+`removedCell`, `modifiedCell`, `addedRow`, `removedRow`, `modifiedRow`,
+`keyColumn`.
 
 ## Dark mode
 
-Built-in dark tokens activate when `data-theme="dark"` is set on `:root`. This demo also toggles the `.dark` class via `next-themes` and syncs `data-theme` for the UI package.
+Built-in dark tokens activate when `data-theme="dark"` is set on `:root`. This
+demo also toggles the `.dark` class via `next-themes` and syncs `data-theme` for
+the UI package. Remember: a `theme` prop’s inline variables outrank dark-mode
+CSS — align tokens with the host mode or leave them unset.
 
 ## Next steps
 
+- [Decision guide](/docs/styling/decision-guide)
 - Build a theme from scratch: [Custom Themes](/docs/styling/custom)
 - Switch AG Grid chrome: [AG Grid Themes](/docs/styling/ag-grid-themes)
 - Wire MUI or Carbon: [MUI](/docs/styling/mui) · [Carbon](/docs/styling/carbon)
+- [Styling overview](/docs/styling)

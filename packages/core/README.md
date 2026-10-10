@@ -2,7 +2,7 @@
 
 Framework-agnostic Excel and CSV parsing and diff engine. Runs in Node and the browser.
 
-Depends on nothing else in this repo. React hooks live in `@mojro/excel-diff-react`. Drop-in components live in `@mojro/excel-diff-ui`.
+Depends on nothing else in this repo. React hooks live in `@mojro/excel-diff-react`. Drop-in components live in `@mojro/excel-diff-ui` (including the `Theme` type and `theme` prop for UI theming).
 
 ## Install
 

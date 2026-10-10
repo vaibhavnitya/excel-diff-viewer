@@ -129,6 +129,12 @@ agGridProps={{
 
 ### Change the theme
 
+`agGridProps.theme` controls **AG Grid chrome** only (grid borders, header
+widgets, density). It does not replace library chrome theming (`--edv-*` /
+`theme` prop). Keep both consistent when you brand the viewer — see
+[AG Grid Themes](/docs/styling/ag-grid-themes) and
+[Styling basics](/docs/styling/basics).
+
 The library defaults to AG Grid’s `themeQuartz` object (Theming API). Override:
 
 ```tsx

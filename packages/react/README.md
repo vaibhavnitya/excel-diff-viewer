@@ -4,7 +4,8 @@ React hooks for loading and diffing Excel and CSV files. No grid and no opiniona
 
 **Requires React 18+** (`react` and `react-dom` are peer dependencies).
 
-Imports `@mojro/excel-diff-core` only. Drop-in components live in `@mojro/excel-diff-ui`.
+Imports `@mojro/excel-diff-core` only. Drop-in components (and the `Theme` type /
+`theme` prop) live in `@mojro/excel-diff-ui`.
 
 ## Install
 

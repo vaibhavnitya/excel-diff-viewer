@@ -14,6 +14,13 @@ View and diff Excel/CSV files in the browser. Built for React and Next.js — pa
 | [`@mojro/excel-diff-react`](./packages/react) | React hooks for custom UIs |
 | [`@mojro/excel-diff-ui`](./packages/ui) | Drop-in components using AG Grid |
 
+## What's included
+
+- Key-based Excel/CSV diff with numeric tolerance and Web Workers
+- Drop-in viewer, unified diff, and split (side-by-side) components
+- Design-system-agnostic theming (`theme` prop + CSS variables), with ready-made MUI and Carbon integration examples in the demo docs
+- AG Grid feature surface via `agGridProps` (filtering, sorting, themes, …)
+
 ## Install
 
 ```bash
@@ -56,8 +63,9 @@ export function App() {
 ## Documentation
 
 - Demo docs (local): [http://localhost:3000/docs](http://localhost:3000/docs) after `npm run dev`
+- Styling & theming: [http://localhost:3000/docs/styling](http://localhost:3000/docs/styling) (basics, MUI, Carbon, decision guide)
 - Deployed docs URL: *coming soon*
-- [DESIGN.md](./DESIGN.md) — architecture and the “why”
+- [DESIGN.md](./DESIGN.md) — architecture and the “why” (includes theming philosophy)
 - [PRINCIPLES.md](./PRINCIPLES.md) — engineering principles
 - [DEVELOPMENT.md](./DEVELOPMENT.md) — setup and daily workflow
 - [ROADMAP.md](./ROADMAP.md) — phased build plan
@@ -74,4 +82,3 @@ Demo runs at http://localhost:3000.
 ## License
 
 MIT
-# excel-diff-viewer

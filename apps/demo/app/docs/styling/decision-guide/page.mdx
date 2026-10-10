@@ -1,0 +1,30 @@
+import { StylingBreadcrumb } from '@/components/docs/styling-breadcrumb';
+
+<StylingBreadcrumb current="Decision guide" />
+
+# Decision guide
+
+Pick a theming lever based on what you want to change. Full precedence and
+rationale: monorepo `DESIGN.md` → **Theming philosophy**.
+
+| You want… | Use | Start here |
+| --- | --- | --- |
+| To change a few colors or radii | CSS variable overrides in your global CSS (`--edv-*`) | [Basics](/docs/styling/basics) · [Custom Themes](/docs/styling/custom) |
+| Your app’s design system (MUI, Carbon, etc.) to flow into the viewer | `theme` prop with a consumer adapter | [MUI](/docs/styling/mui) · [Carbon](/docs/styling/carbon) |
+| Precise control over specific component slots | `classNames` prop | [Basics](/docs/styling/basics) |
+| To change the grid’s look (Quartz, Alpine, …) | `agGridProps.theme` (or AG Grid CSS) | [AG Grid Themes](/docs/styling/ag-grid-themes) |
+| All of the above | Combine them | Respect precedence in `DESIGN.md` |
+
+## Precedence (reminder)
+
+Lowest → highest: library defaults → dark mode → consumer CSS → `theme` prop →
+`classNames` → `style`.
+
+Library chrome (`--edv-*` / `theme`) and AG Grid chrome (`agGridProps.theme`)
+are separate surfaces — they compose without the library coupling them.
+
+## Next steps
+
+- [Styling overview](/docs/styling)
+- [Basics](/docs/styling/basics)
+- [Custom Themes](/docs/styling/custom)

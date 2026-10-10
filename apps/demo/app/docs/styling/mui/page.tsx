@@ -128,7 +128,19 @@ const muiTheme = createTheme({ palette: { mode: '${activeId === 'dark' ? 'dark' 
           <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em]">
             CssBaseline
           </code>
-          ) and maps the MUI theme to EDV via a copy-paste adapter.
+          ) and maps the MUI theme to EDV via a copy-paste adapter. Precedence
+          and philosophy: monorepo{' '}
+          <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em]">
+            DESIGN.md
+          </code>{' '}
+          → Theming philosophy. Also see the{' '}
+          <a
+            href="/docs/styling/decision-guide"
+            className="font-medium text-foreground underline-offset-4 hover:underline"
+          >
+            decision guide
+          </a>
+          .
         </p>
       </header>
 
@@ -209,6 +221,38 @@ const muiTheme = createTheme({ palette: { mode: '${activeId === 'dark' ? 'dark' 
           <code>{usageSnippet}</code>
         </pre>
       </details>
+
+      <section className="space-y-2 text-sm text-muted-foreground">
+        <h2 className="text-lg font-semibold tracking-tight text-foreground">
+          Next steps
+        </h2>
+        <ul className="list-disc space-y-1 pl-5">
+          <li>
+            <a
+              href="/docs/styling"
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+            >
+              Styling overview
+            </a>
+          </li>
+          <li>
+            <a
+              href="/docs/styling/carbon"
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+            >
+              Carbon Integration
+            </a>
+          </li>
+          <li>
+            <a
+              href="/docs/styling/custom"
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+            >
+              Custom Themes
+            </a>
+          </li>
+        </ul>
+      </section>
     </div>
   );
 }

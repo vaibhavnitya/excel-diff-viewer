@@ -87,7 +87,20 @@ import { ExcelDiffViewer } from '@mojro/excel-diff-ui';
           <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em]">
             agGridProps.theme
           </code>
-          . Enterprise-only configuration is not used.
+          . This controls <em>grid</em> chrome only — library chrome (toolbar,
+          diff colors, tabs) still uses CSS variables / the{' '}
+          <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em]">
+            theme
+          </code>{' '}
+          prop. See{' '}
+          <a
+            href="/docs/styling/decision-guide"
+            className="font-medium text-foreground underline-offset-4 hover:underline"
+          >
+            decision guide
+          </a>{' '}
+          and <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em]">DESIGN.md</code>.
+          Enterprise-only configuration is not used.
         </p>
       </header>
 
@@ -114,6 +127,40 @@ import { ExcelDiffViewer } from '@mojro/excel-diff-ui';
         <pre className="overflow-x-auto rounded-lg border bg-muted/60 p-4 text-sm leading-relaxed">
           <code>{snippet}</code>
         </pre>
+      </section>
+
+      <section className="space-y-2 text-sm text-muted-foreground">
+        <h2 className="text-lg font-semibold tracking-tight text-foreground">
+          Next steps
+        </h2>
+        <ul className="list-disc space-y-1 pl-5">
+          <li>
+            <a
+              href="/docs/styling"
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+            >
+              Styling overview
+            </a>
+          </li>
+          <li>
+            <a
+              href="/docs/styling/basics"
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+            >
+              Basics
+            </a>{' '}
+            — library chrome via CSS variables / <code className="font-mono text-xs">theme</code>
+          </li>
+          <li>
+            <a
+              href="/docs/filtering-and-sorting"
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+            >
+              Filtering &amp; sorting
+            </a>{' '}
+            — <code className="font-mono text-xs">agGridProps</code> merge rules
+          </li>
+        </ul>
       </section>
     </div>
   );

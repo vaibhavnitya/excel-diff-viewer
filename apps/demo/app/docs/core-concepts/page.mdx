@@ -32,6 +32,15 @@ or ghost rows, then render `<AgGridReact>`. Filtering, sorting, pinning, sidebar
 and pagination are configured with `agGridProps` — the library does not rebuild
 those UIs. Details: [Filtering & sorting](/docs/filtering-and-sorting).
 
+## Theming
+
+`@mojro/excel-diff-ui` does not bundle a design system. Style library chrome with
+`--edv-*` CSS variables, the typed `theme` prop, or `classNames`. Map MUI or
+Carbon (or any kit) in your app via a small adapter. AG Grid’s own look is
+separate (`agGridProps.theme`). Guides: [Styling](/docs/styling) ·
+[decision guide](/docs/styling/decision-guide). Source of truth: `DESIGN.md` →
+**Theming philosophy**.
+
 ## The schema
 
 Diffing workbooks needs a schema so “same row” means the same business key, not the same Excel row index.

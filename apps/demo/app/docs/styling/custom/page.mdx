@@ -6,7 +6,13 @@ import { CSS_VARIABLES } from '@/lib/docs-props';
 # Custom Themes
 
 Build your own look without a design system: override `--edv-*` CSS variables,
-pass a typed `theme` prop, or combine both with `classNames`.
+pass a typed `theme` prop, or combine both with `classNames`. Precedence and
+philosophy: monorepo `DESIGN.md` → **Theming philosophy**. Not sure which lever
+to use? See the [decision guide](/docs/styling/decision-guide).
+
+This page is the **source of truth** for the full `--edv-*` table and the
+`Theme` field map. The TypeScript shape lives in
+`packages/ui/src/theme.ts` (`Theme` from `@mojro/excel-diff-ui`).
 
 ## `--edv-*` CSS variable reference
 
@@ -63,6 +69,9 @@ Every field is optional. Only set what you want to override.
 | `spacing.headerHeight` | `number` | `--edv-header-height` + AG Grid `headerHeight` |
 | `spacing.cellPadding` | `string` | `--edv-cell-padding` |
 | `shape.borderRadius` | `string \| number` | `--edv-border-radius` |
+
+A few CSS variables (`--edv-warning-*`, `--edv-ghost-opacity`, `--edv-muted-fg`)
+have no `Theme` field yet — override them in CSS. See `KNOWN_ISSUES.md`.
 
 ## Example: CSS variables only
 
@@ -139,4 +148,8 @@ Use `theme` for tokens and `classNames` for one-off layout or Tailwind utilities
 />
 ```
 
-For design-system adapters, see [MUI](/docs/styling/mui) and [Carbon](/docs/styling/carbon). For AG Grid chrome themes, see [AG Grid Themes](/docs/styling/ag-grid-themes).
+## Next steps
+
+- [Styling overview](/docs/styling) · [Decision guide](/docs/styling/decision-guide)
+- Design-system adapters: [MUI](/docs/styling/mui) · [Carbon](/docs/styling/carbon)
+- AG Grid chrome: [AG Grid Themes](/docs/styling/ag-grid-themes)
