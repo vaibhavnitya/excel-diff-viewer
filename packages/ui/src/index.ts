@@ -10,6 +10,7 @@ export type {
   ExcelDiffViewerProps,
   ExcelSplitViewerProps,
   ExcelViewerProps,
+  Theme,
 } from './types.js';
 
 export type {

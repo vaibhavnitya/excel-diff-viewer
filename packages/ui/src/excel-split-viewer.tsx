@@ -10,6 +10,7 @@ import { SplitGrids } from './grid/split-grids.js';
 import { slotClass } from './grid/class-slots.js';
 import { useOnError } from './hooks/use-on-error.js';
 import type { ExcelSplitViewerProps } from './types.js';
+import { mergeRootStyle } from './utils/root-style.js';
 
 export function ExcelSplitViewer({
   fileA,
@@ -27,6 +28,7 @@ export function ExcelSplitViewer({
   renderLoading,
   renderEmpty,
   style,
+  theme,
   height,
   agGridProps,
 }: ExcelSplitViewerProps) {
@@ -45,10 +47,7 @@ export function ExcelSplitViewer({
   return (
     <div
       className={slotClass('root', classNames)}
-      style={{
-        ...(height !== undefined ? { height } : undefined),
-        ...style,
-      }}
+      style={mergeRootStyle(theme, height, style)}
       data-edv-component="split"
     >
       {idle ? renderEmpty?.() ?? <EmptyView message="Provide two files and a schema." /> : null}
@@ -90,6 +89,8 @@ export function ExcelSplitViewer({
               labelB={labelB}
               classNames={classNames}
               height={height}
+              themeRowHeight={theme?.spacing?.rowHeight}
+              themeHeaderHeight={theme?.spacing?.headerHeight}
               agGridProps={agGridProps}
             />
           )}

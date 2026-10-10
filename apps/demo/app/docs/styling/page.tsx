@@ -13,11 +13,15 @@ export default function StylingDocsPage() {
           <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em]">
             --edv-*
           </code>{' '}
-          CSS variables, or override slots via the{' '}
+          CSS variables, the typed{' '}
+          <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em]">
+            theme
+          </code>{' '}
+          prop, or override slots via{' '}
           <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em]">
             classNames
-          </code>{' '}
-          prop. No CSS-in-JS runtime.
+          </code>
+          . No CSS-in-JS runtime and no bundled design systems.
         </p>
       </header>
 
@@ -82,6 +86,58 @@ export default function StylingDocsPage() {
           Pick a preset. The viewer and the CSS override block update together.
         </p>
         <ThemeSwitcherDemo />
+      </section>
+
+      <section className="space-y-3">
+        <h2
+          id="theme-prop"
+          className="scroll-mt-24 border-b pb-2 text-2xl font-semibold tracking-tight"
+        >
+          theme prop
+        </h2>
+        <p className="text-muted-foreground">
+          Pass a typed{' '}
+          <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em]">
+            Theme
+          </code>{' '}
+          object to set{' '}
+          <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em]">
+            --edv-*
+          </code>{' '}
+          variables as inline styles on the component root. Every field is
+          optional — omit what you do not want to override. The library does
+          not import design systems; map MUI / Carbon / etc. tokens in your
+          app (copy-paste adapters will land in a later demo phase).
+        </p>
+        <pre className="overflow-x-auto rounded-lg border bg-muted/60 p-4 text-sm leading-relaxed">
+          <code>{`import { ExcelViewer, type Theme } from '@mojro/excel-diff-ui';
+
+const theme: Theme = {
+  colors: {
+    added: '#dcfce7',
+    modified: '#fef3c7',
+    removed: '#fee2e2',
+    headerBg: '#f5f5f5',
+  },
+  typography: { fontSize: 14, headerWeight: 600 },
+  spacing: { rowHeight: 36, headerHeight: 40 },
+  shape: { borderRadius: 4 },
+};
+
+<ExcelViewer file={file} height={600} theme={theme} />`}</code>
+        </pre>
+        <p className="text-sm text-muted-foreground">
+          Precedence (low → high): stylesheet defaults → dark mode → consumer
+          CSS →{' '}
+          <code className="font-mono text-xs">theme</code> →{' '}
+          <code className="font-mono text-xs">classNames</code> →{' '}
+          <code className="font-mono text-xs">style</code>.{' '}
+          <code className="font-mono text-xs">spacing.rowHeight</code> /{' '}
+          <code className="font-mono text-xs">headerHeight</code> also feed AG
+          Grid; explicit{' '}
+          <code className="font-mono text-xs">agGridProps.rowHeight</code> still
+          wins.
+        </p>
       </section>
 
       <section className="space-y-3">

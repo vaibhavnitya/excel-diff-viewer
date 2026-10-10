@@ -196,6 +196,31 @@ Grid or an underpowered lowest-common-denominator API.
 - ExcelViewer: `columnDefs` are user-replaceable
 - `defaultColDef` is deep-merged (user keys win); theme defaults to `themeQuartz`
 
+## Theming philosophy
+
+The UI package does **not** bundle design systems (MUI, Carbon, Tailwind, etc.).
+Consumers who want their design system reflected in the viewer pass a typed
+`theme` prop containing design tokens. The library translates that object into
+`--edv-*` CSS variables on the component root. No design-system code is
+imported in library packages.
+
+Design-system-specific integration (e.g. mapping an MUI theme to our `Theme`)
+lives in **consumer** code. The demo app may ship example adapter helpers that
+consumers copy — not import from `@mojro/excel-diff-ui`.
+
+**Precedence (lowest → highest):**
+
+1. Library defaults in `styles.css` (`:root { --edv-added-bg: … }`)
+2. Dark mode overrides (`:root[data-theme='dark']`)
+3. Consumer CSS targeting `--edv-*` (loaded after library CSS)
+4. `theme` prop (inline style on component root)
+5. `classNames` prop (user classes; win when more specific)
+6. `style` prop (merged last on the root; overrides everything)
+
+`theme.spacing.rowHeight` / `headerHeight` also set AG Grid’s `rowHeight` /
+`headerHeight` as library defaults. Explicit `agGridProps.rowHeight` still
+wins (Phase 5 merge policy).
+
 ## Decisions log
 
 - **TypeScript, not JS** — consumers can be JS; the engine's correctness demands types.
@@ -203,5 +228,6 @@ Grid or an underpowered lowest-common-denominator API.
 - **Peer dep for AG Grid** — don't force the dep or the version.
 - **AG Grid-first UI (Phase 5)** — viewers are adapters; feature surface via `agGridProps`, not custom grid chrome.
 - **CSS variables for theming** — no CSS-in-JS runtime; easier to override.
+- **No design systems in library (Phase 6a)** — tokens via `theme` prop; adapters stay in consumer code.
 - **Changesets for versioning** — supports independent-but-linked packages.
 - **npm workspaces (not pnpm)** — simpler for contributors; `workspace:*` not used.

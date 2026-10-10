@@ -9,6 +9,7 @@ import { slotClass } from './grid/class-slots.js';
 import { useOnError } from './hooks/use-on-error.js';
 import type { ExcelViewerProps } from './types.js';
 import { cx } from './utils/cx.js';
+import { mergeRootStyle } from './utils/root-style.js';
 
 export function ExcelViewer({
   file,
@@ -22,6 +23,7 @@ export function ExcelViewer({
   renderLoading,
   renderEmpty,
   style,
+  theme,
   height,
   agGridProps,
 }: ExcelViewerProps) {
@@ -73,10 +75,7 @@ export function ExcelViewer({
   return (
     <div
       className={slotClass('root', classNames)}
-      style={{
-        ...(height !== undefined ? { height } : undefined),
-        ...style,
-      }}
+      style={mergeRootStyle(theme, height, style)}
       data-edv-component="viewer"
     >
       {state.status === 'idle' || file === null ? (
@@ -116,6 +115,8 @@ export function ExcelViewer({
             sheet={sheet}
             classNames={classNames}
             height={height}
+            themeRowHeight={theme?.spacing?.rowHeight}
+            themeHeaderHeight={theme?.spacing?.headerHeight}
             agGridProps={agGridProps}
           />
         </>

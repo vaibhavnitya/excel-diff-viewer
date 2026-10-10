@@ -11,6 +11,7 @@ import { slotClass } from './grid/class-slots.js';
 import { useOnError } from './hooks/use-on-error.js';
 import type { ExcelDiffViewerProps } from './types.js';
 import { filterDiffRows } from './utils/filter-diff-rows.js';
+import { mergeRootStyle } from './utils/root-style.js';
 
 export function ExcelDiffViewer({
   fileA,
@@ -30,6 +31,7 @@ export function ExcelDiffViewer({
   renderLoading,
   renderEmpty,
   style,
+  theme,
   height,
   agGridProps,
 }: ExcelDiffViewerProps) {
@@ -64,10 +66,7 @@ export function ExcelDiffViewer({
   return (
     <div
       className={slotClass('root', classNames)}
-      style={{
-        ...(height !== undefined ? { height } : undefined),
-        ...style,
-      }}
+      style={mergeRootStyle(theme, height, style)}
       data-edv-component="diff"
     >
       {idle ? renderEmpty?.() ?? <EmptyView message="Provide two files and a schema." /> : null}
@@ -123,6 +122,8 @@ export function ExcelDiffViewer({
               schema={schema}
               classNames={classNames}
               height={height}
+              themeRowHeight={theme?.spacing?.rowHeight}
+              themeHeaderHeight={theme?.spacing?.headerHeight}
               agGridProps={agGridProps}
             />
           )}

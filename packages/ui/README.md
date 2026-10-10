@@ -21,7 +21,7 @@ import '@mojro/excel-diff-ui/styles.css';
 <ExcelSplitViewer fileA={a} fileB={b} schema={schema} height={600} />
 ```
 
-Styling is opt-in via the CSS import. Theme with CSS variables (`--edv-*`) or override slots via the `classNames` prop.
+Styling is opt-in via the CSS import. Theme with CSS variables (`--edv-*`), the typed `theme` prop (design tokens → CSS vars on the root), or override slots via the `classNames` prop. The library does not bundle design systems.
 
 ## Public exports
 
@@ -31,6 +31,7 @@ Styling is opt-in via the CSS import. Theme with CSS variables (`--edv-*`) or ov
 | `ExcelDiffViewer` | Unified key-based diff grid + toolbar |
 | `ExcelSplitViewer` | Side-by-side aligned panes |
 | `diffToCSV` | Serialize a `DiffResult` to CSV |
+| `Theme` | Design-token shape for the `theme` prop |
 | Prop / slot types | `ExcelViewerProps`, `ClassNameSlot`, … |
 
 ## Peer dependencies

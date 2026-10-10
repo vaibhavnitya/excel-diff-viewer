@@ -60,9 +60,15 @@ export const VIEWER_PROPS: readonly PropRow[] = [
     description: 'Parse hints (filename, format, limits).',
   },
   {
+    name: 'theme',
+    type: 'Theme',
+    description:
+      'Design tokens mapped to --edv-* CSS variables on the root. Partial overrides only. See Styling.',
+  },
+  {
     name: 'style',
     type: 'CSSProperties',
-    description: 'Inline styles on the root element.',
+    description: 'Inline styles on the root element (merged after theme).',
   },
   {
     name: 'agGridProps',
@@ -164,9 +170,15 @@ export const DIFF_PROPS: readonly PropRow[] = [
     description: 'Error observer for logging / analytics.',
   },
   {
+    name: 'theme',
+    type: 'Theme',
+    description:
+      'Design tokens mapped to --edv-* CSS variables on the root. Partial overrides only. See Styling.',
+  },
+  {
     name: 'style',
     type: 'CSSProperties',
-    description: 'Inline styles on the root element.',
+    description: 'Inline styles on the root element (merged after theme).',
   },
   {
     name: 'agGridProps',
@@ -257,9 +269,15 @@ export const SPLIT_PROPS: readonly PropRow[] = [
     description: 'Error observer.',
   },
   {
+    name: 'theme',
+    type: 'Theme',
+    description:
+      'Design tokens mapped to --edv-* CSS variables on the root. Partial overrides only. See Styling.',
+  },
+  {
     name: 'style',
     type: 'CSSProperties',
-    description: 'Inline styles on the root element.',
+    description: 'Inline styles on the root element (merged after theme).',
   },
   {
     name: 'agGridProps',
@@ -288,6 +306,12 @@ export const CSS_VARIABLES: readonly {
     description: 'Base font size',
   },
   {
+    name: '--edv-header-weight',
+    light: '600',
+    dark: '(inherited)',
+    description: 'Font weight for headers / selected tabs',
+  },
+  {
     name: '--edv-text-color',
     light: '#1a1a1a',
     dark: '#e8e8e8',
@@ -304,6 +328,12 @@ export const CSS_VARIABLES: readonly {
     light: '#d0d0d0',
     dark: '#333333',
     description: 'Borders and dividers',
+  },
+  {
+    name: '--edv-border-radius',
+    light: '0',
+    dark: '(inherited)',
+    description: 'Root and chrome border radius',
   },
   {
     name: '--edv-header-bg',
@@ -328,6 +358,24 @@ export const CSS_VARIABLES: readonly {
     light: '#fafafa',
     dark: '#1a1a1a',
     description: 'Key column shading',
+  },
+  {
+    name: '--edv-row-height',
+    light: '32px',
+    dark: '(inherited)',
+    description: 'Row height token (also set via theme → AG Grid rowHeight)',
+  },
+  {
+    name: '--edv-header-height',
+    light: '36px',
+    dark: '(inherited)',
+    description: 'Header height token (also set via theme → AG Grid headerHeight)',
+  },
+  {
+    name: '--edv-cell-padding',
+    light: '0 8px',
+    dark: '(inherited)',
+    description: 'Cell padding',
   },
   {
     name: '--edv-added-bg / --edv-added-fg',

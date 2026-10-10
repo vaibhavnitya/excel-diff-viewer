@@ -7,6 +7,9 @@ import type {
   Limits,
   ParseFileOptions,
 } from '@mojro/excel-diff-core';
+import type { Theme } from './theme.js';
+
+export type { Theme } from './theme.js';
 
 export type ClassNameSlot =
   | 'root'
@@ -41,6 +44,12 @@ export type CommonProps = {
   renderLoading?: (progress: number, phase?: string) => ReactNode;
   renderEmpty?: () => ReactNode;
   style?: CSSProperties;
+  /**
+   * Design tokens mapped to `--edv-*` CSS variables on the component root.
+   * Partial overrides only — omitted fields keep stylesheet / dark-mode values.
+   * See {@link Theme} for precedence vs `classNames` and `style`.
+   */
+  theme?: Theme;
   /** Explicit grid height (e.g. 600, "80vh"). Defaults to filling the parent. */
   height?: number | string;
   /**

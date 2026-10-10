@@ -26,6 +26,10 @@ export type SheetGridProps = {
   classNames?: Partial<Record<ClassNameSlot, string>>;
   className?: string;
   height?: number | string;
+  /** From `theme.spacing.rowHeight` — library default before user agGridProps. */
+  themeRowHeight?: number;
+  /** From `theme.spacing.headerHeight` — library default before user agGridProps. */
+  themeHeaderHeight?: number;
   agGridProps?: AgGridPropsPassthrough;
 };
 
@@ -34,6 +38,8 @@ export function SheetGrid({
   classNames,
   className,
   height,
+  themeRowHeight,
+  themeHeaderHeight,
   agGridProps,
 }: SheetGridProps) {
   const columnDefs = useMemo<ColDef<SheetRow>[]>(
@@ -77,8 +83,8 @@ export function SheetGrid({
           defaultColDef: LIBRARY_DEFAULT_COL_DEF,
           animateRows: false,
           suppressCellFocus: true,
-          rowHeight: 32,
-          headerHeight: 36,
+          rowHeight: themeRowHeight ?? 32,
+          headerHeight: themeHeaderHeight ?? 36,
         },
         {
           rowData,
@@ -86,7 +92,7 @@ export function SheetGrid({
         },
         agGridProps as Partial<AgGridReactProps<SheetRow>>,
       ),
-    [agGridProps, columnDefs, rowData],
+    [agGridProps, columnDefs, rowData, themeHeaderHeight, themeRowHeight],
   );
 
   return (

@@ -1,5 +1,9 @@
 ## Known issues to address in Phase 6 polish
 
+- **Phase 6a CSS variables added (no renames):** `--edv-header-weight`,
+  `--edv-row-height`, `--edv-header-height`, `--edv-cell-padding`,
+  `--edv-border-radius`. Wired into chrome selectors; row/header heights also
+  thread through the `theme` prop to AG Grid.
 - **AG Grid-locked by design (Phase 5):** the UI package is an AG Grid adapter.
   A portable grid abstraction (swap Glide / TanStack behind the same component
   API) was considered and rejected. Bring-your-own-grid remains the Tier 2 hooks

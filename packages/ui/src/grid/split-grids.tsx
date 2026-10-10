@@ -41,6 +41,8 @@ export type SplitGridsProps = {
   labelB: string;
   classNames?: Partial<Record<ClassNameSlot, string>>;
   height?: number | string;
+  themeRowHeight?: number;
+  themeHeaderHeight?: number;
   agGridProps?: AgGridPropsPassthrough;
 };
 
@@ -116,6 +118,8 @@ export function SplitGrids({
   labelB,
   classNames,
   height,
+  themeRowHeight,
+  themeHeaderHeight,
   agGridProps,
 }: SplitGridsProps) {
   const apiA = useRef<GridApi<SplitRow> | null>(null);
@@ -201,8 +205,8 @@ export function SplitGrids({
           defaultColDef: SPLIT_DEFAULT_COL_DEF,
           animateRows: false,
           suppressCellFocus: true,
-          rowHeight: ROW_HEIGHT,
-          headerHeight: HEADER_HEIGHT,
+          rowHeight: themeRowHeight ?? ROW_HEIGHT,
+          headerHeight: themeHeaderHeight ?? HEADER_HEIGHT,
         },
         {
           columnDefs,
@@ -211,7 +215,7 @@ export function SplitGrids({
         },
         userRest,
       ),
-    [columnDefs, getRowClass, userRest],
+    [columnDefs, getRowClass, themeHeaderHeight, themeRowHeight, userRest],
   );
 
   const onReadyA = useCallback(

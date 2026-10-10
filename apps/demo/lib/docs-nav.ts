@@ -48,7 +48,7 @@ export const DOCS_NAV: readonly DocsNavItem[] = [
   {
     href: '/docs/styling',
     title: 'Styling',
-    description: 'CSS variables, classNames, and themes',
+    description: 'CSS variables, theme prop, classNames, and dark mode',
   },
   {
     href: '/docs/errors',

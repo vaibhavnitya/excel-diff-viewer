@@ -32,7 +32,24 @@ export default function ViewerPage() {
           <div className="min-h-[360px] p-2 sm:min-h-[600px]">
             <ExcelViewer 
               file={file}
-              height={600} 
+              height={700} 
+              theme={{
+                colors: {
+                  added: '#dcedc8',       // custom green
+                  removed: '#ffcdd2',     // custom red
+                  modified: '#fff59d',    // custom yellow
+                  headerBg: '#1976d2',    // blue header
+                  headerFg: '#ffffff',
+                },
+                typography: {
+                  fontFamily: '"Comic Sans MS", sans-serif',
+                  fontSize: 16,           // number, should become "16px"
+                },
+                spacing: {
+                  rowHeight: 48,          // taller rows
+                  headerHeight: 56,
+                }
+              }}
               />
           </div>
         </CardContent>

@@ -48,6 +48,8 @@ export type DiffGridProps = {
   classNames?: Partial<Record<ClassNameSlot, string>>;
   className?: string;
   height?: number | string;
+  themeRowHeight?: number;
+  themeHeaderHeight?: number;
   agGridProps?: AgGridPropsPassthrough;
 };
 
@@ -131,6 +133,8 @@ export function DiffGrid({
   classNames,
   className,
   height,
+  themeRowHeight,
+  themeHeaderHeight,
   agGridProps,
 }: DiffGridProps) {
   const keySet = useMemo(() => new Set(schema.keyFields), [schema.keyFields]);
@@ -207,8 +211,8 @@ export function DiffGrid({
         defaultColDef: LIBRARY_DEFAULT_COL_DEF,
         animateRows: false,
         suppressCellFocus: true,
-        rowHeight: 32,
-        headerHeight: 36,
+        rowHeight: themeRowHeight ?? 32,
+        headerHeight: themeHeaderHeight ?? 36,
         className: cx('edv-ag-grid', userClassName),
       },
       {
@@ -219,7 +223,14 @@ export function DiffGrid({
       },
       userRest,
     );
-  }, [agGridProps, columnDefs, getRowClass, rowData]);
+  }, [
+    agGridProps,
+    columnDefs,
+    getRowClass,
+    rowData,
+    themeHeaderHeight,
+    themeRowHeight,
+  ]);
 
   return (
     <div
