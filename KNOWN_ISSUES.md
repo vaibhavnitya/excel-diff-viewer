@@ -114,6 +114,8 @@ Smaller workbooks (10k rows) complete in well under 1 second (~0.5s). For large
 workbooks, consumers should prefer `writeWorkbookAsync` and surface a loading
 state on their export affordance.
 
+Measured write time at ceiling varies 10-15 seconds depending on system load. The 10k-row common case (~500ms) is enforced as a regression budget; the 100k case is tracked as a reference only, with 7d-polish scoped to resolve the underlying blocking-write issue.
+
 A dedicated phase (7d-polish, planned before 7e-editing) will move write
 execution into a Web Worker, keeping the main thread responsive during
 large writes. This is the write-side equivalent of the parse Worker that

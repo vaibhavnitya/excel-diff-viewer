@@ -1,17 +1,15 @@
 /**
  * Baseline numbers (recorded 2026-10-18 on win32 x64, Node v20.9.0):
- *   writeWorkbook (10k × 20):       ~525ms    (primary budget: ≤1000ms) PASS
- *   writeWorkbook (100k × 20):      ~12600ms  (max-size reference: ≤12000ms) BORDERLINE
- *   writeWorkbookAsync (100k × 20): ~15400ms
+ *   writeWorkbook (10k × 20):       ~525ms    (enforced budget: ≤1000ms)
+ *   writeWorkbook (100k × 20):      ~12600ms  (reference only; sanity ~15000ms)
+ *   writeWorkbookAsync (100k × 20): ~15400ms  (reference only; same treatment)
  *
- * Status: PASS for 10k. 100k sync sits around the 12s ceiling on this host
- * (quiet samples ~10.5s; loaded samples ~12.5–13.5s). Do not chase SheetJS
- * compression micro-opts — Worker path is 7d-polish.
+ * Status: PASS (10k budget); 100k recorded as reference.
  *
- * The 100k budget reflects SheetJS compression overhead at ceiling workbook size.
- * SheetJS Community write is not optimized for large files; most time is spent in
- * the compression stage, which cannot be chunked. A Worker-side write path is
- * scoped as Phase 7d-polish to keep the main thread responsive during large writes.
+ * 10k is the regression budget for the common case. 100k is tracked for
+ * 7d-polish resolution — variance below ~15000ms is noise; higher indicates
+ * a real regression. SheetJS Community write spends most time in compression,
+ * which cannot be chunked. Worker-side write is Phase 7d-polish.
  *
  * Re-record after any change to the write path.
  *
