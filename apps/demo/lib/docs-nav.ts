@@ -68,6 +68,21 @@ export const DOCS_NAV: readonly DocsNavItem[] = [
         title: 'Overview',
         description: 'summarizeWorkbook and inline DiffSummary / OverlaySummary',
       },
+      {
+        href: '/docs/analytics/components',
+        title: 'Components',
+        description: 'WorkbookSummary, DiffSummary, OverlaySummary',
+      },
+      {
+        href: '/docs/analytics/hooks',
+        title: 'Hooks',
+        description: 'useWorkbookSummary sync/async and cache',
+      },
+      {
+        href: '/docs/analytics/examples',
+        title: 'Examples',
+        description: 'Defaults, overlay panel, Recharts escape hatch',
+      },
     ],
   },
   {

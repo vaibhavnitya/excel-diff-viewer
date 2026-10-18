@@ -29,6 +29,13 @@ const REQUIRED_VARS = [
   '--edv-error-fg',
   '--edv-loading-bg',
   '--edv-toolbar-bg',
+  '--edv-summary-card-bg',
+  '--edv-summary-card-border',
+  '--edv-summary-tile-bg',
+  '--edv-summary-bar-fill',
+  '--edv-summary-range-mark',
+  '--edv-summary-bool-true',
+  '--edv-summary-bool-false',
 ] as const;
 
 describe('styles.css', () => {

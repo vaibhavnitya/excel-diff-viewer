@@ -1,0 +1,134 @@
+import { Callout } from '@/components/docs/callout';
+import { PropsTable } from '@/components/docs/props-table';
+
+# Summary components
+
+Three presentational components in `@mojro/excel-diff-ui`. Each takes an
+already-computed summary — the library does **not** fetch or compute inside the
+component.
+
+```tsx
+import {
+  WorkbookSummary,
+  DiffSummary,
+  OverlaySummary,
+} from '@mojro/excel-diff-ui';
+import '@mojro/excel-diff-ui/styles.css';
+```
+
+<Callout>
+  Default rendering is plain CSS — no chart library. Pass a `renderers` prop to
+  swap the visualization slot per treatment (numeric / categorical / date /
+  boolean).
+</Callout>
+
+## Common props
+
+<PropsTable
+  rows={[
+    {
+      name: 'summary',
+      type: 'WorkbookSummary | DiffSummary | OverlaySummary',
+      description: 'Already-computed summary data (required).',
+    },
+    {
+      name: 'theme',
+      type: 'Theme',
+      description: 'Maps to --edv-* CSS variables on the root.',
+    },
+    {
+      name: 'classNames',
+      type: 'SummaryClassNames',
+      description: 'Slot overrides: root, header, columnCard, statTile.',
+    },
+    {
+      name: 'style',
+      type: 'CSSProperties',
+      description: 'Merged last on the root element.',
+    },
+    {
+      name: 'renderers',
+      type: 'SummaryRenderers',
+      description:
+        'Per-treatment visualization overrides. Card frame (title, count, nullCount) stays.',
+    },
+  ]}
+/>
+
+## WorkbookSummary
+
+```tsx
+function WorkbookSummary(props: WorkbookSummaryProps): JSX.Element;
+```
+
+Renders row/column/sheet tiles plus a responsive grid of column cards (one per
+`summary.columns` entry).
+
+```tsx
+const state = useWorkbookSummary(workbook);
+if (state.status === 'success') {
+  return <WorkbookSummary summary={state.summary} />;
+}
+```
+
+## DiffSummary
+
+```tsx
+function DiffSummary(props: DiffSummaryProps): JSX.Element;
+```
+
+Header: added / removed / modified / unchanged tiles. Below: one card per
+`fieldChanges` entry (numeric deltas and/or categorical transitions). Pass
+`diff.summary` from `useExcelDiff` — there is no separate diff-summary hook.
+
+```tsx
+const state = useExcelDiff(fileA, fileB, schema);
+if (state.status === 'success') {
+  return <DiffSummary summary={state.diff.summary} />;
+}
+```
+
+## OverlaySummary
+
+```tsx
+function OverlaySummary(props: OverlaySummaryProps): JSX.Element;
+```
+
+Header: totalBase / totalOverlay / matched / unmatched / droppedByCompose.
+Below: `targetColumns` as standard treatment cards (honors `renderers`).
+
+```tsx
+const state = useExcelOverlay(base, overlay, options);
+if (state.status === 'success') {
+  return <OverlaySummary summary={state.summary} />;
+}
+```
+
+## renderers prop
+
+```ts
+type SummaryRenderers = {
+  numeric?: (column: NumericColumnSummary) => ReactNode;
+  categorical?: (column: CategoricalColumnSummary) => ReactNode;
+  date?: (column: DateColumnSummary) => ReactNode;
+  boolean?: (column: BooleanColumnSummary) => ReactNode;
+};
+```
+
+When a renderer is provided, it fills the **visualization slot** inside the
+default card frame. Count / nullCount stay. Overrides are per-treatment across
+all three components — not per column name.
+
+```tsx
+<WorkbookSummary
+  summary={summary}
+  renderers={{
+    numeric: (col) => <span>{col.mean}</span>,
+  }}
+/>
+```
+
+Date cards default to min/max ISO strings (no reformatting). A timeline chart
+belongs in the escape hatch — see [/analytics](/analytics) for a Recharts demo.
+
+See also [hooks](/docs/analytics/hooks) and [examples](/docs/analytics/examples).

@@ -38,11 +38,15 @@ import {
   ExcelViewer,
   ExcelDiffViewer,
   ExcelOverlayViewer,
+  WorkbookSummary,
+  DiffSummary,
+  OverlaySummary,
 } from '@mojro/excel-diff-ui';
 import '@mojro/excel-diff-ui/styles.css';
 <ExcelViewer file={file} />
 <ExcelDiffViewer fileA={a} fileB={b} schema={schema} />
 <ExcelOverlayViewer baseFile={base} overlayFile={overlay} options={{ schema }} />
+<WorkbookSummary summary={workbookSummary} />
 ```
 
 **Tier 2 (custom UIs):**
@@ -51,6 +55,7 @@ import {
   useExcelFile,
   useExcelDiff,
   useExcelOverlay,
+  useWorkbookSummary,
 } from '@mojro/excel-diff-react';
 ```
 
@@ -374,8 +379,7 @@ FTL rate card + surcharge template (`fn`) under `/overlay` and
 
 ## Summary
 
-Engine-only analytics primitives (Phase 7b-slim). Validate the data shape in
-core before building hooks or UI on top (7c).
+Analytics primitives span core (7b-slim) plus React/UI (7c-analytics-ui).
 
 **`summarizeWorkbook` / `summarizeWorkbookAsync`** walk dense columns and return
 a `WorkbookSummary` (per-column numeric / categorical / date / boolean stats,
@@ -404,10 +408,32 @@ small under the perf budget. Consumers compose with `summarizeWorkbook` + cache.
 100k-row limit a full type-check is cheap and avoids “row 1001 introduces a new
 type.” Distinct counts are exact for the same reason (YAGNI on HyperLogLog).
 
-**Non-goals:** percentiles beyond median, outliers, correlations, histograms,
-chart-friendly formatting, approximate distinct counts, chained summaries, UI.
+### UI layer (Phase 7c-analytics-ui)
 
-Docs: `/docs/analytics/overview`.
+Same discipline as [Theming philosophy](#theming-philosophy): no chart libraries
+in `@mojro/excel-diff-ui` or `@mojro/excel-diff-react` (parallel to “no design
+systems in library”). Default rendering is plain CSS. Charting belongs in
+consumer code via composition.
+
+- **Three components, not one** — `<WorkbookSummary>`, `<DiffSummary>`,
+  `<OverlaySummary>` have different semantics and likely renderings. A single
+  collapsed `<Summary>` was rejected.
+- **Only `useWorkbookSummary`** — diff/overlay summaries ride on
+  `useExcelDiff` / `useExcelOverlay` result objects (`diff.summary`,
+  overlay `summary`). No `useDiffSummary` / `useOverlaySummary`.
+- **`renderers` prop** — per-treatment escape hatch. The library keeps the card
+  frame (title + count / nullCount); the consumer fills the visualization slot.
+  Not a full-card override; not per-column-name overrides in v1.
+- **Cache ownership** — hook defaults to an internal `createSummaryCache()` via
+  `useRef` (GC’d on unmount). Pass `options.cache` to share across hooks.
+
+**Non-goals (engine + UI):** percentiles beyond median, outliers, correlations,
+histograms as engine output, approximate distinct counts, chained summaries,
+chart libraries in published packages, interactive tooltips/zoom in defaults,
+group-by aggregates, editing, Excel export.
+
+Docs: `/docs/analytics/overview`, `/docs/analytics/components`,
+`/docs/analytics/hooks`, `/docs/analytics/examples`. Demo: `/analytics`.
 
 ## Decisions log
 

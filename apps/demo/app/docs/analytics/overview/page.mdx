@@ -4,7 +4,9 @@ Summary primitives live in `@mojro/excel-diff-core`. They turn dense workbook
 columns into typed aggregates, and enrich diff / overlay results with
 field-level change stats — without a second walk of the data.
 
-Hooks, grid components, and charts are **out of scope** here (Phase 7c).
+Hooks and UI components ship in Phase 7c — see
+[components](/docs/analytics/components), [hooks](/docs/analytics/hooks), and
+[examples](/docs/analytics/examples).
 
 ## What you get
 
@@ -98,4 +100,4 @@ base columns are what `summarizeWorkbook(base)` already covers.
 - Percentiles beyond median, outliers, correlations, histograms
 - Approximate distinct count (HyperLogLog) — exact only, bounded by row limits
 - Charts / number formatting (summary is data, not presentation)
-- React hooks and UI — see Phase 7c in `ROADMAP.md`
+- Charts inside the library — use the `renderers` escape hatch (see 7c UI docs)

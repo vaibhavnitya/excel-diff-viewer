@@ -1,0 +1,66 @@
+import {
+  OverlayWithSummaryDemo,
+  RechartsEscapeHatchDemo,
+  WorkbookSummaryDefaultsDemo,
+} from '@/components/docs/analytics-examples-demos';
+import { Callout } from '@/components/docs/callout';
+import { LiveDemo } from '@/components/docs/live-demo';
+
+# Analytics examples
+
+<LiveDemo href="/analytics">Open the /analytics demo →</LiveDemo>
+
+## 1. Workbook summary with defaults
+
+Upload is optional here — this demo uses the sample rate card and
+`<WorkbookSummary>` with **no** `renderers` prop (plain CSS defaults).
+
+```tsx
+import { useWorkbookSummary } from '@mojro/excel-diff-react';
+import { WorkbookSummary } from '@mojro/excel-diff-ui';
+
+const state = useWorkbookSummary(workbook);
+if (state.status === 'success') {
+  return <WorkbookSummary summary={state.summary} />;
+}
+```
+
+<WorkbookSummaryDefaultsDemo />
+
+## 2. Overlay with summary panel
+
+Real-shaped FTL rate card + surcharge template. `<ExcelOverlayViewer>` beside
+`<OverlaySummary>` using `targetColumns` from the overlay result.
+
+```tsx
+const state = useExcelOverlay(baseFile, overlayFile, { schema });
+return (
+  <>
+    <ExcelOverlayViewer baseFile={baseFile} overlayFile={overlayFile} options={{ schema }} />
+    {state.status === 'success' && (
+      <OverlaySummary summary={state.summary} />
+    )}
+  </>
+);
+```
+
+<OverlayWithSummaryDemo />
+
+## 3. Escape hatch with Recharts
+
+Same component and data; pass `renderers={rechartsRenderers}`. Recharts is a
+**demo dependency only** — it is not required to use `@mojro/excel-diff-ui`.
+Copy `apps/demo/app/analytics/chart-renderers.tsx` as a starting point.
+
+```tsx
+import { rechartsRenderers } from './chart-renderers';
+
+<WorkbookSummary summary={summary} renderers={rechartsRenderers} />
+```
+
+<Callout>
+  Recharts lives in `apps/demo/package.json` only. Library packages have zero
+  chart dependencies.
+</Callout>
+
+<RechartsEscapeHatchDemo />

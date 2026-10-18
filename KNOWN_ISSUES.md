@@ -1,7 +1,8 @@
-## Known issues (post Phase 7b-slim)
+## Known issues (post Phase 7c-analytics-ui)
 
-Phase 7b-slim (summary engine primitives) is complete. Phase 7a overlay and
-Phases 6a/6b theming remain done. Open items below are polish or Phase 7c+ work.
+Phase 7c-analytics-ui (summary hooks + components) is complete. Phase 7b-slim
+engine primitives, 7a overlay, and 6a/6b theming remain done. Open items below
+are polish or Phase 7d+ work.
 
 ### Theming / style isolation (watch)
 
@@ -9,6 +10,11 @@ Phases 6a/6b theming remain done. Open items below are polish or Phase 7c+ work.
   `--edv-ghost-opacity`, and `--edv-muted-fg` ship in `styles.css` and appear in
   the docs CSS variable tables, but have no corresponding `Theme` fields. Override
   them via CSS until/unless the type grows.
+- **New summary CSS variables not on `Theme` type:** `--edv-summary-card-bg`,
+  `--edv-summary-card-border`, `--edv-summary-tile-bg`, `--edv-summary-bar-fill`,
+  `--edv-summary-range-mark`, `--edv-summary-bool-true`, `--edv-summary-bool-false`.
+  Same pattern as the CSS-only tokens above — override via CSS until/unless
+  `Theme` grows.
 - **`theme` prop vs dark mode:** the `theme` prop sets inline CSS variables and
   therefore outranks `:root[data-theme='dark']` defaults. A light token object on
   a dark host page (or the reverse) can clash — see `DESIGN.md` → Theming
@@ -71,6 +77,13 @@ Phases 6a/6b theming remain done. Open items below are polish or Phase 7c+ work.
   `summarizeWorkbook` separately on base and after workbooks if they want
   per-side stats. Deliberate — keeps the diff side-output small and under the
   1.1× budget. Documented in `/docs/analytics/overview`.
+- **No per-column-name renderer overrides:** v1 `renderers` is per-treatment only
+  (`numeric` / `categorical` / `date` / `boolean`). If real users want to render
+  a specific column (e.g. `Unit Rate`) differently from other numeric columns,
+  add later as `renderersByColumn`. Not a priority.
+- **Date rendering is minimal by default:** min/max as ISO text. A real timeline
+  chart requires a chart library and lives in the escape hatch. Documented in
+  `/docs/analytics/components`.
 
 ## Lessons from Phase 4c (docs)
 

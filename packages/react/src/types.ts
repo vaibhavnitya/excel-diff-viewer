@@ -5,7 +5,10 @@ import type {
   Limits,
   OverlaySummary,
   OverlayWorkbooksOptions,
+  SummaryCache,
+  SummaryConfig,
   Workbook,
+  WorkbookSummary,
 } from '@mojro/excel-diff-core';
 
 export type FileState =
@@ -89,4 +92,45 @@ export type UseExcelOverlayOptions = {
   readonly limits?: Partial<Limits>;
 };
 
-export type { OverlayWorkbooksOptions };
+/**
+ * Progress for {@link useWorkbookSummary} async path.
+ * Mirrors core `DiffControl.onProgress(processed, total)` cell counts.
+ */
+export type SummaryProgress = {
+  readonly processed: number;
+  readonly total: number;
+};
+
+/**
+ * Discriminated workbook-summary state — mirrors {@link DiffState}.
+ * Sync path never enters `loading`; async path reports {@link SummaryProgress}.
+ */
+export type UseWorkbookSummaryState =
+  | { readonly status: 'idle' }
+  | {
+      readonly status: 'loading';
+      readonly progress: SummaryProgress;
+    }
+  | {
+      readonly status: 'success';
+      readonly summary: WorkbookSummary;
+    }
+  | { readonly status: 'error'; readonly error: DiffError };
+
+/**
+ * Options for `useWorkbookSummary`.
+ *
+ * **Sync vs async:** default is sync (`async` omitted / `false`). Sync is fine
+ * up to the 100k-row workbook limit (~200ms measured). Pass `async: true` when
+ * main-thread blocking matters.
+ *
+ * **Cache:** omit `cache` to get a per-hook-instance cache (GC'd on unmount).
+ * Pass an external {@link SummaryCache} to share hits across hooks.
+ */
+export type UseWorkbookSummaryOptions = {
+  readonly cache?: SummaryCache;
+  /** Default `false`. When `true`, uses `summarizeWorkbookAsync` with cancellation. */
+  readonly async?: boolean;
+};
+
+export type { OverlayWorkbooksOptions, SummaryCache, SummaryConfig };

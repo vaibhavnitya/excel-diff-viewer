@@ -93,7 +93,7 @@ Goal: parse a file and diff two files from Node, with full tests.
 - [x] Docs under /docs/overlay/
 - [x] Assisted editable schema on /overlay demo (uploads)
 
-## Phase 7b-slim — Summary primitives (engine only) (current)
+## Phase 7b-slim — Summary primitives (engine only)
 
 - [x] summarizeWorkbook + summarizeWorkbookAsync
 - [x] createSummaryCache
@@ -102,13 +102,18 @@ Goal: parse a file and diff two files from Node, with full tests.
 - [x] Docs under /docs/analytics/overview
 - [x] Perf budgets verified via bench
 
-## Phase 7c — Analytics UI + editing + export
+## Phase 7c-analytics-ui — Summary UI (current)
 
-- [ ] useWorkbookSummary / useDiffSummary / useOverlaySummary hooks
-- [ ] `<WorkbookSummary>` / `<DiffSummary>` / `<OverlaySummary>` components (no chart lib)
-- [ ] Demo page /analytics
-- [ ] /docs/analytics/schema and /docs/analytics/examples
-- [ ] In-grid editing (originally Phase 7b)
-- [ ] Export to Excel (originally Phase 7b)
+- [x] useWorkbookSummary hook with internal/external cache + sync/async
+- [x] `<WorkbookSummary>`, `<DiffSummary>`, `<OverlaySummary>` with no-chart defaults
+- [x] renderers prop (per-treatment escape hatch)
+- [x] /analytics demo page with default/Recharts toggle
+- [x] Docs under /docs/analytics/{components,hooks,examples}
 
-> Phase 7c scope may split into 7c-ui and 7c-editing based on 7b-slim dogfood findings.
+## Phase 7d — In-grid editing
+
+- [ ] (originally part of Phase 7b)
+
+## Phase 7e — Excel export
+
+- [ ] (originally part of Phase 7b)

@@ -4,6 +4,7 @@
 export { useExcelFile } from './use-excel-file.js';
 export { useExcelDiff } from './use-excel-diff.js';
 export { useExcelOverlay } from './use-excel-overlay.js';
+export { useWorkbookSummary } from './use-workbook-summary.js';
 
 export type {
   DiffPhase,
@@ -11,9 +12,12 @@ export type {
   FileState,
   OverlayPhase,
   OverlayState,
+  SummaryProgress,
   UseExcelDiffOptions,
   UseExcelFileOptions,
   UseExcelOverlayOptions,
+  UseWorkbookSummaryOptions,
+  UseWorkbookSummaryState,
 } from './types.js';
 
 export type {
@@ -26,5 +30,8 @@ export type {
   OverlayWorkbooksOptions,
   ParseFileOptions,
   Result,
+  SummaryCache,
+  SummaryConfig,
   Workbook,
+  WorkbookSummary,
 } from '@mojro/excel-diff-core';

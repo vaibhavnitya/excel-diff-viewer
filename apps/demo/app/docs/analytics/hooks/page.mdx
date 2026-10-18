@@ -1,0 +1,115 @@
+import { Callout } from '@/components/docs/callout';
+import { PropsTable } from '@/components/docs/props-table';
+
+# Summary hooks
+
+Only **`useWorkbookSummary`** ships in this phase. Diff and overlay summaries
+ride on their result objects from `useExcelDiff` / `useExcelOverlay`
+(`diff.summary`, overlay `summary`) — there is no `useDiffSummary` or
+`useOverlaySummary`.
+
+```tsx
+import { useWorkbookSummary } from '@mojro/excel-diff-react';
+```
+
+## useWorkbookSummary
+
+```ts
+function useWorkbookSummary(
+  workbook: Workbook | null,
+  config?: SummaryConfig,
+  options?: { cache?: SummaryCache; async?: boolean },
+): UseWorkbookSummaryState;
+```
+
+<PropsTable
+  rows={[
+    {
+      name: 'workbook',
+      type: 'Workbook | null',
+      description: 'Parsed workbook. null → idle (no summarize call).',
+    },
+    {
+      name: 'config',
+      type: 'SummaryConfig',
+      description:
+        'Optional treatment overrides, exclude, topN, sheetName. Reference identity matters for cache keys.',
+    },
+    {
+      name: 'options.cache',
+      type: 'SummaryCache',
+      description:
+        'External cache (createSummaryCache). Omit for a per-hook internal cache.',
+    },
+    {
+      name: 'options.async',
+      type: 'boolean',
+      default: 'false',
+      description:
+        'false = sync summarizeWorkbook in useMemo. true = summarizeWorkbookAsync with progress + cancellation.',
+    },
+  ]}
+/>
+
+### State shape
+
+```ts
+type UseWorkbookSummaryState =
+  | { status: 'idle' }
+  | { status: 'loading'; progress: { processed: number; total: number } }
+  | { status: 'success'; summary: WorkbookSummary }
+  | { status: 'error'; error: DiffError };
+```
+
+Sync path never enters `loading`. Async path reports cell progress
+`(processed, total)` including a final `(total, total)`.
+
+### Sync vs async
+
+**Default sync is fine** up to the 100k-row workbook limit / ~500ms budget
+(measured ~201ms for 100k × 20 in 7b-slim). Pass `async: true` for larger
+workbooks or UIs where main-thread blocking matters.
+
+```tsx
+// Common case
+const state = useWorkbookSummary(workbook);
+
+// Opt-in async
+const state = useWorkbookSummary(workbook, config, { async: true });
+if (state.status === 'loading') {
+  const { processed, total } = state.progress;
+}
+```
+
+### Cache
+
+- **Internal (default):** `useRef(createSummaryCache())` per hook instance; GC'd
+  on unmount.
+- **External:** pass `options.cache` to share hits across hooks (e.g. the same
+  workbook in a viewer and a summary panel). Keys on **reference identity** of
+  workbook + config — not deep equality.
+
+```tsx
+const cache = useMemo(() => createSummaryCache(), []);
+const a = useWorkbookSummary(workbook, config, { cache });
+const b = useWorkbookSummary(workbook, config, { cache }); // hit
+```
+
+### Diff / overlay summaries
+
+```tsx
+const diff = useExcelDiff(a, b, schema);
+if (diff.status === 'success') {
+  return <DiffSummary summary={diff.diff.summary} />;
+}
+
+const overlay = useExcelOverlay(base, overlay, options);
+if (overlay.status === 'success') {
+  return <OverlaySummary summary={overlay.summary} />;
+}
+```
+
+<Callout>
+  Compose with `useWorkbookSummary` + a shared cache when you also want
+  per-side workbook stats alongside a diff or overlay.
+</Callout>
