@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm install && npm run build --workspaces --if-present && npm run build -w apps/demo",
+  "outputDirectory": "apps/demo/.next",
+  "framework": "nextjs"
+}
