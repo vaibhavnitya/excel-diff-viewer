@@ -84,6 +84,11 @@ are polish or Phase 7d+ work.
 - **Date rendering is minimal by default:** min/max as ISO text. A real timeline
   chart requires a chart library and lives in the escape hatch. Documented in
   `/docs/analytics/components`.
+- **No DiffSummary field-change renderer:** `<DiffSummary>` does not accept
+  `renderers` — field-change cards (`FieldChangeAggregate`) are a different
+  shape from column treatments. If real users want to customize those cards,
+  that needs a separate API (e.g. `renderFieldChange: (agg: FieldChangeAggregate) => ReactNode`).
+  Out of scope until requested.
 
 ## Lessons from Phase 4c (docs)
 

@@ -17,12 +17,17 @@ import '@mojro/excel-diff-ui/styles.css';
 ```
 
 <Callout>
-  Default rendering is plain CSS — no chart library. Pass a `renderers` prop to
-  swap the visualization slot per treatment (numeric / categorical / date /
-  boolean).
+  Default rendering is plain CSS — no chart library. On
+  `<WorkbookSummary>` and `<OverlaySummary>`, pass a `renderers` prop to swap
+  the visualization slot per treatment (numeric / categorical / date /
+  boolean). `<DiffSummary>` has a fixed field-change layout and does not take
+  `renderers`.
 </Callout>
 
 ## Common props
+
+Shared chrome props (`theme`, `classNames`, `style`) plus `summary`. The
+`renderers` prop applies only to `<WorkbookSummary>` and `<OverlaySummary>`.
 
 <PropsTable
   rows={[
@@ -50,7 +55,7 @@ import '@mojro/excel-diff-ui/styles.css';
       name: 'renderers',
       type: 'SummaryRenderers',
       description:
-        'Per-treatment visualization overrides. Card frame (title, count, nullCount) stays.',
+        'WorkbookSummary / OverlaySummary only. Per-treatment visualization overrides; card frame stays.',
     },
   ]}
 />
@@ -62,7 +67,7 @@ function WorkbookSummary(props: WorkbookSummaryProps): JSX.Element;
 ```
 
 Renders row/column/sheet tiles plus a responsive grid of column cards (one per
-`summary.columns` entry).
+`summary.columns` entry). Honors `renderers`.
 
 ```tsx
 const state = useWorkbookSummary(workbook);
@@ -80,6 +85,9 @@ function DiffSummary(props: DiffSummaryProps): JSX.Element;
 Header: added / removed / modified / unchanged tiles. Below: one card per
 `fieldChanges` entry (numeric deltas and/or categorical transitions). Pass
 `diff.summary` from `useExcelDiff` — there is no separate diff-summary hook.
+
+Field-change aggregates are not `ColumnSummary` shapes, so there is no
+`renderers` prop. Layout is fixed for v1.
 
 ```tsx
 const state = useExcelDiff(fileA, fileB, schema);
@@ -106,6 +114,8 @@ if (state.status === 'success') {
 
 ## renderers prop
 
+Applies to `<WorkbookSummary>` and `<OverlaySummary>` only.
+
 ```ts
 type SummaryRenderers = {
   numeric?: (column: NumericColumnSummary) => ReactNode;
@@ -116,8 +126,8 @@ type SummaryRenderers = {
 ```
 
 When a renderer is provided, it fills the **visualization slot** inside the
-default card frame. Count / nullCount stay. Overrides are per-treatment across
-all three components — not per column name.
+default card frame. Count / nullCount stay. Overrides are per-treatment — not
+per column name.
 
 ```tsx
 <WorkbookSummary

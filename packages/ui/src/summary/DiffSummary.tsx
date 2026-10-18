@@ -7,19 +7,14 @@ import type { DiffSummaryProps } from './types.js';
 /**
  * Presentational diff summary. Pass `diff.summary` from `useExcelDiff` /
  * `diffWorkbooks`. Row-level counts are fixed layout; field-change cards
- * render below. The `renderers` prop is reserved for column-treatment
- * cards when field aggregates expose column summaries in a later phase —
- * field-change cards use a dedicated layout today.
+ * use a dedicated layout (not ColumnSummary treatment cards — no `renderers`).
  */
 export function DiffSummary({
   summary,
   theme,
   classNames,
   style,
-  renderers: _renderers,
 }: DiffSummaryProps) {
-  void _renderers;
-
   return (
     <div
       className={cx('edv-summary', classNames?.root)}

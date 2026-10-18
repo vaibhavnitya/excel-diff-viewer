@@ -421,9 +421,12 @@ consumer code via composition.
 - **Only `useWorkbookSummary`** — diff/overlay summaries ride on
   `useExcelDiff` / `useExcelOverlay` result objects (`diff.summary`,
   overlay `summary`). No `useDiffSummary` / `useOverlaySummary`.
-- **`renderers` prop** — per-treatment escape hatch. The library keeps the card
-  frame (title + count / nullCount); the consumer fills the visualization slot.
-  Not a full-card override; not per-column-name overrides in v1.
+- **`renderers` prop** — per-treatment escape hatch on `<WorkbookSummary>` and
+  `<OverlaySummary>` only. The library keeps the card frame (title + count /
+  nullCount); the consumer fills the visualization slot. Not a full-card
+  override; not per-column-name overrides in v1. `<DiffSummary>` field-change
+  aggregates are not `ColumnSummary` shapes and use a fixed layout — no
+  `renderers` prop (a silent no-op was removed).
 - **Cache ownership** — hook defaults to an internal `createSummaryCache()` via
   `useRef` (GC’d on unmount). Pass `options.cache` to share across hooks.
 

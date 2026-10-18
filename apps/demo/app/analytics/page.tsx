@@ -54,12 +54,12 @@ export default function AnalyticsPage() {
         <p className="text-muted-foreground">
           The library ships summary components with built-in rendering — no chart
           dependencies. Toggle to Recharts to see the escape hatch pattern: pass a{' '}
-          <code className="text-xs">renderers</code> prop with your own chart
-          implementations. The default and Recharts renderings use the same{' '}
+          <code className="text-xs">renderers</code> prop on{' '}
           <code className="text-xs">WorkbookSummary</code> /{' '}
-          <code className="text-xs">DiffSummary</code> /{' '}
-          <code className="text-xs">OverlaySummary</code> components with
-          different <code className="text-xs">renderers</code> props.
+          <code className="text-xs">OverlaySummary</code> with your own chart
+          implementations. <code className="text-xs">DiffSummary</code> uses a
+          fixed field-change layout and does not take{' '}
+          <code className="text-xs">renderers</code>.
         </p>
         <p className="text-sm text-muted-foreground">
           Recharts is a demo-only dependency and is not required to use the
@@ -104,7 +104,7 @@ export default function AnalyticsPage() {
           <WorkbookPanel renderers={renderers} />
         </TabsContent>
         <TabsContent value="diff" className="space-y-4 pt-4">
-          <DiffPanel renderers={renderers} />
+          <DiffPanel />
         </TabsContent>
         <TabsContent value="overlay" className="space-y-4 pt-4">
           <OverlayPanel renderers={renderers} />
@@ -167,11 +167,7 @@ function WorkbookPanel({
   );
 }
 
-function DiffPanel({
-  renderers,
-}: {
-  readonly renderers?: SummaryRenderers;
-}) {
+function DiffPanel() {
   const [fileA, setFileA] = useState<File | null>(null);
   const [fileB, setFileB] = useState<File | null>(null);
   const [schema, setSchema] = useState<DiffSchema | null>(null);
@@ -212,7 +208,7 @@ function DiffPanel({
         {summary !== null ? (
           <Card>
             <CardContent className="p-4">
-              <DiffSummary summary={summary} renderers={renderers} />
+              <DiffSummary summary={summary} />
             </CardContent>
           </Card>
         ) : (

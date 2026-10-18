@@ -40,7 +40,8 @@ export type WorkbookSummaryProps = CommonSummaryProps & {
   readonly summary: WorkbookSummaryData;
 };
 
-export type DiffSummaryProps = CommonSummaryProps & {
+/** Diff field-change cards are not ColumnSummary shapes — no treatment `renderers`. */
+export type DiffSummaryProps = Omit<CommonSummaryProps, 'renderers'> & {
   readonly summary: DiffSummaryData;
 };
 
