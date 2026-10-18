@@ -757,7 +757,7 @@ describe('overlay coverage extras', () => {
         join: { base: ['Vehicle Type'], overlay: ['Vehicle Type'] },
         compose: {
           kind: 'fn',
-          fn: (row) => ({ only: row['Vehicle Type'] }),
+          fn: (row) => ({ only: row['Vehicle Type'] ?? null }),
         },
       },
     });

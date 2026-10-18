@@ -103,6 +103,15 @@ describe('useExcelDiff', () => {
           headers: ['origin', 'rate'],
           rows: [],
           stats: { added: 0, removed: 0, modified: 0, unchanged: 1 },
+          summary: {
+            totalKeys: 1,
+            added: 0,
+            removed: 0,
+            modified: 0,
+            unchanged: 1,
+            fieldChanges: [],
+            warnings: [],
+          },
         },
       };
     };

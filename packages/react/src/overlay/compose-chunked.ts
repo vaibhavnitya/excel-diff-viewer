@@ -1,11 +1,12 @@
 import {
   finishOverlayResult,
+  materializeFnOverlay,
   type CellValue,
   type ComposeFn,
   type MatchedPair,
   type NamedRow,
+  type OverlayPartialSummary,
   type OverlayResult,
-  type OverlaySummary,
   type Row,
 } from '@mojro/excel-diff-core';
 
@@ -41,43 +42,14 @@ function rowToNamed(row: Row, headers: readonly string[]): NamedRow {
   return out;
 }
 
-function collectColumnUnion(
-  baseHeaders: readonly string[],
-  namedRows: readonly (NamedRow | null)[],
-): string[] {
-  const headers: string[] = [...baseHeaders];
-  const seen = new Set<string>(baseHeaders);
-  for (const named of namedRows) {
-    if (named === null) continue;
-    for (const key of Object.keys(named)) {
-      if (!seen.has(key)) {
-        seen.add(key);
-        headers.push(key);
-      }
-    }
-  }
-  return headers;
-}
-
-function namedToDense(named: NamedRow, headers: readonly string[]): Row {
-  const out: CellValue[] = new Array(headers.length);
-  for (let i = 0; i < headers.length; i += 1) {
-    const key = headers[i]!;
-    out[i] = Object.prototype.hasOwnProperty.call(named, key)
-      ? (named[key] ?? null)
-      : null;
-  }
-  return out;
-}
-
 /**
  * Run `ComposeFn` over matched pairs on the main thread in rAF-sized chunks.
  *
  * NamedRow views are materialized per chunk (not up front) and released when
  * the chunk finishes. Cancellation is checked between chunks only.
  *
- * Two-pass: (1) collect column union + drop count while calling `fn`;
- * (2) emit dense rows.
+ * Two-pass: (1) collect named results + drop count while calling `fn`;
+ * (2) dense emission + derived-column summary via core `materializeFnOverlay`.
  */
 export async function runComposeChunked(
   pairs: readonly MatchedPair[],
@@ -86,7 +58,7 @@ export async function runComposeChunked(
   overlayHeaders: readonly string[],
   sheetName: string,
   baseFilename: string | undefined,
-  partialSummary: Omit<OverlaySummary, 'droppedByCompose'>,
+  partialSummary: OverlayPartialSummary,
   control: ComposeChunkedControl,
 ): Promise<OverlayResult | null> {
   const chunkSize = control.chunkSize ?? DEFAULT_CHUNK;
@@ -124,25 +96,20 @@ export async function runComposeChunked(
     return null;
   }
 
-  // Pass 2: dense emission from collected named rows
-  const headers = collectColumnUnion(baseHeaders, namedResults);
-  const rows: Row[] = [];
-  for (const named of namedResults) {
-    if (named === null) continue;
-    rows.push(namedToDense(named, headers));
-  }
+  const materialized = materializeFnOverlay(namedResults, baseHeaders);
 
   if (total === 0) {
     control.onProgress(0, 0);
   }
 
   return finishOverlayResult(
-    headers,
-    rows,
+    materialized.headers,
+    materialized.rows,
     sheetName,
     baseFilename,
     partialSummary,
     droppedByCompose,
+    materialized.targetColumns,
   );
 }
 

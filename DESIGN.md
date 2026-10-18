@@ -63,6 +63,9 @@ import {
   diffWorkbooksAsync,
   overlayWorkbooks,
   overlayWorkbooksAsync,
+  summarizeWorkbook,
+  summarizeWorkbookAsync,
+  createSummaryCache,
   createWorker,
 } from '@mojro/excel-diff-core';
 
@@ -133,8 +136,8 @@ Demo fixtures: synthetic simple rates + fuel (`rules`), and a real-shaped FTL
 rate card + surcharge template (`fn`) — see `/overlay` and `/docs/overlay/`.
 
 **Non-goals (Phase 7a):** rating engine semantics, cascading precedence,
-pattern matching, multi-sheet output, chained rules, in-grid editing, analytics
-aggregates (7b), Excel export (7c).
+pattern matching, multi-sheet output, chained rules, in-grid editing,
+Excel export (7c). Analytics aggregates are engine-only in 7b-slim (see Summary).
 
 ## Normalization
 
@@ -203,6 +206,7 @@ Every failure has a stable `code`:
 - `UNSUPPORTED_FORMAT`, `PARSE_ERROR`
 - `INVALID_SCHEMA`, `SCHEMA_INFERENCE_FAILED`, `DUPLICATE_KEYS`,
   `OVERLAY_AMBIGUOUS_MATCH`
+- `SUMMARY_INVALID_CONFIG`, `SUMMARY_COLUMN_NOT_FOUND`
 - `WORKER_UNAVAILABLE`, `CANCELLED`
 
 Components render default error UIs. Consumers can override via `renderError`
@@ -361,11 +365,49 @@ belongs in `fn`, where the caller decides how to reduce N overlays.
 
 **Non-goals (Phase 7a):** rating engines, cascading/precedence, wildcard pattern
 matching across values, multi-sheet output, chained rules, in-grid editing,
-analytics aggregates (Phase 7b).
+Excel export. Analytics aggregates shipped as engine-only in Phase 7b-slim
+(see Summary below); UI in 7c.
 
 Demo grounding: synthetic simple rates + fuel pct (`rules`), and a real-shaped
 FTL rate card + surcharge template (`fn`) under `/overlay` and
 `/docs/overlay/examples`.
+
+## Summary
+
+Engine-only analytics primitives (Phase 7b-slim). Validate the data shape in
+core before building hooks or UI on top (7c).
+
+**`summarizeWorkbook` / `summarizeWorkbookAsync`** walk dense columns and return
+a `WorkbookSummary` (per-column numeric / categorical / date / boolean stats,
+skipped columns, capped warnings). Optional `SummaryConfig` overrides treatment,
+excludes columns, sets `topN`, and picks a sheet. Optional `SummaryCache`
+(`createSummaryCache`) keys on **reference identity** of workbook + config —
+same structural pattern as overlay’s dense-array / cache discipline.
+
+**Inline side-outputs (not separate functions):**
+
+- `DiffResult.summary: DiffSummary` — row counts plus `fieldChanges` aggregates,
+  accumulated inside the existing diff pass (≤ 1.1× baseline).
+- `OverlayResult.summary.targetColumns` — aggregates only for columns written by
+  rules or newly introduced by `fn`. Pass-through base columns are omitted so
+  consumers call `summarizeWorkbook(base)` when they want those stats.
+
+**Why side-outputs, not `summarizeDiff` / `summarizeOverlay`?** A second walk
+would blow the 1.1× budget and fight PRINCIPLES.md §2 (keep the engine a pure
+single-pass pipeline). Shared stats live in `packages/core/src/summary/stats.ts`
+and are imported at the integration sites.
+
+**Why no nested per-side summaries on Diff/Overlay?** Keeps the side-output
+small under the perf budget. Consumers compose with `summarizeWorkbook` + cache.
+
+**Why full-pass inference (no sampling)?** Same rationale as overlay: at the
+100k-row limit a full type-check is cheap and avoids “row 1001 introduces a new
+type.” Distinct counts are exact for the same reason (YAGNI on HyperLogLog).
+
+**Non-goals:** percentiles beyond median, outliers, correlations, histograms,
+chart-friendly formatting, approximate distinct counts, chained summaries, UI.
+
+Docs: `/docs/analytics/overview`.
 
 ## Decisions log
 

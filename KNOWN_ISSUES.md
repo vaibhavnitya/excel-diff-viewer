@@ -1,7 +1,7 @@
-## Known issues (post Phase 7a)
+## Known issues (post Phase 7b-slim)
 
-Phase 7a (overlay compose + viewer + demo/docs) is complete. Phases 6a/6b
-theming remain done. Open items below are polish or Phase 7b+ work.
+Phase 7b-slim (summary engine primitives) is complete. Phase 7a overlay and
+Phases 6a/6b theming remain done. Open items below are polish or Phase 7c+ work.
 
 ### Theming / style isolation (watch)
 
@@ -57,9 +57,20 @@ theming remain done. Open items below are polish or Phase 7b+ work.
   existing per-file limits.
 - **Dev warning threshold for `fn` compose:** fixed at 1ms per call average.
   Make configurable if real users want it; not configurable in 7a.
-- **`DiffError` naming:** now carries overlay codes (e.g.
-  `OVERLAY_AMBIGUOUS_MATCH`) and is aliased as `OverlayError`. Rename to
-  `EngineError` in a dedicated refactor — not in Phase 7a.
+- **`DiffError` naming:** now carries overlay and summary codes (e.g.
+  `OVERLAY_AMBIGUOUS_MATCH`, `SUMMARY_*`) and is aliased as `OverlayError` /
+  `SummaryError`. Rename to `EngineError` in a dedicated refactor — not in
+  Phase 7b-slim.
+- **`SummaryCache` not thread-safe across Workers:** in 7b-slim the cache lives
+  on the main thread (or whichever thread calls summarize). If 7c introduces a
+  Worker pool, cache coordination needs rethinking. Not an issue today since
+  there is no cross-Worker caching.
+- **No approximate distinct count:** exact counts only, bounded by workbook row
+  limits. Add HLL if a real user requests it; not a priority.
+- **`DiffSummary` carries no per-side workbook summaries:** consumers must call
+  `summarizeWorkbook` separately on base and after workbooks if they want
+  per-side stats. Deliberate — keeps the diff side-output small and under the
+  1.1× budget. Documented in `/docs/analytics/overview`.
 
 ## Lessons from Phase 4c (docs)
 

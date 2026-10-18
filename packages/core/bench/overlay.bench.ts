@@ -4,7 +4,17 @@
  *   overlayWorkbooks rules (50k × 10k):  161.77 ms  (0.66x diff)
  *   overlayWorkbooks fn (50k × 10k):     185.77 ms  (0.76x diff)
  *
- * Budget: rules compose must be ≤ 1.1x diff baseline.
+ * Re-check 2026-10-18 after Phase 7b-slim DiffSummary / OverlaySummary side-outputs
+ * (vitest bench mean on same host; absolute ms vary with load — compare ratios):
+ *   diffWorkbooks baseline:              ~78–107 ms
+ *   overlayWorkbooks rules:              ~67–68 ms
+ *   overlayWorkbooks fn (identity):      ~52–58 ms
+ *   diffWorkbooks + DiffSummary:         ~77–93 ms   (≤ 1.1× same-run baseline) PASS
+ *   overlay rules + OverlaySummary:      ~67–71 ms   (≤ 1.1× same-run baseline) PASS
+ *   overlay fn + OverlaySummary:         ~45–61 ms   (≤ 1.1× same-run baseline) PASS
+ *
+ * Budget: rules compose must be ≤ 1.1x diff baseline; +summary variants ≤ 1.1× their
+ * same-run counterparts without summary.
  * Current status: PASS
  *
  * Re-record after any change to overlay engine or diff engine.
@@ -102,5 +112,31 @@ describe('overlay vs diff (50k base × 10k partner)', () => {
     if (!result.ok) {
       throw new Error(result.error.message);
     }
+  });
+
+  // Phase 7b-slim: same inputs with expanded DiffSummary / OverlaySummary
+  // side-outputs (budgets ≤ 1.1× the baselines above — see summary.bench.ts).
+  bench('diffWorkbooks + DiffSummary', () => {
+    const result = diffWorkbooks(base, partner, { schema: diffSchema });
+    if (!result.ok) {
+      throw new Error(result.error.message);
+    }
+    void result.value.summary.fieldChanges;
+  });
+
+  bench('overlayWorkbooks rules + OverlaySummary', () => {
+    const result = overlayWorkbooks(base, partner, { schema: rulesSchema });
+    if (!result.ok) {
+      throw new Error(result.error.message);
+    }
+    void result.value.summary.targetColumns;
+  });
+
+  bench('overlayWorkbooks fn + OverlaySummary', () => {
+    const result = overlayWorkbooks(base, partner, { schema: fnSchema });
+    if (!result.ok) {
+      throw new Error(result.error.message);
+    }
+    void result.value.summary.targetColumns;
   });
 });

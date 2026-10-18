@@ -31,6 +31,28 @@ export function diffResult(): DiffResult {
   return {
     headers: ['origin', 'destination', 'base_rate', 'min_charge'],
     stats: { added: 1, removed: 1, modified: 1, unchanged: 1 },
+    summary: {
+      totalKeys: 4,
+      added: 1,
+      removed: 1,
+      modified: 1,
+      unchanged: 1,
+      fieldChanges: [
+        {
+          field: 'base_rate',
+          changedRows: 1,
+          numericChanges: {
+            meanDelta: 3,
+            meanAbsDelta: 3,
+            maxAbsDelta: 3,
+            increased: 1,
+            decreased: 0,
+          },
+          categoricalChanges: null,
+        },
+      ],
+      warnings: [],
+    },
     rows: [
       {
         key: 'US|CA' as RowKey,

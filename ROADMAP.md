@@ -93,15 +93,22 @@ Goal: parse a file and diff two files from Node, with full tests.
 - [x] Docs under /docs/overlay/
 - [x] Assisted editable schema on /overlay demo (uploads)
 
-## Phase 7b — Analytics primitives (current)
+## Phase 7b-slim — Summary primitives (engine only) (current)
 
-- [ ] summarizeWorkbook, summarizeDiff, summarizeOverlay in core
-- [ ] DiffResult.summary and OverlayResult.summary expanded with field-level aggregates
+- [x] summarizeWorkbook + summarizeWorkbookAsync
+- [x] createSummaryCache
+- [x] DiffResult.summary expanded with FieldChangeAggregate
+- [x] OverlayResult.summary expanded with targetColumns
+- [x] Docs under /docs/analytics/overview
+- [x] Perf budgets verified via bench
+
+## Phase 7c — Analytics UI + editing + export
+
 - [ ] useWorkbookSummary / useDiffSummary / useOverlaySummary hooks
-- [ ] `<RateCardSummary>` / `<DiffSummary>` / `<OverlaySummary>` components (no chart lib)
-- [ ] Summary cache ownership in react layer
-- [ ] Docs under /docs/analytics/
+- [ ] `<WorkbookSummary>` / `<DiffSummary>` / `<OverlaySummary>` components (no chart lib)
+- [ ] Demo page /analytics
+- [ ] /docs/analytics/schema and /docs/analytics/examples
+- [ ] In-grid editing (originally Phase 7b)
+- [ ] Export to Excel (originally Phase 7b)
 
-## Phase 7c — In-grid editing + Excel export
-
-- [ ] (previously Phase 7b in earlier roadmap)
+> Phase 7c scope may split into 7c-ui and 7c-editing based on 7b-slim dogfood findings.

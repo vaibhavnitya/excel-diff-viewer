@@ -15,6 +15,9 @@ import {
   overlayWorkbooks,
   overlayWorkbooksAsync,
   parseFile,
+  createSummaryCache,
+  summarizeWorkbook,
+  summarizeWorkbookAsync,
 } from '../src/index.js';
 
 describe('@mojro/excel-diff-core public API', () => {
@@ -24,6 +27,9 @@ describe('@mojro/excel-diff-core public API', () => {
     expect(typeof diffWorkbooksAsync).toBe('function');
     expect(typeof overlayWorkbooks).toBe('function');
     expect(typeof overlayWorkbooksAsync).toBe('function');
+    expect(typeof summarizeWorkbook).toBe('function');
+    expect(typeof summarizeWorkbookAsync).toBe('function');
+    expect(typeof createSummaryCache).toBe('function');
     expect(typeof inferSchema).toBe('function');
     expect(typeof createWorker).toBe('function');
     expect(typeof ok).toBe('function');

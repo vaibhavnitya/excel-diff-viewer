@@ -59,6 +59,18 @@ export const DOCS_NAV: readonly DocsNavItem[] = [
     ],
   },
   {
+    href: '/docs/analytics',
+    title: 'Analytics',
+    description: 'Workbook, diff, and overlay summary primitives',
+    children: [
+      {
+        href: '/docs/analytics/overview',
+        title: 'Overview',
+        description: 'summarizeWorkbook and inline DiffSummary / OverlaySummary',
+      },
+    ],
+  },
+  {
     href: '/docs/hooks',
     title: 'Hooks',
     description: 'useExcelFile and useExcelDiff for custom UIs',

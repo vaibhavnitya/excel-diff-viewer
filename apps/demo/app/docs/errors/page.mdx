@@ -22,6 +22,9 @@ Failures are values with a stable `code`. Switch on `code` for logic; show
 | `WORKER_UNAVAILABLE` | Worker could not be constructed | Error panel | Use a Worker-capable environment |
 | `WORKER_CRASHED` | Worker terminated unexpectedly | Error panel (reportable) | Retry; try a smaller file |
 | `SCHEMA_INFERENCE_FAILED` | `inferSchema` found no keys | Error panel | Pass an explicit schema |
+| `OVERLAY_AMBIGUOUS_MATCH` | Rules compose matched 2+ overlay rows | Error panel | Disambiguate overlay or use `fn` |
+| `SUMMARY_INVALID_CONFIG` | Bad `SummaryConfig` (e.g. `topN`) | Error panel | Fix config fields |
+| `SUMMARY_COLUMN_NOT_FOUND` | Named column/sheet missing in workbook | Error panel | Use exact header / sheet names |
 | `CANCELLED` | Latest-wins cancelled prior work | Usually not sticky | Transient; new request continues |
 
 ## Custom renderError

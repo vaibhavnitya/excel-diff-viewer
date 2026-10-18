@@ -9,9 +9,14 @@ export default defineConfig({
     exclude: ['tests/worker/**', 'tests/integration/end-to-end-worker.test.ts'],
     coverage: {
       provider: 'v8',
-      include: ['src/diff/**/*.ts', 'src/normalize/**/*.ts', 'src/overlay/**/*.ts'],
+      include: [
+        'src/diff/**/*.ts',
+        'src/normalize/**/*.ts',
+        'src/overlay/**/*.ts',
+        'src/summary/**/*.ts',
+      ],
       thresholds: {
-        branches: 90,
+        branches: 95,
       },
     },
   },

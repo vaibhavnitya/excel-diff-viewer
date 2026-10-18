@@ -2,6 +2,12 @@ import { resolveNumericTolerance } from '../defaults.js';
 import { createDiffError } from '../errors.js';
 import { enforceWorkbookLimits } from '../limits/enforce-limits.js';
 import { err, ok } from '../result.js';
+import {
+  createFieldChangeAccumulators,
+  finalizeFieldChanges,
+  observeRowChanges,
+  type FieldChangeAccumulators,
+} from '../summary/field-changes.js';
 import type {
   DiffChange,
   DiffControl,
@@ -9,11 +15,13 @@ import type {
   DiffResult,
   DiffRow,
   DiffStats,
+  DiffSummary,
   DiffWorkbooksOptions,
   Result,
   Row,
   RowKey,
   Sheet,
+  SummaryWarning,
   Workbook,
 } from '../types.js';
 import { valuesEqual } from './compare-values.js';
@@ -172,6 +180,7 @@ function processKey(
   prepared: PreparedDiff,
   rows: DiffRow[],
   stats: { added: number; removed: number; modified: number; unchanged: number },
+  fieldAccs: FieldChangeAccumulators,
 ): void {
   const left = prepared.byKeyA.get(key);
   const right = prepared.byKeyB.get(key);
@@ -226,6 +235,7 @@ function processKey(
         rowB: right.row,
       });
       stats.modified += 1;
+      observeRowChanges(fieldAccs, changes);
     }
   }
 }
@@ -234,12 +244,25 @@ function finishDiff(
   prepared: PreparedDiff,
   rows: DiffRow[],
   stats: { added: number; removed: number; modified: number; unchanged: number },
+  fieldAccs: FieldChangeAccumulators,
 ): Result<DiffResult, DiffError> {
   const resultStats: DiffStats = stats;
+  const warnings: SummaryWarning[] = [];
+  const fieldChanges = finalizeFieldChanges(fieldAccs, warnings);
+  const summary: DiffSummary = {
+    totalKeys: stats.added + stats.removed + stats.modified + stats.unchanged,
+    added: stats.added,
+    removed: stats.removed,
+    modified: stats.modified,
+    unchanged: stats.unchanged,
+    fieldChanges,
+    warnings,
+  };
   return ok({
     headers: prepared.headers,
     rows,
     stats: resultStats,
+    summary,
   });
 }
 
@@ -272,10 +295,11 @@ export function diffWorkbooks(
 
   const rows: DiffRow[] = [];
   const stats = { added: 0, removed: 0, modified: 0, unchanged: 0 };
+  const fieldAccs = createFieldChangeAccumulators(prepared.value.valueFields);
   for (const key of prepared.value.sortedKeys) {
-    processKey(key, prepared.value, rows, stats);
+    processKey(key, prepared.value, rows, stats, fieldAccs);
   }
-  return finishDiff(prepared.value, rows, stats);
+  return finishDiff(prepared.value, rows, stats, fieldAccs);
 }
 
 /**
@@ -320,6 +344,7 @@ export async function diffWorkbooksAsync(
 
   const rows: DiffRow[] = [];
   const stats = { added: 0, removed: 0, modified: 0, unchanged: 0 };
+  const fieldAccs = createFieldChangeAccumulators(prepared.value.valueFields);
 
   for (let i = 0; i < sortedKeys.length; i += chunkSize) {
     if (control.isCancelled()) {
@@ -337,7 +362,7 @@ export async function diffWorkbooksAsync(
       if (key === undefined) {
         continue;
       }
-      processKey(key, prepared.value, rows, stats);
+      processKey(key, prepared.value, rows, stats, fieldAccs);
     }
 
     control.onProgress(end, total);
@@ -356,5 +381,5 @@ export async function diffWorkbooksAsync(
     );
   }
 
-  return finishDiff(prepared.value, rows, stats);
+  return finishDiff(prepared.value, rows, stats, fieldAccs);
 }

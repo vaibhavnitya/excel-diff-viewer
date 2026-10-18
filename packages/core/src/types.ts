@@ -165,11 +165,70 @@ export type DiffStats = {
   readonly unchanged: number;
 };
 
+/**
+ * Side-output of the diff pass (not a second walk).
+ * Row-level counts plus per-valueField change aggregates.
+ * Does not nest per-side workbook summaries — call {@link summarizeWorkbook}
+ * on each workbook (with a cache) when those are needed.
+ */
+export type DiffSummary = {
+  readonly totalKeys: number;
+  readonly added: number;
+  readonly removed: number;
+  readonly modified: number;
+  readonly unchanged: number;
+  readonly fieldChanges: readonly FieldChangeAggregate[];
+  /** Cap 100. Includes `MIXED_TYPES` when a field's changes are mixed. */
+  readonly warnings: readonly SummaryWarning[];
+};
+
+export type FieldChangeAggregate = {
+  /** valueField name */
+  readonly field: string;
+  /** How many rows had this field change. */
+  readonly changedRows: number;
+  /**
+   * Populated when the field's changes are classified as numeric.
+   * `null` when there were no numeric changes (or majority was categorical).
+   */
+  readonly numericChanges: NumericChangeAggregate | null;
+  /**
+   * Populated when the field's changes are classified as categorical.
+   * `null` when there were no categorical changes (or majority was numeric).
+   */
+  readonly categoricalChanges: CategoricalChangeAggregate | null;
+};
+
+export type NumericChangeAggregate = {
+  /** Mean of (new − old). */
+  readonly meanDelta: number;
+  /** Mean of |new − old|. */
+  readonly meanAbsDelta: number;
+  readonly maxAbsDelta: number;
+  readonly increased: number;
+  readonly decreased: number;
+};
+
+export type CategoricalChangeAggregate = {
+  /** Length ≤ 10, sorted by count descending. */
+  readonly topTransitions: readonly {
+    readonly from: string;
+    readonly to: string;
+    readonly count: number;
+  }[];
+};
+
 export type DiffResult = {
   /** Headers for the sheet that was diffed (aligned with `DiffRow` cells). */
   readonly headers: readonly string[];
   readonly rows: readonly DiffRow[];
+  /**
+   * Row-level counts (same numbers as {@link DiffSummary} added/removed/…).
+   * Kept for backward compatibility; prefer `summary` for new code.
+   */
   readonly stats: DiffStats;
+  /** Side-output of the diff pass, including field-level change aggregates. */
+  readonly summary: DiffSummary;
 };
 
 /**
@@ -220,6 +279,8 @@ export type DiffErrorCode =
   | 'SCHEMA_INFERENCE_FAILED'
   | 'DUPLICATE_KEYS'
   | 'OVERLAY_AMBIGUOUS_MATCH'
+  | 'SUMMARY_INVALID_CONFIG'
+  | 'SUMMARY_COLUMN_NOT_FOUND'
   | 'WORKER_UNAVAILABLE'
   | 'WORKER_CRASHED'
   | 'CANCELLED';
@@ -237,6 +298,12 @@ export type DiffError = {
  * prefer switching on `code` (including `OVERLAY_AMBIGUOUS_MATCH`).
  */
 export type OverlayError = DiffError;
+
+/**
+ * Context alias for summary failures. Same shape as {@link DiffError};
+ * prefer switching on `code` (`SUMMARY_*`).
+ */
+export type SummaryError = DiffError;
 
 /**
  * Suggested `details` for `INVALID_SCHEMA` when a required key field is blank.
@@ -362,8 +429,9 @@ export type OverlayMeta = {
 
 /**
  * Side-output of the overlay pass (not a second walk).
- * Identical to {@link OverlayMeta} counts for 7a; kept separate so 7b can
- * extend with field-level aggregates without reshuffling workbook meta.
+ * Row-level counts plus per-derived-column aggregates.
+ * Pass-through base columns are not re-aggregated here — call
+ * {@link summarizeWorkbook} on the base workbook when those are needed.
  */
 export type OverlaySummary = {
   readonly totalBase: number;
@@ -371,6 +439,116 @@ export type OverlaySummary = {
   readonly matched: number;
   readonly unmatched: number;
   readonly droppedByCompose: number;
+  /**
+   * Columns written by rules or newly introduced by `fn` compose.
+   * Base columns that pass through unchanged are omitted.
+   */
+  readonly targetColumns: readonly ColumnSummary[];
+};
+
+// ---------------------------------------------------------------------------
+// Summary (Phase 7b-slim)
+// ---------------------------------------------------------------------------
+
+/** How a column is treated when summarizing. Exclusion uses `SummaryConfig.exclude`. */
+export type ColumnTreatment = 'numeric' | 'categorical' | 'date' | 'boolean';
+
+type ColumnSummaryBase = {
+  /** Header name. */
+  readonly column: string;
+  /** Non-null cell count. */
+  readonly count: number;
+  readonly nullCount: number;
+};
+
+export type NumericColumnSummary = ColumnSummaryBase & {
+  readonly treatment: 'numeric';
+  /** `null` only when `count === 0`. */
+  readonly min: number | null;
+  readonly max: number | null;
+  readonly mean: number | null;
+  readonly median: number | null;
+  /** Sample stddev (`n − 1`); `null` when `count < 2`. */
+  readonly stddev: number | null;
+  /** Always a number; `0` when `count === 0`. */
+  readonly sum: number;
+  readonly distinctCount: number;
+};
+
+export type CategoricalColumnSummary = ColumnSummaryBase & {
+  readonly treatment: 'categorical';
+  readonly distinctCount: number;
+  /** Empty string `""`, distinct from null. */
+  readonly blankCount: number;
+  /** Length ≤ `topN` (default 10). */
+  readonly topValues: readonly { readonly value: string; readonly count: number }[];
+};
+
+export type DateColumnSummary = ColumnSummaryBase & {
+  readonly treatment: 'date';
+  /** ISO 8601 string; `null` only when `count === 0`. */
+  readonly min: string | null;
+  readonly max: string | null;
+  readonly distinctCount: number;
+};
+
+export type BooleanColumnSummary = ColumnSummaryBase & {
+  readonly treatment: 'boolean';
+  readonly trueCount: number;
+  readonly falseCount: number;
+};
+
+export type ColumnSummary =
+  | NumericColumnSummary
+  | CategoricalColumnSummary
+  | DateColumnSummary
+  | BooleanColumnSummary;
+
+export type SkippedColumn = {
+  readonly column: string;
+  readonly reason: 'excluded' | 'mixed-types' | 'all-null';
+};
+
+export type SummaryWarning = {
+  readonly code:
+    | 'MIXED_TYPES'
+    | 'INFERENCE_FELL_BACK'
+    | 'STDDEV_UNDEFINED'
+    | 'TOP_N_TRUNCATED';
+  readonly column: string;
+  readonly message: string;
+};
+
+export type WorkbookSummary = {
+  readonly sheetName: string;
+  readonly rowCount: number;
+  readonly columnCount: number;
+  /** Column order matches workbook header order. */
+  readonly columns: readonly ColumnSummary[];
+  /** Excluded or unsummarizable columns. */
+  readonly skippedColumns: readonly SkippedColumn[];
+  /** Cap 100. */
+  readonly warnings: readonly SummaryWarning[];
+};
+
+export type SummaryConfig = {
+  /** Per-column treatment overrides. Columns not listed use inference. */
+  readonly columns?: Readonly<Record<string, ColumnTreatment>>;
+  /** Columns to exclude entirely. */
+  readonly exclude?: readonly string[];
+  /** How many top values to include for categorical columns. Default 10. */
+  readonly topN?: number;
+  /** Which sheet to summarize. Default: first sheet. */
+  readonly sheetName?: string;
+};
+
+/**
+ * Opaque cache for {@link summarizeWorkbook}.
+ * Internally `WeakMap<Workbook, Map<SummaryConfig, WorkbookSummary>>`.
+ * Keys on reference identity — not deep equality.
+ */
+export type SummaryCache = {
+  readonly __brand: 'SummaryCache';
 };
 
 export type OverlayResult = {

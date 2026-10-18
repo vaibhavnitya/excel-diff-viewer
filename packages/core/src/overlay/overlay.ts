@@ -14,6 +14,11 @@ import type {
   Workbook,
 } from '../types.js';
 import {
+  createRulesDerivedTracker,
+  finalizeDerivedColumns,
+  observeDerivedRow,
+} from '../summary/derived-columns.js';
+import {
   applyRulesToRow,
   buildRulesComposeContext,
 } from './compose-rules.js';
@@ -169,6 +174,11 @@ function runRulesOverlay(prepared: PreparedOverlay): Result<OverlayResult, DiffE
     rulesCompose.resolved,
   );
 
+  const derivedTracker = createRulesDerivedTracker(
+    ctx.outputHeaders,
+    rulesCompose.resolved.map((r) => r.target),
+  );
+
   const baseRows = validated.baseSheet.rows;
   const overlaySheetRows = validated.overlaySheet.rows;
   const outRows: Row[] = [];
@@ -190,14 +200,17 @@ function runRulesOverlay(prepared: PreparedOverlay): Result<OverlayResult, DiffE
       );
     }
 
+    let outRow: Row;
     if (matchIndexes.length === 0) {
       unmatched += 1;
-      outRows.push(applyRulesToRow(baseRow, null, i, ctx, warnings));
+      outRow = applyRulesToRow(baseRow, null, i, ctx, warnings);
     } else {
       matched += 1;
       const overlayRow = overlaySheetRows[matchIndexes[0]!]!;
-      outRows.push(applyRulesToRow(baseRow, overlayRow, i, ctx, warnings));
+      outRow = applyRulesToRow(baseRow, overlayRow, i, ctx, warnings);
     }
+    outRows.push(outRow);
+    observeDerivedRow(derivedTracker, outRow);
   }
 
   const meta: OverlayMeta = {
@@ -209,6 +222,7 @@ function runRulesOverlay(prepared: PreparedOverlay): Result<OverlayResult, DiffE
     rowWarnings: warnings,
   };
 
+  const targetColumns = finalizeDerivedColumns(derivedTracker);
   const workbook = buildDerivedOverlayWorkbook(
     ctx.outputHeaders,
     outRows,
@@ -217,7 +231,7 @@ function runRulesOverlay(prepared: PreparedOverlay): Result<OverlayResult, DiffE
     meta,
   );
 
-  return ok({ workbook, summary: overlaySummaryFromMeta(meta) });
+  return ok({ workbook, summary: overlaySummaryFromMeta(meta, targetColumns) });
 }
 
 function collectFnPairs(prepared: PreparedOverlay): OverlayFnPairsResult {
@@ -296,7 +310,10 @@ function finishFnInline(pairsResult: OverlayFnPairsResult): OverlayResult {
     meta,
   );
 
-  return { workbook, summary: overlaySummaryFromMeta(meta) };
+  return {
+    workbook,
+    summary: overlaySummaryFromMeta(meta, assembled.targetColumns),
+  };
 }
 
 /**
@@ -492,7 +509,10 @@ export async function overlayWorkbooksAsync(
       meta,
     );
 
-    return ok({ workbook, summary: overlaySummaryFromMeta(meta) });
+    return ok({
+      workbook,
+      summary: overlaySummaryFromMeta(meta, assembled.targetColumns),
+    });
   }
 
   // rules path — chunked (compose.kind narrowed by the fn early-return above)
@@ -504,6 +524,10 @@ export async function overlayWorkbooksAsync(
     validated.passthroughHeaders,
     validated.passthroughIndexes,
     rulesCompose.resolved,
+  );
+  const derivedTracker = createRulesDerivedTracker(
+    ctx.outputHeaders,
+    rulesCompose.resolved.map((r) => r.target),
   );
   const overlaySheetRows = validated.overlaySheet.rows;
   const outRows: Row[] = [];
@@ -536,15 +560,22 @@ export async function overlayWorkbooksAsync(
         );
       }
 
+      let outRow: Row;
       if (matchIndexes.length === 0) {
         unmatched += 1;
-        outRows.push(applyRulesToRow(baseRow, null, j, ctx, warnings));
+        outRow = applyRulesToRow(baseRow, null, j, ctx, warnings);
       } else {
         matched += 1;
-        outRows.push(
-          applyRulesToRow(baseRow, overlaySheetRows[matchIndexes[0]!]!, j, ctx, warnings),
+        outRow = applyRulesToRow(
+          baseRow,
+          overlaySheetRows[matchIndexes[0]!]!,
+          j,
+          ctx,
+          warnings,
         );
       }
+      outRows.push(outRow);
+      observeDerivedRow(derivedTracker, outRow);
     }
 
     control.onProgress(end, total);
@@ -575,6 +606,7 @@ export async function overlayWorkbooksAsync(
     rowWarnings: warnings,
   };
 
+  const targetColumns = finalizeDerivedColumns(derivedTracker);
   const workbook = buildDerivedOverlayWorkbook(
     ctx.outputHeaders,
     outRows,
@@ -583,7 +615,7 @@ export async function overlayWorkbooksAsync(
     meta,
   );
 
-  return ok({ workbook, summary: overlaySummaryFromMeta(meta) });
+  return ok({ workbook, summary: overlaySummaryFromMeta(meta, targetColumns) });
 }
 
 /**

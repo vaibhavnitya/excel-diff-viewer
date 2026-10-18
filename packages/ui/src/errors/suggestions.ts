@@ -19,6 +19,10 @@ const SUGGESTIONS: Record<DiffErrorCode, string> = {
     'Deduplicate rows that share the same business key, or adjust `schema.keyFields`.',
   OVERLAY_AMBIGUOUS_MATCH:
     'Under rules compose each base row may match at most one overlay row. Disambiguate the overlay, or switch to fn compose.',
+  SUMMARY_INVALID_CONFIG:
+    'Check SummaryConfig: topN must be a positive integer, and column treatments must be numeric | categorical | date | boolean.',
+  SUMMARY_COLUMN_NOT_FOUND:
+    'A column or sheet named in SummaryConfig was not found. Use exact header names from the workbook.',
   WORKER_UNAVAILABLE:
     'Ensure the app runs in an environment with Web Workers (not blocked SSR or restricted iframes).',
   WORKER_CRASHED:

@@ -1,0 +1,101 @@
+# Analytics overview
+
+Summary primitives live in `@mojro/excel-diff-core`. They turn dense workbook
+columns into typed aggregates, and enrich diff / overlay results with
+field-level change stats — without a second walk of the data.
+
+Hooks, grid components, and charts are **out of scope** here (Phase 7c).
+
+## What you get
+
+1. **`summarizeWorkbook` / `summarizeWorkbookAsync`** — column summaries for one
+   sheet (numeric / categorical / date / boolean).
+2. **`DiffResult.summary`** — row counts plus per-`valueField` change aggregates
+   (`fieldChanges`), produced as a side-output of `diffWorkbooks`.
+3. **`OverlayResult.summary.targetColumns`** — aggregates for columns written by
+   rules or newly introduced by `fn` compose (not pass-through base columns).
+
+## `SummaryConfig`
+
+All fields optional. With no config, the engine infers treatment per column and
+uses `topN: 10` on the first sheet.
+
+```ts
+import {
+  parseFile,
+  summarizeWorkbook,
+  createSummaryCache,
+  type SummaryConfig,
+} from '@mojro/excel-diff-core';
+
+const parsed = await parseFile(bytes, { filename: 'rates.csv' });
+if (!parsed.ok) throw new Error(parsed.error.message);
+
+const config: SummaryConfig = {
+  columns: { 'Base Rate': 'numeric', Mode: 'categorical' },
+  exclude: ['Notes'],
+  topN: 5,
+  // sheetName: 'Sheet1',
+};
+
+const cache = createSummaryCache();
+const summary = summarizeWorkbook(parsed.value, config, cache);
+if (!summary.ok) throw new Error(summary.error.message);
+
+for (const col of summary.value.columns) {
+  if (col.treatment === 'numeric') {
+    console.log(col.column, col.mean, col.median, col.stddev);
+  }
+}
+```
+
+## Column treatments
+
+| Treatment | Produced fields |
+| --- | --- |
+| `numeric` | min, max, mean, median, sample stddev, sum, distinctCount |
+| `categorical` | distinctCount, blankCount (`""`), topValues (≤ topN) |
+| `date` | min / max as ISO strings, distinctCount |
+| `boolean` | trueCount, falseCount |
+
+Inference walks the full column (no sampling) — workbooks are capped at 100k
+rows. Mixed types fall back to categorical with an `INFERENCE_FELL_BACK`
+warning. Exclusion uses `config.exclude` (there is no `'skip'` treatment).
+
+## Caching
+
+`createSummaryCache()` returns an opaque cache keyed on **reference identity** of
+both `Workbook` and `SummaryConfig`. Deep equality is intentionally not used —
+preserve both references across calls when you want hits.
+
+```ts
+const cache = createSummaryCache();
+const config = { topN: 10 }; // keep this object stable
+
+summarizeWorkbook(wb, config, cache); // miss → compute
+summarizeWorkbook(wb, config, cache); // hit
+summarizeWorkbook(wb, { topN: 10 }, cache); // miss (new config object)
+```
+
+Cancellation and errors never insert into the cache.
+
+## Diff and overlay side-outputs
+
+`DiffSummary` and `OverlaySummary` do **not** nest full per-side workbook
+summaries. That keeps the 1.1× pass budget and lets consumers compose:
+
+```ts
+const diff = diffWorkbooks(a, b, { schema });
+const baseSummary = summarizeWorkbook(a, undefined, cache);
+const afterSummary = summarizeWorkbook(b, undefined, cache);
+```
+
+For overlay, only **derived** columns appear in `targetColumns` — pass-through
+base columns are what `summarizeWorkbook(base)` already covers.
+
+## Non-goals (7b-slim)
+
+- Percentiles beyond median, outliers, correlations, histograms
+- Approximate distinct count (HyperLogLog) — exact only, bounded by row limits
+- Charts / number formatting (summary is data, not presentation)
+- React hooks and UI — see Phase 7c in `ROADMAP.md`

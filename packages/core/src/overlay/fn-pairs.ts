@@ -1,10 +1,16 @@
 import type {
+  ColumnSummary,
   ComposeFn,
   NamedRow,
   OverlaySchema,
   OverlaySummary,
   Row,
 } from '../types.js';
+import {
+  createFnDerivedTracker,
+  finalizeDerivedColumns,
+  observeDerivedRow,
+} from '../summary/derived-columns.js';
 import {
   collectFnColumnUnion,
   namedToDense,
@@ -29,7 +35,7 @@ export type OverlayFnPairsResult = {
   readonly baseHeaders: readonly string[];
   readonly overlayHeaders: readonly string[];
   readonly schema: OverlaySchema;
-  readonly summary: Omit<OverlaySummary, 'droppedByCompose'>;
+  readonly summary: Omit<OverlaySummary, 'droppedByCompose' | 'targetColumns'>;
   readonly sheetName: string;
   readonly baseFilename: string | undefined;
 };
@@ -43,8 +49,40 @@ export type FnComposeControl = {
 const DEFAULT_FN_CHUNK = 1000;
 
 /**
+ * Materialize dense rows + derived-column summaries from named fn results.
+ * Shared by the Node assemble path and (via public export shape) consumers
+ * that already hold named results.
+ */
+export function materializeFnOverlay(
+  namedResults: readonly (NamedRow | null)[],
+  baseHeaders: readonly string[],
+): {
+  readonly headers: readonly string[];
+  readonly rows: readonly Row[];
+  readonly targetColumns: readonly ColumnSummary[];
+} {
+  const headers = collectFnColumnUnion(baseHeaders, namedResults);
+  const tracker = createFnDerivedTracker(headers, baseHeaders);
+  const rows: Row[] = [];
+  for (const named of namedResults) {
+    if (named === null) {
+      continue;
+    }
+    const dense = namedToDense(named, headers);
+    rows.push(dense);
+    observeDerivedRow(tracker, dense);
+  }
+  return {
+    headers,
+    rows,
+    targetColumns: finalizeDerivedColumns(tracker),
+  };
+}
+
+/**
  * Run `ComposeFn` over matched pairs with a two-pass column union.
- * Used by the Node/direct-call path (inline) and by the react chunked utility.
+ * Stats for derived columns accumulate in the dense-emission pass (one fn call
+ * pass — not two).
  */
 export function assembleFnOverlay(
   pairs: readonly MatchedPair[],
@@ -53,13 +91,14 @@ export function assembleFnOverlay(
   overlayHeaders: readonly string[],
   sheetName: string,
   baseFilename: string | undefined,
-  partialSummary: Omit<OverlaySummary, 'droppedByCompose'>,
+  partialSummary: Omit<OverlaySummary, 'droppedByCompose' | 'targetColumns'>,
   control?: FnComposeControl,
 ): {
   readonly headers: readonly string[];
   readonly rows: readonly Row[];
   readonly droppedByCompose: number;
   readonly cancelled: boolean;
+  readonly targetColumns: readonly ColumnSummary[];
 } {
   const total = pairs.length;
   const chunkSize = control?.chunkSize ?? DEFAULT_FN_CHUNK;
@@ -68,7 +107,13 @@ export function assembleFnOverlay(
 
   for (let i = 0; i < total; i += 1) {
     if (control?.isCancelled?.()) {
-      return { headers: baseHeaders, rows: [], droppedByCompose, cancelled: true };
+      return {
+        headers: baseHeaders,
+        rows: [],
+        droppedByCompose,
+        cancelled: true,
+        targetColumns: [],
+      };
     }
 
     const pair = pairs[i]!;
@@ -80,7 +125,6 @@ export function assembleFnOverlay(
       droppedByCompose += 1;
     }
 
-    // Release named views promptly (locals go out of scope each iteration).
     void baseNamed;
     void overlayNamed;
 
@@ -89,18 +133,17 @@ export function assembleFnOverlay(
     }
   }
 
-  const headers = collectFnColumnUnion(baseHeaders, namedResults);
-  const rows: Row[] = [];
-  for (const named of namedResults) {
-    if (named === null) {
-      continue;
-    }
-    rows.push(namedToDense(named, headers));
-  }
+  const materialized = materializeFnOverlay(namedResults, baseHeaders);
 
   void sheetName;
   void baseFilename;
   void partialSummary;
 
-  return { headers, rows, droppedByCompose, cancelled: false };
+  return {
+    headers: materialized.headers,
+    rows: materialized.rows,
+    droppedByCompose,
+    cancelled: false,
+    targetColumns: materialized.targetColumns,
+  };
 }

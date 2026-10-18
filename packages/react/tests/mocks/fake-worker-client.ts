@@ -285,6 +285,15 @@ export function defaultDiffResult(): DiffResult {
       modified: 0,
       unchanged: 0,
     },
+    summary: {
+      totalKeys: 0,
+      added: 0,
+      removed: 0,
+      modified: 0,
+      unchanged: 0,
+      fieldChanges: [],
+      warnings: [],
+    },
   };
 }
 
@@ -320,6 +329,7 @@ export function defaultOverlayResult(base?: Workbook): OverlayWorkerValue {
         matched: 1,
         unmatched: 0,
         droppedByCompose: 0,
+        targetColumns: [],
       },
     },
   };

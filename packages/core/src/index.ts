@@ -3,10 +3,16 @@
 // Internal helpers are not re-exported; see PRINCIPLES.md section 10.
 
 export type {
+  BooleanColumnSummary,
+  CategoricalChangeAggregate,
+  CategoricalColumnSummary,
   CellComparator,
   CellNormalizer,
   CellValue,
+  ColumnSummary,
+  ColumnTreatment,
   ComposeFn,
+  DateColumnSummary,
   DiffChange,
   DiffControl,
   DiffError,
@@ -16,12 +22,16 @@ export type {
   DiffSchema,
   DiffStats,
   DiffStatus,
+  DiffSummary,
   DiffWorkbooksOptions,
+  FieldChangeAggregate,
   FileFormat,
   InferSchemaOptions,
   InvalidSchemaErrorDetails,
   Limits,
   NamedRow,
+  NumericChangeAggregate,
+  NumericColumnSummary,
   NumericTolerance,
   NumericToleranceInput,
   OverlayAmbiguousMatchErrorDetails,
@@ -40,7 +50,13 @@ export type {
   RowKey,
   RowWarning,
   Sheet,
+  SkippedColumn,
+  SummaryCache,
+  SummaryConfig,
+  SummaryError,
+  SummaryWarning,
   Workbook,
+  WorkbookSummary,
 } from './types.js';
 
 export { createDiffError } from './errors.js';
@@ -58,6 +74,11 @@ export {
   overlayWorkbooks,
   overlayWorkbooksAsync,
 } from './overlay/overlay.js';
+export {
+  createSummaryCache,
+  summarizeWorkbook,
+  summarizeWorkbookAsync,
+} from './summary/summarize.js';
 
 export { createWorker, WorkerClient } from './worker/create-worker.js';
 export type { WorkerProgress } from './worker/create-worker.js';
@@ -67,5 +88,9 @@ export type {
 } from './overlay/fn-pairs.js';
 export type { OverlayEngineOutcome } from './overlay/overlay.js';
 export type { OverlayWorkerValue } from './worker/protocol.js';
-export { assembleFnOverlay } from './overlay/fn-pairs.js';
+export {
+  assembleFnOverlay,
+  materializeFnOverlay,
+} from './overlay/fn-pairs.js';
 export { finishOverlayResult } from './overlay/build-derived.js';
+export type { OverlayPartialSummary } from './overlay/build-derived.js';
