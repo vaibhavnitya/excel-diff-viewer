@@ -1,3 +1,4 @@
+import type { ColumnSummary } from '@mojro/excel-diff-core';
 import { themeToCssVars } from '../theme-to-css-vars.js';
 import { cx } from '../utils/cx.js';
 import { ColumnCard } from './cards/column-card.js';
@@ -40,7 +41,7 @@ export function OverlaySummary({
         <p className="edv-summary-empty">No derived columns.</p>
       ) : (
         <div className="edv-summary__grid">
-          {summary.targetColumns.map((col) => (
+          {summary.targetColumns.map((col: ColumnSummary) => (
             <ColumnCard
               key={col.column}
               column={col}

@@ -1,5 +1,5 @@
 import { useExcelFile } from '@mojro/excel-diff-react';
-import type { DiffError } from '@mojro/excel-diff-core';
+import type { DiffError, Sheet } from '@mojro/excel-diff-core';
 import { useEffect, useMemo, useState } from 'react';
 import { EmptyView } from './components/empty-view.js';
 import { ErrorView } from './components/error-view.js';
@@ -53,7 +53,7 @@ export function ExcelViewer({
     if (state.status !== 'success') {
       return [] as string[];
     }
-    return state.workbook.sheets.map((sheet) => sheet.name);
+    return state.workbook.sheets.map((sheet: Sheet) => sheet.name);
   }, [state]);
 
   const [activeSheet, setActiveSheet] = useState<string | null>(null);
@@ -84,7 +84,9 @@ export function ExcelViewer({
     if (state.status !== 'success' || activeSheet === null) {
       return null;
     }
-    return state.workbook.sheets.find((s) => s.name === activeSheet) ?? null;
+    return (
+      state.workbook.sheets.find((s: Sheet) => s.name === activeSheet) ?? null
+    );
   }, [state, activeSheet]);
 
   const handleSheetChange = (name: string): void => {

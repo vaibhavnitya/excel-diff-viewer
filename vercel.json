@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm install && npm run build --workspaces --if-present && npm run build -w apps/demo",
+  "buildCommand": "npm install && npm run build -w @mojro/excel-diff-core && npm run build -w @mojro/excel-diff-react && npm run build -w @mojro/excel-diff-ui && npm run build -w apps/demo",
   "outputDirectory": "apps/demo/.next",
   "framework": "nextjs"
 }

@@ -1,3 +1,4 @@
+import type { ColumnSummary } from '@mojro/excel-diff-core';
 import { themeToCssVars } from '../theme-to-css-vars.js';
 import { cx } from '../utils/cx.js';
 import { ColumnCard } from './cards/column-card.js';
@@ -38,7 +39,7 @@ export function WorkbookSummary({
         <p className="edv-summary-empty">No columns to summarize.</p>
       ) : (
         <div className="edv-summary__grid">
-          {summary.columns.map((col) => (
+          {summary.columns.map((col: ColumnSummary) => (
             <ColumnCard
               key={col.column}
               column={col}

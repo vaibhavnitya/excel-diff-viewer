@@ -1,7 +1,7 @@
 import { themeQuartz, type ColDef } from 'ag-grid-community';
 import { AgGridReact, type AgGridReactProps } from 'ag-grid-react';
 import { useMemo } from 'react';
-import type { Sheet } from '@mojro/excel-diff-core';
+import type { Row, Sheet } from '@mojro/excel-diff-core';
 import {
   agFilterForColumnType,
   collectColumnValues,
@@ -44,7 +44,7 @@ export function SheetGrid({
 }: SheetGridProps) {
   const columnDefs = useMemo<ColDef<SheetRow>[]>(
     () =>
-      sheet.headers.map((header, columnIndex) => {
+      sheet.headers.map((header: string, columnIndex: number) => {
         const type = detectColumnType(
           collectColumnValues(sheet.rows, columnIndex),
         );
@@ -61,7 +61,7 @@ export function SheetGrid({
 
   const rowData = useMemo<SheetRow[]>(
     () =>
-      sheet.rows.map((row, index) => {
+      sheet.rows.map((row: Row, index: number) => {
         const record: SheetRow = { __rowIndex: index };
         for (let i = 0; i < sheet.headers.length; i += 1) {
           const header = sheet.headers[i];

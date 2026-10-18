@@ -1,4 +1,4 @@
-import type { Sheet, Workbook } from '@mojro/excel-diff-core';
+import type { Row, Sheet, Workbook } from '@mojro/excel-diff-core';
 
 function escapeCell(value: unknown): string {
   if (value == null) return '';
@@ -9,8 +9,8 @@ function escapeCell(value: unknown): string {
 export function sheetToCsv(sheet: Sheet): string {
   const lines = [
     sheet.headers.map(escapeCell).join(','),
-    ...sheet.rows.map((row) =>
-      sheet.headers.map((_, i) => escapeCell(row[i])).join(','),
+    ...sheet.rows.map((row: Row) =>
+      sheet.headers.map((_: string, i: number) => escapeCell(row[i])).join(','),
     ),
   ];
   return `${lines.join('\n')}\n`;

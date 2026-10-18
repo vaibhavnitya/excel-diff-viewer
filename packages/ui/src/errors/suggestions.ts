@@ -42,7 +42,10 @@ const REPORTABLE: ReadonlySet<DiffErrorCode> = new Set([
 ]);
 
 export function suggestionFor(error: DiffError): string {
-  return SUGGESTIONS[error.code];
+  return (
+    SUGGESTIONS[error.code] ??
+    `No recovery suggestion for error code '${error.code}'.`
+  );
 }
 
 export function isReportableError(error: DiffError): boolean {

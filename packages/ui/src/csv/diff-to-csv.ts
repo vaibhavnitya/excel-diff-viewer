@@ -31,7 +31,10 @@ export function diffToCSV(diff: DiffResult, schema: DiffSchema): string {
   const header = [
     'status',
     ...schema.keyFields,
-    ...schema.valueFields.flatMap((field) => [`${field}_old`, `${field}_new`]),
+    ...schema.valueFields.flatMap((field: string) => [
+      `${field}_old`,
+      `${field}_new`,
+    ]),
   ];
 
   const lines = [header.map(escapeCsvField).join(',')];
@@ -40,8 +43,10 @@ export function diffToCSV(diff: DiffResult, schema: DiffSchema): string {
     const keySource = row.rowB ?? row.rowA;
     const values = [
       row.status,
-      ...schema.keyFields.map((field) => cellAt(diff.headers, keySource, field)),
-      ...schema.valueFields.flatMap((field) => [
+      ...schema.keyFields.map((field: string) =>
+        cellAt(diff.headers, keySource, field),
+      ),
+      ...schema.valueFields.flatMap((field: string) => [
         cellAt(diff.headers, row.rowA, field),
         cellAt(diff.headers, row.rowB, field),
       ]),

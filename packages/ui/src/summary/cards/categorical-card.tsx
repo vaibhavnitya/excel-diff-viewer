@@ -14,7 +14,8 @@ export function CategoricalCard({
   visualization,
 }: CategoricalCardProps) {
   const maxCount = column.topValues.reduce(
-    (m, v) => Math.max(m, v.count),
+    (m: number, v: { readonly value: string; readonly count: number }) =>
+      Math.max(m, v.count),
     0,
   );
 
@@ -23,26 +24,28 @@ export function CategoricalCard({
       <p className="edv-summary-empty">No values</p>
     ) : (
       <ul className="edv-summary-bars">
-        {column.topValues.map((entry) => {
-          const pct =
-            maxCount === 0 ? 0 : (entry.count / maxCount) * 100;
-          return (
-            <li key={entry.value} className="edv-summary-bars__item">
-              <div className="edv-summary-bars__label">
-                <span className="edv-summary-bars__value">
-                  {entry.value === '' ? '(blank)' : entry.value}
-                </span>
-                <span className="edv-summary-bars__count">{entry.count}</span>
-              </div>
-              <div className="edv-summary-bars__track">
-                <div
-                  className="edv-summary-bars__fill"
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-            </li>
-          );
-        })}
+        {column.topValues.map(
+          (entry: { readonly value: string; readonly count: number }) => {
+            const pct =
+              maxCount === 0 ? 0 : (entry.count / maxCount) * 100;
+            return (
+              <li key={entry.value} className="edv-summary-bars__item">
+                <div className="edv-summary-bars__label">
+                  <span className="edv-summary-bars__value">
+                    {entry.value === '' ? '(blank)' : entry.value}
+                  </span>
+                  <span className="edv-summary-bars__count">{entry.count}</span>
+                </div>
+                <div className="edv-summary-bars__track">
+                  <div
+                    className="edv-summary-bars__fill"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+              </li>
+            );
+          },
+        )}
       </ul>
     );
 

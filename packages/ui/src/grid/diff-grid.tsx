@@ -8,6 +8,7 @@ import { AgGridReact, type AgGridReactProps } from 'ag-grid-react';
 import { useMemo } from 'react';
 import type {
   CellValue,
+  DiffChange,
   DiffRow,
   DiffSchema,
   DiffStatus,
@@ -87,7 +88,9 @@ function toDiffGridRows(
   headers: readonly string[],
 ): DiffGridRow[] {
   return rows.map((row) => {
-    const changedFields = new Set(row.changes.map((c) => c.field));
+    const changedFields = new Set<string>(
+      row.changes.map((c: DiffChange) => c.field),
+    );
     const oldValues: Record<string, string> = {};
     for (const change of row.changes) {
       oldValues[change.field] = formatCellValue(change.before);

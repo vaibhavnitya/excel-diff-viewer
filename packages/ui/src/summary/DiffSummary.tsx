@@ -1,3 +1,4 @@
+import type { FieldChangeAggregate } from '@mojro/excel-diff-core';
 import { themeToCssVars } from '../theme-to-css-vars.js';
 import { cx } from '../utils/cx.js';
 import { FieldChangeCard } from './field-change-card.js';
@@ -38,7 +39,7 @@ export function DiffSummary({
         <p className="edv-summary-empty">No field changes.</p>
       ) : (
         <div className="edv-summary__grid">
-          {summary.fieldChanges.map((field) => (
+          {summary.fieldChanges.map((field: FieldChangeAggregate) => (
             <FieldChangeCard
               key={field.field}
               field={field}

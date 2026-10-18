@@ -49,19 +49,25 @@ export function FieldChangeCard({ field, className }: FieldChangeCardProps) {
           className="edv-summary-bars"
           data-edv-field-kind="categorical"
         >
-          {categorical.topTransitions.map((t) => (
-            <li
-              key={`${t.from}→${t.to}`}
-              className="edv-summary-bars__item"
-            >
-              <div className="edv-summary-bars__label">
-                <span className="edv-summary-bars__value">
-                  {t.from} → {t.to}
-                </span>
-                <span className="edv-summary-bars__count">{t.count}</span>
-              </div>
-            </li>
-          ))}
+          {categorical.topTransitions.map(
+            (t: {
+              readonly from: string;
+              readonly to: string;
+              readonly count: number;
+            }) => (
+              <li
+                key={`${t.from}→${t.to}`}
+                className="edv-summary-bars__item"
+              >
+                <div className="edv-summary-bars__label">
+                  <span className="edv-summary-bars__value">
+                    {t.from} → {t.to}
+                  </span>
+                  <span className="edv-summary-bars__count">{t.count}</span>
+                </div>
+              </li>
+            ),
+          )}
         </ul>
       ) : null}
 

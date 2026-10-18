@@ -24,7 +24,9 @@ export function diffRowsToWorkbook(
       row.status === 'removed' || row.status === 'unchanged'
         ? row.rowA
         : row.rowB ?? row.rowA;
-    const cells: CellValue[] = diff.headers.map((_, i) => source?.[i] ?? null);
+    const cells: CellValue[] = diff.headers.map(
+      (_: string, i: number) => source?.[i] ?? null,
+    );
     cells.push(row.status);
     return cells;
   });
