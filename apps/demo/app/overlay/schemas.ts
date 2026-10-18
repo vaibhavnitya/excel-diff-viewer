@@ -1,6 +1,7 @@
 /**
- * Hardcoded overlay schemas for the /overlay demo.
- * Copy these into your app — there is no interactive schema builder here.
+ * Hardcoded overlay schemas for the /overlay demo fixtures.
+ * The demo page also seeds an assisted rules schema for manual uploads
+ * and lets you edit it as JSON (see OverlaySchemaEditor).
  */
 export {
   realFixtureSchema,

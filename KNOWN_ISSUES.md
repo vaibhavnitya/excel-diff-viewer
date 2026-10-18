@@ -1,7 +1,7 @@
-## Known issues (post Phase 6a / 6b)
+## Known issues (post Phase 7a)
 
-Phases 6a (`theme` prop + CSS tokens) and 6b (MUI / Carbon / AG Grid theme
-docs) are complete. Open items below are for later polish / Phase 7+ work.
+Phase 7a (overlay compose + viewer + demo/docs) is complete. Phases 6a/6b
+theming remain done. Open items below are polish or Phase 7b+ work.
 
 ### Theming / style isolation (watch)
 

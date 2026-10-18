@@ -1,52 +1,31 @@
 'use client';
 
 import { ExcelOverlayViewer } from '@mojro/excel-diff-ui';
-import type { OverlaySchema, OverlayWorkbooksOptions } from '@mojro/excel-diff-core';
+import type { OverlayWorkbooksOptions } from '@mojro/excel-diff-core';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { FileUpload } from '@/components/file-upload';
+import { OverlaySchemaEditor } from '@/components/overlay-schema-editor';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  getRealShapedBaseFile,
-  getRealShapedOverlayFile,
-  getSimpleBaseFile,
-  getSimpleOverlayFile,
-  realFixtureSchema,
-  simpleFixtureSchema,
-} from '@/lib/overlay-sample-data';
-
-type FixtureId = 'none' | 'real' | 'simple';
+import { useOverlayPageState } from '@/lib/use-overlay-page-state';
 
 export default function OverlayPage() {
-  const [baseFile, setBaseFile] = useState<File | null>(null);
-  const [overlayFile, setOverlayFile] = useState<File | null>(null);
-  const [fixture, setFixture] = useState<FixtureId>('none');
-  const [schema, setSchema] = useState<OverlaySchema | null>(null);
+  const {
+    baseFile,
+    overlayFile,
+    fixture,
+    schema,
+    loadFixture,
+    onBaseFileChange,
+    onOverlayFileChange,
+    applySchema,
+  } = useOverlayPageState();
 
   const options: OverlayWorkbooksOptions | null = useMemo(
     () => (schema === null ? null : { schema }),
     [schema],
   );
-
-  const loadFixture = (id: FixtureId): void => {
-    setFixture(id);
-    if (id === 'real') {
-      setBaseFile(getRealShapedBaseFile());
-      setOverlayFile(getRealShapedOverlayFile());
-      setSchema(realFixtureSchema);
-      return;
-    }
-    if (id === 'simple') {
-      setBaseFile(getSimpleBaseFile());
-      setOverlayFile(getSimpleOverlayFile());
-      setSchema(simpleFixtureSchema);
-      return;
-    }
-    setBaseFile(null);
-    setOverlayFile(null);
-    setSchema(null);
-  };
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6">
@@ -67,7 +46,7 @@ export default function OverlayPage() {
             className="block rounded-md border bg-background px-3 py-2"
             value={fixture}
             onChange={(e) => {
-              loadFixture(e.target.value as FixtureId);
+              loadFixture(e.target.value as 'none' | 'real' | 'simple');
             }}
           >
             <option value="none">—</option>
@@ -83,42 +62,23 @@ export default function OverlayPage() {
         <FileUpload
           label="Base workbook"
           file={baseFile}
-          onFileChange={(file) => {
-            setFixture('none');
-            setBaseFile(file);
-          }}
+          onFileChange={onBaseFileChange}
         />
         <FileUpload
           label="Overlay workbook"
           file={overlayFile}
-          onFileChange={(file) => {
-            setFixture('none');
-            setOverlayFile(file);
-          }}
+          onFileChange={onOverlayFileChange}
         />
       </div>
 
       {schema !== null ? (
-        <Card>
-          <CardContent className="space-y-2 p-4">
-            <h2 className="text-sm font-medium">Schema used</h2>
-            <pre className="overflow-x-auto rounded-md bg-muted p-3 text-xs">
-              {JSON.stringify(
-                {
-                  join: schema.join,
-                  compose:
-                    schema.compose.kind === 'rules'
-                      ? schema.compose
-                      : { kind: 'fn', fn: '<ComposeFn>' },
-                  passthrough: schema.passthrough ?? 'all',
-                },
-                null,
-                2,
-              )}
-            </pre>
-          </CardContent>
-        </Card>
-      ) : null}
+        <OverlaySchemaEditor schema={schema} onApply={applySchema} />
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Upload both workbooks (or load a sample) to get an assisted schema you
+          can edit.
+        </p>
+      )}
 
       <Card className="overflow-hidden">
         <CardContent className="p-0">
