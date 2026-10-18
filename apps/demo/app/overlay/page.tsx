@@ -1,10 +1,11 @@
 'use client';
 
-import { ExcelOverlayViewer } from '@mojro/excel-diff-ui';
+import { ExcelOverlayViewer, type ExportMode } from '@mojro/excel-diff-ui';
 import type { OverlayWorkbooksOptions } from '@mojro/excel-diff-core';
 import Link from 'next/link';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
+import { ExportModeToggle } from '@/components/export-mode-toggle';
 import { FileUpload } from '@/components/file-upload';
 import { OverlaySchemaEditor } from '@/components/overlay-schema-editor';
 import { Card, CardContent } from '@/components/ui/card';
@@ -21,6 +22,7 @@ export default function OverlayPage() {
     onOverlayFileChange,
     applySchema,
   } = useOverlayPageState();
+  const [exportMode, setExportMode] = useState<ExportMode>('current-view');
 
   const options: OverlayWorkbooksOptions | null = useMemo(
     () => (schema === null ? null : { schema }),
@@ -56,6 +58,7 @@ export default function OverlayPage() {
             </option>
           </select>
         </label>
+        <ExportModeToggle value={exportMode} onChange={setExportMode} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -88,6 +91,7 @@ export default function OverlayPage() {
               overlayFile={overlayFile}
               options={options}
               height={600}
+              exportMode={exportMode}
             />
           </div>
         </CardContent>

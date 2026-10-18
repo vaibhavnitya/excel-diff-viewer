@@ -11,6 +11,9 @@ export type ToolbarProps = {
   onSearchQueryChange?: (value: string) => void;
   enableCSVExport?: boolean;
   onExportCSV?: () => void;
+  enableXlsxExport?: boolean;
+  onExportXlsx?: () => void;
+  exporting?: boolean;
   extra?: ReactNode;
 };
 
@@ -23,8 +26,15 @@ export function Toolbar({
   onSearchQueryChange,
   enableCSVExport = false,
   onExportCSV,
+  enableXlsxExport = false,
+  onExportXlsx,
+  exporting = false,
   extra,
 }: ToolbarProps) {
+  const showDownload =
+    (enableCSVExport && onExportCSV !== undefined) ||
+    (enableXlsxExport && onExportXlsx !== undefined);
+
   return (
     <div className={cx('edv-toolbar', className)}>
       {stats !== undefined ? (
@@ -59,10 +69,28 @@ export function Toolbar({
             aria-label="Search diff"
           />
         ) : null}
-        {enableCSVExport && onExportCSV !== undefined ? (
-          <button type="button" onClick={onExportCSV}>
-            Download CSV
-          </button>
+        {showDownload ? (
+          <>
+            {enableCSVExport && onExportCSV !== undefined ? (
+              <button
+                type="button"
+                onClick={onExportCSV}
+                disabled={exporting}
+              >
+                Download CSV
+              </button>
+            ) : null}
+            {enableXlsxExport && onExportXlsx !== undefined ? (
+              <button
+                type="button"
+                onClick={onExportXlsx}
+                disabled={exporting}
+                aria-busy={exporting || undefined}
+              >
+                {exporting ? 'Exporting…' : 'Download XLSX'}
+              </button>
+            ) : null}
+          </>
         ) : null}
         {extra}
       </div>

@@ -6,6 +6,8 @@ export { WorkbookSummary } from './summary/WorkbookSummary.js';
 export { DiffSummary } from './summary/DiffSummary.js';
 export { OverlaySummary } from './summary/OverlaySummary.js';
 export { diffToCSV } from './csv/diff-to-csv.js';
+export { downloadBlob } from './csv/download-blob.js';
+export { downloadCsv } from './csv/download-csv.js';
 
 export type {
   AgGridPropsPassthrough,
@@ -15,6 +17,7 @@ export type {
   ExcelOverlayViewerProps,
   ExcelSplitViewerProps,
   ExcelViewerProps,
+  ExportMode,
   Theme,
 } from './types.js';
 

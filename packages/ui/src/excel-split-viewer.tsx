@@ -1,11 +1,15 @@
 import { useExcelDiff } from '@mojro/excel-diff-react';
-import { useEffect } from 'react';
+import type { DiffError } from '@mojro/excel-diff-core';
+import { useEffect, useState } from 'react';
 import { EmptyView } from './components/empty-view.js';
 import { ErrorView } from './components/error-view.js';
 import { LoadingView } from './components/loading-view.js';
 import { Toolbar } from './components/toolbar.js';
 import { diffToCSV } from './csv/diff-to-csv.js';
 import { downloadCsv } from './csv/download-csv.js';
+import { splitExportFilename } from './export/filenames.js';
+import { runXlsxExport } from './export/run-xlsx-export.js';
+import { splitDiffToWorkbook } from './export/split-to-workbook.js';
 import { SplitGrids } from './grid/split-grids.js';
 import { slotClass } from './grid/class-slots.js';
 import { useOnError } from './hooks/use-on-error.js';
@@ -20,7 +24,9 @@ export function ExcelSplitViewer({
   labelB = 'File B',
   onDiffComplete,
   enableCSVExport = true,
+  enableXlsxExport = true,
   exportFilename = 'diff.csv',
+  exportMode = 'current-view',
   classNames,
   limits,
   onError,
@@ -32,17 +38,49 @@ export function ExcelSplitViewer({
   height,
   agGridProps,
 }: ExcelSplitViewerProps) {
+  // Split has no library-level showOnlyChanges/search today; both modes export
+  // all non-ghost rows. exportMode kept for API parity with other viewers.
+  void exportMode;
+
   const state = useExcelDiff(fileA, fileB, schema, { limits });
-  useOnError(state.status === 'error' ? state.error : undefined, onError);
+  const [exportError, setExportError] = useState<DiffError | undefined>();
+  const [exporting, setExporting] = useState(false);
+
+  useOnError(state.status === 'error' ? state.error : exportError, onError);
 
   useEffect(() => {
     if (state.status === 'success') {
       onDiffComplete?.(state.diff);
+      setExportError(undefined);
     }
   }, [state, onDiffComplete]);
 
   const idle =
     fileA === null || fileB === null || schema === null || state.status === 'idle';
+
+  const handleExportXlsx = async (): Promise<void> => {
+    if (state.status !== 'success' || exporting) return;
+    setExporting(true);
+    setExportError(undefined);
+    const filename = splitExportFilename(
+      state.workbookA.meta.filename,
+      state.workbookB.meta.filename,
+    );
+    const baseSheetName =
+      state.workbookA.sheets[state.workbookA.activeSheetIndex]?.name ?? 'Base';
+    const overlaySheetName =
+      state.workbookB.sheets[state.workbookB.activeSheetIndex]?.name ?? 'Overlay';
+    const workbook = splitDiffToWorkbook(state.diff, state.diff.rows, {
+      baseSheetName,
+      overlaySheetName,
+      filename,
+    });
+    const error = await runXlsxExport(workbook, filename);
+    if (error !== undefined) {
+      setExportError(error);
+    }
+    setExporting(false);
+  };
 
   return (
     <div
@@ -68,7 +106,13 @@ export function ExcelSplitViewer({
         )
       ) : null}
 
-      {state.status === 'success' && schema !== null ? (
+      {exportError !== undefined && state.status === 'success' ? (
+        renderError?.(exportError) ?? (
+          <ErrorView error={exportError} className={classNames?.error} />
+        )
+      ) : null}
+
+      {state.status === 'success' && schema !== null && exportError === undefined ? (
         <>
           <Toolbar
             className={slotClass('toolbar', classNames)}
@@ -77,6 +121,11 @@ export function ExcelSplitViewer({
             onExportCSV={() => {
               downloadCsv(exportFilename, diffToCSV(state.diff, schema));
             }}
+            enableXlsxExport={enableXlsxExport}
+            onExportXlsx={() => {
+              void handleExportXlsx();
+            }}
+            exporting={exporting}
           />
           {state.diff.rows.length === 0 ? (
             renderEmpty?.() ?? <EmptyView message="No rows to display." />

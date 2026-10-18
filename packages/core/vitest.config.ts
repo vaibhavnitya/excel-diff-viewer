@@ -14,6 +14,7 @@ export default defineConfig({
         'src/normalize/**/*.ts',
         'src/overlay/**/*.ts',
         'src/summary/**/*.ts',
+        'src/write/**/*.ts',
       ],
       thresholds: {
         branches: 95,

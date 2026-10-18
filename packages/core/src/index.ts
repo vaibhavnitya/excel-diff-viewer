@@ -57,6 +57,8 @@ export type {
   SummaryWarning,
   Workbook,
   WorkbookSummary,
+  WriteError,
+  WriteWorkbookOptions,
 } from './types.js';
 
 export { createDiffError } from './errors.js';
@@ -79,6 +81,7 @@ export {
   summarizeWorkbook,
   summarizeWorkbookAsync,
 } from './summary/summarize.js';
+export { writeWorkbook, writeWorkbookAsync } from './write/write.js';
 
 export { createWorker, WorkerClient } from './worker/create-worker.js';
 export type { WorkerProgress } from './worker/create-worker.js';

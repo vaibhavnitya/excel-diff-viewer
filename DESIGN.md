@@ -70,6 +70,8 @@ import {
   overlayWorkbooksAsync,
   summarizeWorkbook,
   summarizeWorkbookAsync,
+  writeWorkbook,
+  writeWorkbookAsync,
   createSummaryCache,
   createWorker,
 } from '@mojro/excel-diff-core';
@@ -142,7 +144,7 @@ rate card + surcharge template (`fn`) — see `/overlay` and `/docs/overlay/`.
 
 **Non-goals (Phase 7a):** rating engine semantics, cascading precedence,
 pattern matching, multi-sheet output, chained rules, in-grid editing,
-Excel export (7c). Analytics aggregates are engine-only in 7b-slim (see Summary).
+Excel export (7d). Analytics aggregates are engine-only in 7b-slim (see Summary).
 
 ## Normalization
 
@@ -212,6 +214,7 @@ Every failure has a stable `code`:
 - `INVALID_SCHEMA`, `SCHEMA_INFERENCE_FAILED`, `DUPLICATE_KEYS`,
   `OVERLAY_AMBIGUOUS_MATCH`
 - `SUMMARY_INVALID_CONFIG`, `SUMMARY_COLUMN_NOT_FOUND`
+- `WRITE_FAILED`, `INVALID_OPTIONS`
 - `WORKER_UNAVAILABLE`, `CANCELLED`
 
 Components render default error UIs. Consumers can override via `renderError`
@@ -232,9 +235,9 @@ sidebars, pagination, editing) pass them through `agGridProps`, which is merged
 **after** library defaults and **before** library-locked props.
 
 The library does **not** build custom filter / search / sort UIs that duplicate
-AG Grid. Toolbar affordances that remain (`showOnlyChanges`, CSV download, and
-the optional diff `searchQuery`) are product-level controls over which rows enter
-the grid, not replacements for column filters.
+AG Grid. Toolbar affordances that remain (`showOnlyChanges`, CSV / XLSX download,
+and the optional diff `searchQuery`) are product-level controls over which rows
+enter the grid, not replacements for column filters.
 
 Users who need a different grid (Glide, TanStack Table, etc.) use hooks from
 `@mojro/excel-diff-react` and build their own component. A portable grid
@@ -369,9 +372,9 @@ where the function object lives.
 belongs in `fn`, where the caller decides how to reduce N overlays.
 
 **Non-goals (Phase 7a):** rating engines, cascading/precedence, wildcard pattern
-matching across values, multi-sheet output, chained rules, in-grid editing,
-Excel export. Analytics aggregates shipped as engine-only in Phase 7b-slim
-(see Summary below); UI in 7c.
+matching across values, multi-sheet output, chained rules, in-grid editing.
+Excel export shipped in Phase 7d-export (see Export below). Analytics aggregates
+shipped as engine-only in Phase 7b-slim (see Summary below); UI in 7c.
 
 Demo grounding: synthetic simple rates + fuel pct (`rules`), and a real-shaped
 FTL rate card + surcharge template (`fn`) under `/overlay` and
@@ -433,10 +436,40 @@ consumer code via composition.
 **Non-goals (engine + UI):** percentiles beyond median, outliers, correlations,
 histograms as engine output, approximate distinct counts, chained summaries,
 chart libraries in published packages, interactive tooltips/zoom in defaults,
-group-by aggregates, editing, Excel export.
+group-by aggregates, editing. Excel export is Phase 7d (see Export below).
 
 Docs: `/docs/analytics/overview`, `/docs/analytics/components`,
 `/docs/analytics/hooks`, `/docs/analytics/examples`. Demo: `/analytics`.
+
+## Export
+
+Values-only `.xlsx` write primitive (`writeWorkbook` / `writeWorkbookAsync`) plus
+toolbar downloads on all four viewers. Editing (7e) will reuse the same write
+path.
+
+**Why values only?** Same reasoning as “no design systems in library”: we are
+not re-implementing a formatting engine. Column widths, colors, number formats,
+and cell styles are out of scope.
+
+**Why round-trip is a hard contract:** Phase 7e editing depends on parse → write
+→ parse being identity for library-produced workbooks. Dates stay ISO strings on
+both sides (`cellDates: false` on write; parser already canonicalizes dates to
+ISO on read).
+
+**Why `ArrayBuffer`, not upload?** Network, auth, and retry are app concerns.
+The engine ships bytes; `downloadBlob` in the UI package is a thin DOM helper.
+
+**Why `exportMode` defaults to `current-view`?** Least surprise — “what I see is
+what I get.” Pass `raw` for the full unfiltered workbook / diff.
+
+**Why no “previous value” column on diff export?** Complexity without clear
+benefit; reviewers who need before/after can open both source files. Status is
+carried by the trailing **Edit Status** column.
+
+**SheetJS Community write limits:** no formulas, no advanced formatting, no
+pivots/charts/images/named ranges. Sufficient for value-based rate card data.
+
+Docs: `/docs/export/overview`, `/docs/export/api`, `/docs/export/viewer-exports`.
 
 ## Decisions log
 

@@ -1,8 +1,8 @@
-## Known issues (post Phase 7c-analytics-ui)
+## Known issues (post Phase 7d-export)
 
-Phase 7c-analytics-ui (summary hooks + components) is complete. Phase 7b-slim
-engine primitives, 7a overlay, and 6a/6b theming remain done. Open items below
-are polish or Phase 7d+ work.
+Phase 7d-export (`writeWorkbook` + viewer XLSX downloads) is complete. Phase
+7c-analytics-ui, 7b-slim, 7a overlay, and 6a/6b theming remain done. Open items
+below are polish or Phase 7e+ work.
 
 ### Theming / style isolation (watch)
 
@@ -89,6 +89,38 @@ are polish or Phase 7d+ work.
   shape from column treatments. If real users want to customize those cards,
   that needs a separate API (e.g. `renderFieldChange: (agg: FieldChangeAggregate) => ReactNode`).
   Out of scope until requested.
+- **No formatting fidelity on export:** column widths, cell colors, number
+  formats, and cell styles are not preserved through write. Formatting-preserving
+  export would need parse-side capture plus write-side serialize — a dedicated
+  phase. Not planned.
+- **No cell highlighting in diff export:** the **Edit Status** column carries
+  status. Styled cell writes are supported by SheetJS Community but deliberately
+  avoided for now.
+- **SheetJS Community write limitations acknowledged:** no formulas, pivot
+  tables, charts, images, or named ranges in exported files. Sufficient for
+  value-based rate card data.
+- **Round-trip tested within the library’s own parse/write cycle, not against
+  arbitrary external xlsx files.** A file produced by Excel that uses features
+  our parser doesn’t preserve will not round-trip through write — that is a
+  parse-side limitation.
+- **All-null / all-blank rows are dropped on re-parse:** the xlsx parser skips
+  rows where every cell is `null` or `''` (pre-existing). Mixed blank/null cells
+  in otherwise non-empty rows round-trip correctly.
+### Write performance at maximum workbook size
+
+`writeWorkbook` on 100k rows × 20 columns takes ~10–13 seconds due to SheetJS
+compression overhead at ceiling size (host-load sensitive; quiet samples ~10.5s).
+Smaller workbooks (10k rows) complete in well under 1 second (~0.5s). For large
+workbooks, consumers should prefer `writeWorkbookAsync` and surface a loading
+state on their export affordance.
+
+A dedicated phase (7d-polish, planned before 7e-editing) will move write
+execution into a Web Worker, keeping the main thread responsive during
+large writes. This is the write-side equivalent of the parse Worker that
+landed in Phase 2.
+
+A dev-mode `console.warn` fires when `writeWorkbook` (sync) is called on
+workbooks larger than 50k cells, suggesting the async variant.
 
 ## Lessons from Phase 4c (docs)
 

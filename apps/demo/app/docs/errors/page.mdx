@@ -25,6 +25,8 @@ Failures are values with a stable `code`. Switch on `code` for logic; show
 | `OVERLAY_AMBIGUOUS_MATCH` | Rules compose matched 2+ overlay rows | Error panel | Disambiguate overlay or use `fn` |
 | `SUMMARY_INVALID_CONFIG` | Bad `SummaryConfig` (e.g. `topN`) | Error panel | Fix config fields |
 | `SUMMARY_COLUMN_NOT_FOUND` | Named column/sheet missing in workbook | Error panel | Use exact header / sheet names |
+| `WRITE_FAILED` | XLSX write threw or buffer could not be produced | Error panel | Retry; try fewer sheets / smaller workbook |
+| `INVALID_OPTIONS` | Bad write options (empty sheets list, unknown sheet, empty workbook) | Error panel | Fix `WriteWorkbookOptions` / workbook |
 | `CANCELLED` | Latest-wins cancelled prior work | Usually not sticky | Transient; new request continues |
 
 ## Custom renderError

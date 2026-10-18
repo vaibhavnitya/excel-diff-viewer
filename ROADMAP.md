@@ -102,7 +102,7 @@ Goal: parse a file and diff two files from Node, with full tests.
 - [x] Docs under /docs/analytics/overview
 - [x] Perf budgets verified via bench
 
-## Phase 7c-analytics-ui — Summary UI (current)
+## Phase 7c-analytics-ui — Summary UI
 
 - [x] useWorkbookSummary hook with internal/external cache + sync/async
 - [x] `<WorkbookSummary>`, `<DiffSummary>`, `<OverlaySummary>` with no-chart defaults
@@ -110,10 +110,26 @@ Goal: parse a file and diff two files from Node, with full tests.
 - [x] /analytics demo page with default/Recharts toggle
 - [x] Docs under /docs/analytics/{components,hooks,examples}
 
-## Phase 7d — In-grid editing
+## Phase 7d-export — Export primitives + viewer downloads (current)
 
-- [ ] (originally part of Phase 7b)
+- [x] writeWorkbook + writeWorkbookAsync
+- [x] XLSX download buttons on all four viewers
+- [x] exportMode: 'current-view' | 'raw' prop
+- [x] Diff export with Edit Status column
+- [x] Overlay export of derived workbook
+- [x] Split export as two-sheet
+- [x] Round-trip property tested
+- [x] Docs under /docs/export/
 
-## Phase 7e — Excel export
+## Phase 7d-polish — Worker-side write path (before 7e)
+- [ ] Move writeWorkbook execution into a Web Worker
+- [ ] Progress reporting for the write phase (not just pre-write chunking)
+- [ ] Keep main thread responsive during large writes
+- [ ] Scoped as a focused mini-phase, estimated 3-5 days
 
-- [ ] (originally part of Phase 7b)
+## Phase 7e-editing — In-grid editing (next)
+
+- [ ] Full table editing (cell edits, row insert, row delete, reorder)
+- [ ] Edit state management
+- [ ] Edit-aware export (reuses 7d write primitive)
+- [ ] Scoping conversation before implementation

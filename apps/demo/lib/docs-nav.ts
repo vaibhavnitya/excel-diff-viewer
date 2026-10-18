@@ -86,6 +86,28 @@ export const DOCS_NAV: readonly DocsNavItem[] = [
     ],
   },
   {
+    href: '/docs/export',
+    title: 'Export',
+    description: 'writeWorkbook and viewer XLSX downloads',
+    children: [
+      {
+        href: '/docs/export/overview',
+        title: 'Overview',
+        description: 'Values-only export and round-trip guarantee',
+      },
+      {
+        href: '/docs/export/api',
+        title: 'API',
+        description: 'writeWorkbook, options, and error codes',
+      },
+      {
+        href: '/docs/export/viewer-exports',
+        title: 'Viewer exports',
+        description: 'Download buttons, exportMode, and shapes',
+      },
+    ],
+  },
+  {
     href: '/docs/hooks',
     title: 'Hooks',
     description: 'useExcelFile and useExcelDiff for custom UIs',

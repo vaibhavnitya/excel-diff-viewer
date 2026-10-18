@@ -1,0 +1,50 @@
+# Viewer exports
+
+Each viewer toolbar exposes two flat buttons (no dropdown):
+
+- **Download CSV** — existing Phase 4 behavior
+- **Download XLSX** — Phase 7d; disabled while an export is in progress
+
+## `exportMode`
+
+```ts
+exportMode?: 'current-view' | 'raw'  // default 'current-view'
+```
+
+| Mode | Behavior |
+| --- | --- |
+| `current-view` | What the user sees — filtered/searched rows (diff), active sheet (viewer) |
+| `raw` | Full unfiltered data in engine / original order |
+
+## Diff (`<ExcelDiffViewer>`)
+
+Single sheet named `Diff`:
+
+- All base columns in base order
+- Trailing column **`Edit Status`**: `added` | `removed` | `modified` | `unchanged`
+- Added / modified rows use **after** values; removed / unchanged use **base**
+- No “previous value” column (reviewers can open both source files)
+- `current-view` + `showOnlyChanges` → only changed rows; `raw` → all rows
+
+Filename: `diff-{base}-vs-{after}.xlsx` (or `diff.xlsx`).
+
+## Overlay (`<ExcelOverlayViewer>`)
+
+Exports the **derived** workbook as composed (one sheet). No source-metadata
+column. Filename: `overlay-{base}.xlsx`.
+
+## Split (`<ExcelSplitViewer>`)
+
+Two-sheet workbook:
+
+1. Base sheet name (or `Base`)
+2. After sheet name (or `Overlay`)
+
+Ghost rows (alignment-only empty sides) are **not** exported.
+
+## Viewer (`<ExcelViewer>`)
+
+- `current-view` → active sheet only
+- `raw` → all sheets in the workbook
+
+Filename: `{original}-export.xlsx` (or `export.xlsx`).

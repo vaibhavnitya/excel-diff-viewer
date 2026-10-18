@@ -1,0 +1,81 @@
+# Export API
+
+## `writeWorkbook` / `writeWorkbookAsync`
+
+```ts
+import {
+  parseFile,
+  writeWorkbook,
+  writeWorkbookAsync,
+  type WriteWorkbookOptions,
+} from '@mojro/excel-diff-core';
+
+const parsed = await parseFile(bytes, { filename: 'rates.xlsx' });
+if (!parsed.ok) throw new Error(parsed.error.message);
+
+const written = writeWorkbook(parsed.value, {
+  sheets: ['Sheet1'],           // optional; default = all sheets
+  filenameHint: 'rates-export.xlsx', // workbook Props.Title only
+});
+if (!written.ok) throw new Error(written.error.message);
+// written.value: ArrayBuffer
+```
+
+Async form mirrors other engines — cooperative control is the third argument:
+
+```ts
+const asyncResult = await writeWorkbookAsync(workbook, options, {
+  isCancelled: () => false,
+  onProgress: (processed, total) => {},
+});
+```
+
+Large workbooks (≥ 50k cells) chunk sheet assembly (~10k rows per yield). The
+final SheetJS `write` call is a single sync op; cancellation is checked at chunk
+boundaries and immediately before that call.
+
+## Error codes
+
+| Code | When |
+| --- | --- |
+| `INVALID_OPTIONS` | Empty workbook, empty `sheets: []`, or unknown sheet name |
+| `WRITE_FAILED` | SheetJS write threw / buffer could not be produced |
+| `CANCELLED` | `control.isCancelled()` at a chunk boundary |
+
+## Download in React (viewer path)
+
+Viewers call `writeWorkbookAsync` then `downloadBlob` (DOM helper in
+`@mojro/excel-diff-ui`). Minimal custom UI:
+
+```tsx
+import { writeWorkbook } from '@mojro/excel-diff-core';
+import { downloadBlob } from '@mojro/excel-diff-ui';
+
+function onDownload(workbook: Workbook) {
+  const result = writeWorkbook(workbook, { filenameHint: 'export.xlsx' });
+  if (!result.ok) {
+    console.error(result.error);
+    return;
+  }
+  downloadBlob(result.value, 'export.xlsx');
+}
+```
+
+## Upload (consumer code only)
+
+The library never calls `fetch`. Typical consumer pattern:
+
+```ts
+const result = writeWorkbook(workbook);
+if (!result.ok) throw new Error(result.error.message);
+
+const form = new FormData();
+form.append(
+  'file',
+  new Blob([result.value], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  }),
+  'export.xlsx',
+);
+await fetch('/api/upload', { method: 'POST', body: form });
+```

@@ -1,14 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { ExcelViewer } from '@mojro/excel-diff-ui';
+import { ExcelViewer, type ExportMode } from '@mojro/excel-diff-ui';
 
+import { ExportModeToggle } from '@/components/export-mode-toggle';
 import { FileUpload } from '@/components/file-upload';
 import { formatViewerProps, PropsPanel } from '@/components/props-panel';
 import { Card, CardContent } from '@/components/ui/card';
 
 export default function ViewerPage() {
   const [file, setFile] = useState<File | null>(null);
+  const [exportMode, setExportMode] = useState<ExportMode>('current-view');
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6">
@@ -20,37 +22,41 @@ export default function ViewerPage() {
         </p>
       </div>
 
-      <FileUpload
-        label="File"
-        file={file}
-        onFileChange={setFile}
-        className="w-full max-w-xl"
-      />
+      <div className="flex flex-wrap items-end gap-4">
+        <FileUpload
+          label="File"
+          file={file}
+          onFileChange={setFile}
+          className="w-full max-w-xl"
+        />
+        <ExportModeToggle value={exportMode} onChange={setExportMode} />
+      </div>
 
       <Card className="overflow-hidden">
         <CardContent className="p-0">
           <div className="min-h-[360px] p-2 sm:min-h-[600px]">
-            <ExcelViewer 
+            <ExcelViewer
               file={file}
-              height={700} 
+              height={700}
+              exportMode={exportMode}
               theme={{
                 colors: {
-                  added: '#dcedc8',       // custom green
-                  removed: '#ffcdd2',     // custom red
-                  modified: '#fff59d',    // custom yellow
-                  headerBg: '#1976d2',    // blue header
+                  added: '#dcedc8',
+                  removed: '#ffcdd2',
+                  modified: '#fff59d',
+                  headerBg: '#1976d2',
                   headerFg: '#ffffff',
                 },
                 typography: {
                   fontFamily: '"Comic Sans MS", sans-serif',
-                  fontSize: 16,           // number, should become "16px"
+                  fontSize: 16,
                 },
                 spacing: {
-                  rowHeight: 48,          // taller rows
+                  rowHeight: 48,
                   headerHeight: 56,
-                }
+                },
               }}
-              />
+            />
           </div>
         </CardContent>
       </Card>

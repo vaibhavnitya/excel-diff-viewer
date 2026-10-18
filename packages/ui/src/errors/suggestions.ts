@@ -23,6 +23,10 @@ const SUGGESTIONS: Record<DiffErrorCode, string> = {
     'Check SummaryConfig: topN must be a positive integer, and column treatments must be numeric | categorical | date | boolean.',
   SUMMARY_COLUMN_NOT_FOUND:
     'A column or sheet named in SummaryConfig was not found. Use exact header names from the workbook.',
+  WRITE_FAILED:
+    'Retry the export. If it keeps failing, try fewer sheets or a smaller workbook.',
+  INVALID_OPTIONS:
+    'Check write options: sheet names must exist in the workbook, and sheets must not be an empty array.',
   WORKER_UNAVAILABLE:
     'Ensure the app runs in an environment with Web Workers (not blocked SSR or restricted iframes).',
   WORKER_CRASHED:

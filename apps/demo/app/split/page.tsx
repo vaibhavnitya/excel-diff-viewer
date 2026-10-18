@@ -1,7 +1,9 @@
 'use client';
 
-import { ExcelSplitViewer } from '@mojro/excel-diff-ui';
+import { useState } from 'react';
+import { ExcelSplitViewer, type ExportMode } from '@mojro/excel-diff-ui';
 
+import { ExportModeToggle } from '@/components/export-mode-toggle';
 import { FileUpload } from '@/components/file-upload';
 import { formatSplitProps, PropsPanel } from '@/components/props-panel';
 import { SchemaEditor } from '@/components/schema-editor';
@@ -19,6 +21,7 @@ export default function SplitPage() {
     inferredSchema,
     headers,
   } = useDiffPageState();
+  const [exportMode, setExportMode] = useState<ExportMode>('current-view');
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6">
@@ -42,12 +45,15 @@ export default function SplitPage() {
         />
       </div>
 
-      <SchemaEditor
-        headers={headers}
-        schema={schema}
-        inferredSchema={inferredSchema}
-        onSchemaChange={setSchema}
-      />
+      <div className="flex flex-wrap items-end gap-4">
+        <SchemaEditor
+          headers={headers}
+          schema={schema}
+          inferredSchema={inferredSchema}
+          onSchemaChange={setSchema}
+        />
+        <ExportModeToggle value={exportMode} onChange={setExportMode} />
+      </div>
 
       <Card className="overflow-hidden">
         <CardContent className="p-0">
@@ -57,6 +63,7 @@ export default function SplitPage() {
               fileB={fileB}
               schema={schema}
               height={600}
+              exportMode={exportMode}
             />
           </div>
         </CardContent>

@@ -1,0 +1,36 @@
+# Export overview
+
+Export turns a library `Workbook` into `.xlsx` bytes. Viewers expose that as a
+**Download XLSX** toolbar button next to the existing CSV download.
+
+## What you get
+
+- **Values only** — cell values (string, number, boolean, null, ISO dates). No
+  column widths, colors, number formats, or cell styles.
+- **Round-trip** — for any workbook produced by `parseFile`,
+  `writeWorkbook` → `parseFile` is structurally identical (same sheets, headers,
+  row counts, and cell values).
+- **No network** — the engine returns an `ArrayBuffer`. The UI triggers a
+  browser download. Upload / auth / retry belong in consumer code.
+
+## Contexts
+
+| Surface | Output |
+| --- | --- |
+| `<ExcelViewer>` | Active sheet (`current-view`) or full workbook (`raw`) |
+| `<ExcelDiffViewer>` | One sheet + trailing **Edit Status** column |
+| `<ExcelOverlayViewer>` | Derived workbook as composed |
+| `<ExcelSplitViewer>` | Two sheets (base / after); ghost rows omitted |
+
+## Non-goals
+
+- Formatting fidelity and cell highlighting
+- Formula write (SheetJS Community limitation)
+- Pivot tables, charts, images, named ranges
+- Upload UX
+- Editing (Phase 7e reuses this write primitive)
+
+## Next
+
+- [API reference](/docs/export/api)
+- [Viewer exports](/docs/export/viewer-exports)

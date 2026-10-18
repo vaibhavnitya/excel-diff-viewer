@@ -1,4 +1,5 @@
 import { useExcelDiff } from '@mojro/excel-diff-react';
+import type { DiffError } from '@mojro/excel-diff-core';
 import { useEffect, useMemo, useState } from 'react';
 import { EmptyView } from './components/empty-view.js';
 import { ErrorView } from './components/error-view.js';
@@ -6,6 +7,9 @@ import { LoadingView } from './components/loading-view.js';
 import { Toolbar } from './components/toolbar.js';
 import { diffToCSV } from './csv/diff-to-csv.js';
 import { downloadCsv } from './csv/download-csv.js';
+import { diffRowsToWorkbook } from './export/diff-to-workbook.js';
+import { diffExportFilename } from './export/filenames.js';
+import { runXlsxExport } from './export/run-xlsx-export.js';
 import { DiffGrid } from './grid/diff-grid.js';
 import { slotClass } from './grid/class-slots.js';
 import { useOnError } from './hooks/use-on-error.js';
@@ -23,7 +27,9 @@ export function ExcelDiffViewer({
   onSearchQueryChange,
   onDiffComplete,
   enableCSVExport = true,
+  enableXlsxExport = true,
   exportFilename = 'diff.csv',
+  exportMode = 'current-view',
   classNames,
   limits,
   onError,
@@ -36,7 +42,10 @@ export function ExcelDiffViewer({
   agGridProps,
 }: ExcelDiffViewerProps) {
   const state = useExcelDiff(fileA, fileB, schema, { limits });
-  useOnError(state.status === 'error' ? state.error : undefined, onError);
+  const [exportError, setExportError] = useState<DiffError | undefined>();
+  const [exporting, setExporting] = useState(false);
+
+  useOnError(state.status === 'error' ? state.error : exportError, onError);
 
   const [internalShowOnly, setInternalShowOnly] = useState(false);
   const [internalSearch, setInternalSearch] = useState('');
@@ -47,6 +56,7 @@ export function ExcelDiffViewer({
   useEffect(() => {
     if (state.status === 'success') {
       onDiffComplete?.(state.diff);
+      setExportError(undefined);
     }
   }, [state, onDiffComplete]);
 
@@ -62,6 +72,23 @@ export function ExcelDiffViewer({
 
   const idle =
     fileA === null || fileB === null || schema === null || state.status === 'idle';
+
+  const handleExportXlsx = async (): Promise<void> => {
+    if (state.status !== 'success' || exporting) return;
+    setExporting(true);
+    setExportError(undefined);
+    const rows = exportMode === 'raw' ? state.diff.rows : visibleRows;
+    const filename = diffExportFilename(
+      state.workbookA.meta.filename,
+      state.workbookB.meta.filename,
+    );
+    const workbook = diffRowsToWorkbook(state.diff, rows, filename);
+    const error = await runXlsxExport(workbook, filename);
+    if (error !== undefined) {
+      setExportError(error);
+    }
+    setExporting(false);
+  };
 
   return (
     <div
@@ -87,7 +114,13 @@ export function ExcelDiffViewer({
         )
       ) : null}
 
-      {state.status === 'success' && schema !== null ? (
+      {exportError !== undefined && state.status === 'success' ? (
+        renderError?.(exportError) ?? (
+          <ErrorView error={exportError} className={classNames?.error} />
+        )
+      ) : null}
+
+      {state.status === 'success' && schema !== null && exportError === undefined ? (
         <>
           <Toolbar
             className={slotClass('toolbar', classNames)}
@@ -112,6 +145,11 @@ export function ExcelDiffViewer({
             onExportCSV={() => {
               downloadCsv(exportFilename, diffToCSV(state.diff, schema));
             }}
+            enableXlsxExport={enableXlsxExport}
+            onExportXlsx={() => {
+              void handleExportXlsx();
+            }}
+            exporting={exporting}
           />
           {visibleRows.length === 0 ? (
             renderEmpty?.() ?? <EmptyView message="No rows to display." />

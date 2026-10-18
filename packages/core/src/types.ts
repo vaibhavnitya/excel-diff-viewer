@@ -281,6 +281,8 @@ export type DiffErrorCode =
   | 'OVERLAY_AMBIGUOUS_MATCH'
   | 'SUMMARY_INVALID_CONFIG'
   | 'SUMMARY_COLUMN_NOT_FOUND'
+  | 'WRITE_FAILED'
+  | 'INVALID_OPTIONS'
   | 'WORKER_UNAVAILABLE'
   | 'WORKER_CRASHED'
   | 'CANCELLED';
@@ -304,6 +306,30 @@ export type OverlayError = DiffError;
  * prefer switching on `code` (`SUMMARY_*`).
  */
 export type SummaryError = DiffError;
+
+/**
+ * Context alias for write / export failures. Same shape as {@link DiffError};
+ * prefer switching on `code` (`WRITE_FAILED`, `INVALID_OPTIONS`).
+ */
+export type WriteError = DiffError;
+
+/**
+ * Options for `writeWorkbook` / `writeWorkbookAsync`.
+ * Cooperative progress / cancellation use a separate {@link DiffControl}
+ * third argument on the async form.
+ */
+export type WriteWorkbookOptions = {
+  /**
+   * Which sheets to include. Default: all sheets in the workbook.
+   * Empty array → `INVALID_OPTIONS`.
+   */
+  readonly sheets?: readonly string[];
+  /**
+   * Filename hint for the xlsx workbook's internal metadata (`Props.Title`).
+   * Not binding — the consumer applies the download filename when saving.
+   */
+  readonly filenameHint?: string;
+};
 
 /**
  * Suggested `details` for `INVALID_SCHEMA` when a required key field is blank.

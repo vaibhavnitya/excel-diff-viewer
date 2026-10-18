@@ -60,11 +60,22 @@ export type CommonProps = {
   agGridProps?: AgGridPropsPassthrough;
 };
 
+/**
+ * What an XLSX download includes.
+ * - `current-view` (default): filtered / searched / active-sheet state
+ * - `raw`: full unfiltered workbook / diff in engine order
+ */
+export type ExportMode = 'current-view' | 'raw';
+
 export type ExcelViewerProps = CommonProps & {
   file: File | ArrayBuffer | null;
   defaultSheet?: string;
   onSheetChange?: (sheetName: string) => void;
   options?: ParseFileOptions;
+  enableCSVExport?: boolean;
+  enableXlsxExport?: boolean;
+  exportFilename?: string;
+  exportMode?: ExportMode;
 };
 
 export type ExcelDiffViewerProps = CommonProps & {
@@ -77,7 +88,9 @@ export type ExcelDiffViewerProps = CommonProps & {
   onSearchQueryChange?: (value: string) => void;
   onDiffComplete?: (diff: DiffResult) => void;
   enableCSVExport?: boolean;
+  enableXlsxExport?: boolean;
   exportFilename?: string;
+  exportMode?: ExportMode;
 };
 
 export type ExcelSplitViewerProps = CommonProps & {
@@ -88,7 +101,9 @@ export type ExcelSplitViewerProps = CommonProps & {
   labelB?: string;
   onDiffComplete?: (diff: DiffResult) => void;
   enableCSVExport?: boolean;
+  enableXlsxExport?: boolean;
   exportFilename?: string;
+  exportMode?: ExportMode;
 };
 
 export type ExcelOverlayViewerProps = CommonProps & {
@@ -96,5 +111,7 @@ export type ExcelOverlayViewerProps = CommonProps & {
   overlayFile: File | ArrayBuffer | null;
   options: OverlayWorkbooksOptions | null;
   enableCSVExport?: boolean;
+  enableXlsxExport?: boolean;
   exportFilename?: string;
+  exportMode?: ExportMode;
 };
