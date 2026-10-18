@@ -106,4 +106,68 @@ writeXlsx('edge-cases/empty-fields.xlsx', [
   ['UK', '', 15.0, 6.0],
 ]);
 
+// ---------------------------------------------------------------------------
+// Overlay fixtures (Phase 7a) — synthetic; real xlsx may be added later.
+// ---------------------------------------------------------------------------
+
+const simpleRateHeaders = ['Lane', 'Vehicle Type', 'Base Rate'];
+const simpleRateRows = [
+  simpleRateHeaders,
+  ['L1', 'Van', 100],
+  ['L2', 'Van', 120],
+  ['L3', 'Truck', 200],
+  ['L4', 'Truck', 220],
+  ['L5', 'Bike', 40],
+];
+
+const simpleSurchargeHeaders = ['Vehicle Type', 'Fuel Pct'];
+const simpleSurchargeRows = [
+  simpleSurchargeHeaders,
+  ['Van', 5],
+  ['Truck', 8],
+  // Bike unmatched on purpose
+];
+
+writeXlsx('overlay/rate-card-simple-base.xlsx', simpleRateRows);
+writeXlsx('overlay/rate-card-simple-overlay.xlsx', simpleSurchargeRows);
+writeCsv('overlay/simple-rates.csv', simpleRateRows);
+writeCsv('overlay/simple-surcharge.csv', simpleSurchargeRows);
+
+const realShapedBaseHeaders = [
+  'Rate ID',
+  'Fleet',
+  'Vehicle Type',
+  'Unit Rate',
+  'Component Type',
+  'Surcharge Code',
+];
+const realShapedBaseRows = [
+  realShapedBaseHeaders,
+  ['R1', 'North', 'Van', 100, 'BASE', ''],
+  ['R2', 'North', 'Truck', 200, 'BASE', ''],
+  ['R3', 'South', 'Van', 110, 'BASE', ''],
+  ['R4', 'South', 'Bike', 45, 'BASE', ''],
+  ['R5', 'East', 'Truck', 210, 'BASE', ''],
+];
+
+const realShapedOverlayHeaders = [
+  'Vehicle Type',
+  'Surcharge Type',
+  'Unit Rate',
+];
+const realShapedOverlayRows = [
+  realShapedOverlayHeaders,
+  ['Van', 'FUEL', 12],
+  ['Van', 'DETENTION', 50],
+  ['Van', 'NIGHT', 25],
+  ['Truck', 'FUEL', 18],
+  ['Truck', 'DETENTION', 80],
+  ['Bike', 'FUEL', 5],
+  // empty Vehicle Type → wildcard match all base rows when wildcardOnEmpty=overlay
+  [null, 'NIGHT', 15],
+];
+
+writeXlsx('overlay/rate-card-real-base.xlsx', realShapedBaseRows);
+writeXlsx('overlay/rate-card-real-overlay.xlsx', realShapedOverlayRows);
+
 console.log('fixtures generated');

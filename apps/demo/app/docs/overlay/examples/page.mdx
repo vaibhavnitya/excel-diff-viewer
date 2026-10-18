@@ -1,0 +1,43 @@
+import {
+  FeeAndFuelDemo,
+  FlatFuelDemo,
+  RealShapedDemo,
+} from '@/components/docs/overlay-examples-demos';
+
+# Overlay examples
+
+## 1. Flat fuel surcharge
+
+Synthetic lanes + `percentIncrease` on `Fuel Pct`.
+
+```ts
+compose: {
+  kind: 'rules',
+  rules: [{
+    op: 'percentIncrease',
+    base: 'Base Rate',
+    overlay: 'Fuel Pct',
+    target: 'Effective Rate',
+    defaultWhenMissing: 0,
+  }],
+}
+```
+
+<FlatFuelDemo />
+
+## 2. Handling fee + fuel together
+
+Two rules, two targets: `add` for handling, `percentIncrease` for fuel.
+
+<FeeAndFuelDemo />
+
+## 3. Real-shaped rate card + surcharge template
+
+`fn` compose joins on `Vehicle Type` and attaches surcharge-derived columns.
+Empty overlay `Vehicle Type` acts as a wildcard when
+`wildcardOnEmpty: 'overlay'`.
+
+<RealShapedDemo />
+
+See also the [/overlay](/overlay) demo page for fixture dropdowns and the full
+schema dump.

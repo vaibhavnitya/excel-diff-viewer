@@ -37,6 +37,28 @@ export const DOCS_NAV: readonly DocsNavItem[] = [
     description: 'Side-by-side ExcelSplitViewer',
   },
   {
+    href: '/docs/overlay',
+    title: 'Overlay',
+    description: 'Join and compose two workbooks into a derived one',
+    children: [
+      {
+        href: '/docs/overlay/overview',
+        title: 'Overview',
+        description: 'What overlay is (and is not)',
+      },
+      {
+        href: '/docs/overlay/schema',
+        title: 'Schema',
+        description: 'OverlaySchema, ops, wildcards, errors',
+      },
+      {
+        href: '/docs/overlay/examples',
+        title: 'Examples',
+        description: 'Fuel surcharge, fees, and real-shaped cards',
+      },
+    ],
+  },
+  {
     href: '/docs/hooks',
     title: 'Hooks',
     description: 'useExcelFile and useExcelDiff for custom UIs',

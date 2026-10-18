@@ -14,6 +14,7 @@ const links = [
   { href: '/viewer', label: 'Viewer' },
   { href: '/diff', label: 'Diff' },
   { href: '/split', label: 'Split' },
+  { href: '/overlay', label: 'Overlay' },
   { href: '/docs', label: 'Docs' },
 ] as const;
 

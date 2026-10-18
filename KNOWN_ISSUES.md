@@ -45,9 +45,21 @@ docs) are complete. Open items below are for later polish / Phase 7+ work.
 - `next.config.js` webpack `fs: false` fallback may no longer be needed
   after Blob URL fix. Verify and remove if unnecessary.
 - Progress callbacks don't fire for single-chunk diffs (small inputs).
-  Should emit a final (total, total) event unconditionally.
+  Should emit a final (total, total) event unconditionally. **Overlay fixed
+  this from day one** (`overlayWorkbooksAsync` always emits a final
+  `(total, total)`); diff still has the bug.
 - Core exports should be re-audited before 1.0 — the Phase 1 cleanup
   narrowed from 29 to ~15, but any additions since need review.
+- **Worker pool deferred:** overlay introduces multi-workbook workflows
+  (base + overlay). Current per-hook Worker model works but means 2–3 Workers
+  active during overlay use. A pool at the react-package level is the right
+  fix; deferred past 7a to keep that phase focused. Memory impact bounded by
+  existing per-file limits.
+- **Dev warning threshold for `fn` compose:** fixed at 1ms per call average.
+  Make configurable if real users want it; not configurable in 7a.
+- **`DiffError` naming:** now carries overlay codes (e.g.
+  `OVERLAY_AMBIGUOUS_MATCH`) and is aliased as `OverlayError`. Rename to
+  `EngineError` in a dedicated refactor — not in Phase 7a.
 
 ## Lessons from Phase 4c (docs)
 

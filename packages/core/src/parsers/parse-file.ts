@@ -4,7 +4,7 @@ import {
   enforceWorkbookLimits,
   inputByteLength,
 } from '../limits/enforce-limits.js';
-import { err, ok } from '../result.js';
+import { ok } from '../result.js';
 import type { DiffError, Result, Workbook } from '../types.js';
 import { csvParser } from './csv.js';
 import { detectFormat } from './detect-format.js';

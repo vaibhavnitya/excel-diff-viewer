@@ -17,10 +17,11 @@ Published as three npm packages in one monorepo:
 
 - **core** — zero UI deps. Parsing (SheetJS, Papa Parse), normalization,
   diff algorithm, Web Worker wrapper, schema inference. Works in Node too.
-- **react** — React hooks (`useExcelFile`, `useExcelDiff`). Manages Worker
-  lifecycle, cancellation, progress. No DOM styling.
-- **ui** — Drop-in `<ExcelViewer>`, `<ExcelDiffViewer>`, and
-  `<ExcelSplitViewer>` components. Opinionated UI. AG Grid as peer dependency.
+- **react** — React hooks (`useExcelFile`, `useExcelDiff`, `useExcelOverlay`).
+  Manages Worker lifecycle, cancellation, progress. No DOM styling.
+- **ui** — Drop-in `<ExcelViewer>`, `<ExcelDiffViewer>`, `<ExcelSplitViewer>`,
+  and `<ExcelOverlayViewer>` components. Opinionated UI. AG Grid as peer
+  dependency.
 
 ### Why split?
 
@@ -33,15 +34,24 @@ Published as three npm packages in one monorepo:
 
 **Tier 1 (99% of users):**
 ```tsx
-import { ExcelViewer, ExcelDiffViewer } from '@mojro/excel-diff-ui';
+import {
+  ExcelViewer,
+  ExcelDiffViewer,
+  ExcelOverlayViewer,
+} from '@mojro/excel-diff-ui';
 import '@mojro/excel-diff-ui/styles.css';
 <ExcelViewer file={file} />
 <ExcelDiffViewer fileA={a} fileB={b} schema={schema} />
+<ExcelOverlayViewer baseFile={base} overlayFile={overlay} options={{ schema }} />
 ```
 
 **Tier 2 (custom UIs):**
 ```tsx
-import { useExcelFile, useExcelDiff } from '@mojro/excel-diff-react';
+import {
+  useExcelFile,
+  useExcelDiff,
+  useExcelOverlay,
+} from '@mojro/excel-diff-react';
 ```
 
 **Tier 3 (engine access, Node use):**
@@ -51,6 +61,8 @@ import {
   inferSchema,
   diffWorkbooks,
   diffWorkbooksAsync,
+  overlayWorkbooks,
+  overlayWorkbooksAsync,
   createWorker,
 } from '@mojro/excel-diff-core';
 
@@ -93,6 +105,36 @@ value on the other side) is explicitly out of scope — it creates ambiguity
 about which rule a row matches. If “find specific rules shadowed by a
 wildcard” is needed later, it will be a separate analysis layer on top of the
 raw diff, not part of key equality.
+
+## Overlay
+
+Join-and-combine primitive. Callers pass a base workbook, an overlay workbook,
+and `OverlayWorkbooksOptions` (`{ schema, sheetName?, limits? }`):
+
+1. Validate the schema against **exact** header names (no case folding).
+2. Index the overlay sheet by join columns (normalized via the same pipeline as
+   diff). With `wildcardOnEmpty: 'overlay'` (default), empty overlay join cells
+   match any base value — implemented as up to `2^N` candidate-key lookups per
+   base row (N is typically 2–4). Diff does not use this pattern: optional key
+   blanks become distinct `*` buckets, not cross-bucket matches.
+3. Compose:
+   - **`rules`** — declarative ops (`add`, `percentIncrease`, `multiply`,
+     `replace`, `passthrough`). Expects 0 or 1 overlay match per base row;
+     2+ → `OVERLAY_AMBIGUOUS_MATCH`. Runs entirely in the Worker on dense arrays
+     (column indexes resolved at validation time).
+   - **`fn`** — custom `ComposeFn`. Functions cannot cross the Worker boundary,
+     so the Worker returns matched pairs and the React hook runs `fn` on the
+     main thread in rAF chunks, materializing `NamedRow` views per chunk only.
+4. Return a derived one-sheet `Workbook` plus `OverlaySummary` as a side-output
+   of the same pass (`Workbook.meta.overlay` carries the same counts plus
+   capped `rowWarnings`).
+
+Demo fixtures: synthetic simple rates + fuel (`rules`), and a real-shaped FTL
+rate card + surcharge template (`fn`) — see `/overlay` and `/docs/overlay/`.
+
+**Non-goals (Phase 7a):** rating engine semantics, cascading precedence,
+pattern matching, multi-sheet output, chained rules, in-grid editing, analytics
+aggregates (7b), Excel export (7c).
 
 ## Normalization
 
@@ -159,7 +201,8 @@ Every failure has a stable `code`:
 
 - `FILE_TOO_LARGE`, `TOO_MANY_ROWS`, `TOO_MANY_COLUMNS`, `TOO_MANY_CELLS`
 - `UNSUPPORTED_FORMAT`, `PARSE_ERROR`
-- `INVALID_SCHEMA`, `SCHEMA_INFERENCE_FAILED`, `DUPLICATE_KEYS`
+- `INVALID_SCHEMA`, `SCHEMA_INFERENCE_FAILED`, `DUPLICATE_KEYS`,
+  `OVERLAY_AMBIGUOUS_MATCH`
 - `WORKER_UNAVAILABLE`, `CANCELLED`
 
 Components render default error UIs. Consumers can override via `renderError`
@@ -280,6 +323,49 @@ Two separate surfaces:
 
 They compose: an MUI-mapped `theme` can sit beside `agGridProps.theme =
 themeAlpine` without the library coupling the two.
+
+## Overlay
+
+Join-and-combine primitive, parallel to the keyed diff. Callers pass a base
+workbook, an overlay workbook, and `OverlayWorkbooksOptions`
+(`{ schema, sheetName?, limits? }`):
+
+1. Validate `OverlaySchema` against exact header names (no case folding).
+2. Index overlay rows by normalized join-column values.
+3. For each base row, look up matching overlay rows:
+   - `wildcardOnEmpty: 'overlay'` (default): empty overlay join cells match any
+     base value. Implemented as up to `2^N` candidate-key lookups per base row
+     (N = join column count; typically 2–4).
+   - `wildcardOnEmpty: 'none'`: empty is literal; single hash lookup (same spirit
+     as diff’s exact-key buckets).
+4. Compose:
+   - `rules` — declarative ops (`add`, `percentIncrease`, `multiply`, `replace`,
+     `passthrough`) on dense arrays (column indexes resolved at validation).
+     Expects 0 or 1 match; 2+ → `OVERLAY_AMBIGUOUS_MATCH`.
+   - `fn` — custom `ComposeFn` receiving `NamedRow` views. Worker builds
+     `MatchedPair[]`; React runs `fn` on the main thread (functions are not
+     structured-cloneable). Node/direct `overlayWorkbooks` runs `fn` inline.
+
+**Why wildcard-on-empty for overlay but not pattern-match in diff?** Rate-card
+surcharge templates often leave a dimension blank to mean “applies to all.”
+Diff compares two versions of the same card and must not silently merge
+distinct keys. Overlay composes two *different* sheets where blank-means-all is
+the common join pattern.
+
+**Why `rules` in Worker / `fn` on main thread?** Worker messaging cannot carry
+closures. Rules are plain data and stay off the UI thread; `fn` must execute
+where the function object lives.
+
+**Why one-to-one under `rules`?** Unambiguous arithmetic semantics. Multi-match
+belongs in `fn`, where the caller decides how to reduce N overlays.
+
+**Non-goals (Phase 7a):** rating engines, cascading/precedence, wildcard pattern
+matching across values, multi-sheet output, chained rules, in-grid editing,
+analytics aggregates (Phase 7b).
+
+Demo grounding: synthetic simple rates + fuel pct (`rules`), and a real-shaped
+FTL rate card + surcharge template (`fn`) under `/overlay` and
+`/docs/overlay/examples`.
 
 ## Decisions log
 

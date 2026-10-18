@@ -5,6 +5,8 @@ import {
   type DiffError,
   type DiffResult,
   type DiffSchema,
+  type OverlayWorkbooksOptions,
+  type OverlayWorkerValue,
   type ParseFileOptions,
   type ParseInput,
   type Result,
@@ -28,6 +30,14 @@ export type FakeDiffHandler = (
   schema: DiffSchema,
 ) => Promise<Result<DiffResult, DiffError>> | Result<DiffResult, DiffError>;
 
+export type FakeOverlayHandler = (
+  base: Workbook,
+  overlay: Workbook,
+  options: OverlayWorkbooksOptions,
+) =>
+  | Promise<Result<OverlayWorkerValue, DiffError>>
+  | Result<OverlayWorkerValue, DiffError>;
+
 /** Controllable WorkerClient stand-in for hook tests (no real Worker). */
 export class FakeWorkerClient {
   static readonly instances: FakeWorkerClient[] = [];
@@ -35,6 +45,7 @@ export class FakeWorkerClient {
   /** Applied to the next constructed client, then cleared. */
   static nextParseHandler: FakeParseHandler | null = null;
   static nextDiffHandler: FakeDiffHandler | null = null;
+  static nextOverlayHandler: FakeOverlayHandler | null = null;
   /** Progress pcts emitted during the next operation on the next client. */
   static nextProgressSequence: number[] | null = null;
 
@@ -47,6 +58,7 @@ export class FakeWorkerClient {
     FakeWorkerClient.instances.length = 0;
     FakeWorkerClient.nextParseHandler = null;
     FakeWorkerClient.nextDiffHandler = null;
+    FakeWorkerClient.nextOverlayHandler = null;
     FakeWorkerClient.nextProgressSequence = null;
   }
 
@@ -62,11 +74,13 @@ export class FakeWorkerClient {
   terminated = false;
   parseCalls = 0;
   diffCalls = 0;
+  overlayCalls = 0;
   terminateCalls = 0;
   cancelCalls = 0;
 
   parseHandler: FakeParseHandler | null = null;
   diffHandler: FakeDiffHandler | null = null;
+  overlayHandler: FakeOverlayHandler | null = null;
   progressSequence: number[] = [];
 
   private current: Pending | null = null;
@@ -84,6 +98,10 @@ export class FakeWorkerClient {
     if (FakeWorkerClient.nextDiffHandler !== null) {
       this.diffHandler = FakeWorkerClient.nextDiffHandler;
       FakeWorkerClient.nextDiffHandler = null;
+    }
+    if (FakeWorkerClient.nextOverlayHandler !== null) {
+      this.overlayHandler = FakeWorkerClient.nextOverlayHandler;
+      FakeWorkerClient.nextOverlayHandler = null;
     }
     if (FakeWorkerClient.nextProgressSequence !== null) {
       this.progressSequence = FakeWorkerClient.nextProgressSequence;
@@ -119,6 +137,21 @@ export class FakeWorkerClient {
       }
       return ok(defaultDiffResult());
     }) as Promise<Result<DiffResult, DiffError>>;
+  }
+
+  overlay(
+    base: Workbook,
+    overlayWb: Workbook,
+    options: OverlayWorkbooksOptions,
+  ): Promise<Result<OverlayWorkerValue, DiffError>> {
+    this.overlayCalls += 1;
+    return this.enqueue(async (correlationId) => {
+      this.emitProgressSequence(correlationId);
+      if (this.overlayHandler !== null) {
+        return this.overlayHandler(base, overlayWb, options);
+      }
+      return ok(defaultOverlayResult(base));
+    }) as Promise<Result<OverlayWorkerValue, DiffError>>;
   }
 
   cancel(correlationId?: string): void {
@@ -259,5 +292,35 @@ export function defaultSchema(): DiffSchema {
   return {
     keyFields: ['origin'],
     valueFields: ['rate'],
+  };
+}
+
+export function defaultOverlayResult(base?: Workbook): OverlayWorkerValue {
+  const workbook = base ?? defaultWorkbook('overlay.csv');
+  return {
+    kind: 'result',
+    value: {
+      workbook: {
+        ...workbook,
+        meta: {
+          ...workbook.meta,
+          overlay: {
+            totalBase: 1,
+            totalOverlay: 1,
+            matched: 1,
+            unmatched: 0,
+            droppedByCompose: 0,
+            rowWarnings: [],
+          },
+        },
+      },
+      summary: {
+        totalBase: 1,
+        totalOverlay: 1,
+        matched: 1,
+        unmatched: 0,
+        droppedByCompose: 0,
+      },
+    },
   };
 }

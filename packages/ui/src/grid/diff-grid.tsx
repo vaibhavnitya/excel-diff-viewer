@@ -204,6 +204,7 @@ export function DiffGrid({
       typeof agGridProps?.className === 'string' ? agGridProps.className : undefined;
     const { className: _userClassName, ...userRest } =
       (agGridProps as Partial<AgGridReactProps<DiffGridRow>> | undefined) ?? {};
+    void _userClassName;
 
     return mergeGridProps<DiffGridRow>(
       {

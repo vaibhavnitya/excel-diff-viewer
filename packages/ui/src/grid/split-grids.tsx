@@ -107,6 +107,9 @@ function stripSplitComposedKeys(
     rowData: _rowData,
     ...rest
   } = user;
+  void _onGridReady;
+  void _onBodyScroll;
+  void _rowData;
   return rest;
 }
 

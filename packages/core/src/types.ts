@@ -51,6 +51,8 @@ export type Workbook = {
   readonly meta: {
     readonly format: FileFormat;
     readonly filename?: string;
+    /** Populated on derived workbooks produced by `overlayWorkbooks`. */
+    readonly overlay?: OverlayMeta;
   };
 };
 
@@ -217,6 +219,7 @@ export type DiffErrorCode =
   | 'INVALID_SCHEMA'
   | 'SCHEMA_INFERENCE_FAILED'
   | 'DUPLICATE_KEYS'
+  | 'OVERLAY_AMBIGUOUS_MATCH'
   | 'WORKER_UNAVAILABLE'
   | 'WORKER_CRASHED'
   | 'CANCELLED';
@@ -230,6 +233,12 @@ export type DiffError = {
 };
 
 /**
+ * Context alias for overlay failures. Same shape as {@link DiffError};
+ * prefer switching on `code` (including `OVERLAY_AMBIGUOUS_MATCH`).
+ */
+export type OverlayError = DiffError;
+
+/**
  * Suggested `details` for `INVALID_SCHEMA` when a required key field is blank.
  * Message shape:
  *   File 'rates.xlsx': row 42 has blank 'origin' field, which is a required key.
@@ -240,6 +249,146 @@ export type InvalidSchemaErrorDetails = {
   /** 1-based row number in the source file (header is row 1). */
   readonly rowNumber: number;
   readonly field: string;
+};
+
+/**
+ * Suggested `details` for `OVERLAY_AMBIGUOUS_MATCH` under `rules` compose
+ * when more than one overlay row matches a base row.
+ */
+export type OverlayAmbiguousMatchErrorDetails = {
+  /** Composite join key for the base row (normalized segments joined by `|`). */
+  readonly baseKey: string;
+  /** 0-based data-row index in the base sheet. */
+  readonly baseRowIndex: number;
+  /** 0-based data-row indices in the overlay sheet that matched. */
+  readonly overlayRowIndices: readonly number[];
+};
+
+// ---------------------------------------------------------------------------
+// Overlay (Phase 7a)
+// ---------------------------------------------------------------------------
+
+/**
+ * Object-form row used only at the `ComposeFn` boundary.
+ * Workbook storage stays dense (`Row`); the engine materializes `NamedRow`
+ * views when invoking `fn` and converts results back to dense arrays.
+ */
+export type NamedRow = Readonly<Record<string, CellValue>>;
+
+export type OverlayRule =
+  | {
+      readonly op: 'add';
+      readonly base: string;
+      readonly overlay: string;
+      readonly target: string;
+      readonly defaultWhenMissing?: number;
+    }
+  | {
+      readonly op: 'percentIncrease';
+      readonly base: string;
+      readonly overlay: string;
+      readonly target: string;
+      readonly defaultWhenMissing?: number;
+    }
+  | {
+      readonly op: 'multiply';
+      readonly base: string;
+      readonly overlay: string;
+      readonly target: string;
+      readonly defaultWhenMissing?: number;
+    }
+  | {
+      readonly op: 'replace';
+      readonly overlay: string;
+      readonly target: string;
+    }
+  | {
+      readonly op: 'passthrough';
+      readonly from: 'base' | 'overlay';
+      readonly source: string;
+      readonly target?: string;
+    };
+
+/**
+ * Custom compose function. Receives named-column views of the base row and
+ * all matching overlay rows (0..N). Return a `NamedRow` to include, or `null`
+ * to drop the base row from output (counted in `summary.droppedByCompose`).
+ */
+export type ComposeFn = (
+  baseRow: NamedRow,
+  overlayRows: readonly NamedRow[],
+) => NamedRow | null;
+
+export type OverlaySchema = {
+  readonly join: {
+    /** Column header names in the base workbook (exact string match). */
+    readonly base: readonly string[];
+    /** Column header names in the overlay workbook; paired positionally with `base`. */
+    readonly overlay: readonly string[];
+    /**
+     * When `'overlay'` (default), empty overlay join cells match any base value.
+     * When `'none'`, empty is literal (exact match only).
+     */
+    readonly wildcardOnEmpty?: 'overlay' | 'none';
+  };
+  readonly compose:
+    | { readonly kind: 'rules'; readonly rules: readonly OverlayRule[] }
+    | { readonly kind: 'fn'; readonly fn: ComposeFn };
+  /**
+   * Base columns to copy into the output. Default `'all'`.
+   * A rule `target` that equals a passthrough column overwrites that value.
+   */
+  readonly passthrough?: readonly string[] | 'all';
+};
+
+export type RowWarning = {
+  /** 0-based data-row index in the base sheet. */
+  readonly baseRowIndex: number;
+  readonly target: string;
+  readonly message: string;
+};
+
+export type OverlayMeta = {
+  readonly totalBase: number;
+  readonly totalOverlay: number;
+  readonly matched: number;
+  /** Base rows with 0 overlay matches. */
+  readonly unmatched: number;
+  /** `fn` compose returned null (always 0 for `rules`). */
+  readonly droppedByCompose: number;
+  /** Cap 100; further warnings are dropped. */
+  readonly rowWarnings: readonly RowWarning[];
+};
+
+/**
+ * Side-output of the overlay pass (not a second walk).
+ * Identical to {@link OverlayMeta} counts for 7a; kept separate so 7b can
+ * extend with field-level aggregates without reshuffling workbook meta.
+ */
+export type OverlaySummary = {
+  readonly totalBase: number;
+  readonly totalOverlay: number;
+  readonly matched: number;
+  readonly unmatched: number;
+  readonly droppedByCompose: number;
+};
+
+export type OverlayResult = {
+  /** Derived workbook (exactly one sheet). */
+  readonly workbook: Workbook;
+  readonly summary: OverlaySummary;
+};
+
+/**
+ * Options for `overlayWorkbooks` / `overlayWorkbooksAsync`.
+ * Cooperative progress / cancellation use a separate {@link DiffControl}
+ * fourth argument on the async form — do not define OverlayControl.
+ */
+export type OverlayWorkbooksOptions = {
+  readonly schema: OverlaySchema;
+  /** Sheet name; defaults to each workbook's active sheet. */
+  readonly sheetName?: string;
+  readonly limits?: Partial<Limits>;
 };
 
 // ---------------------------------------------------------------------------

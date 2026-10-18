@@ -1,0 +1,36 @@
+# Overlay overview
+
+Overlay **joins** two workbooks and **combines** matched rows into a derived
+workbook. You declare join columns and a compose mode; the engine does not
+interpret business meaning.
+
+## What overlay is not
+
+- Not a rating engine (no AT_RATING / AT_EVENT / compounding awareness)
+- Not cascading / precedence between overlay rows
+- Not pattern matching (`*` matching any value)
+- Not multi-sheet output (exactly one output sheet)
+- Not chained rules (no rule reads another rule’s target)
+
+## Overlay vs diff
+
+| | Diff | Overlay |
+| --- | --- | --- |
+| Inputs | Two versions of the same thing | Two different things |
+| Output | `DiffResult` with statuses | Derived `Workbook` |
+| Join | Key fields + optional wildcards as buckets | Column pairs; optional empty-as-wildcard on overlay |
+
+## Compose modes
+
+1. **`rules`** — declarative arithmetic (`add`, `percentIncrease`, `multiply`,
+   `replace`, `passthrough`). Runs in the Worker. Expects 0 or 1 overlay match
+   per base row.
+2. **`fn`** — custom `ComposeFn`. The Worker builds matched pairs; the React
+   hook runs `fn` on the main thread in rAF chunks (functions cannot be
+   serialized into the Worker).
+
+## Next
+
+- [Schema reference](/docs/overlay/schema)
+- [Worked examples](/docs/overlay/examples)
+- Live demo: [/overlay](/overlay)

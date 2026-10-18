@@ -1,15 +1,21 @@
 import { createDiffError } from '../errors.js';
+import { toSerializableOverlayOptions } from '../overlay/serializable-schema.js';
 import { err, ok } from '../result.js';
 import type {
   DiffError,
   DiffResult,
   DiffSchema,
+  OverlayWorkbooksOptions,
   ParseFileOptions,
   ParseInput,
   Result,
   Workbook,
 } from '../types.js';
-import type { MessageRequest, MessageResponse } from './protocol.js';
+import type {
+  MessageRequest,
+  MessageResponse,
+  OverlayWorkerValue,
+} from './protocol.js';
 import { WORKER_SOURCE } from './worker-source.js';
 
 export type WorkerProgress = {
@@ -164,6 +170,38 @@ export class WorkerClient {
   }
 
   /**
+   * Overlay two workbooks in the Worker.
+   * `rules` compose returns a finished {@link OverlayResult}.
+   * `fn` compose returns matched pairs (`kind: 'fn-pairs'`) so the caller can
+   * run `ComposeFn` on the main thread.
+   */
+  overlay(
+    base: Workbook,
+    overlayWorkbook: Workbook,
+    options: OverlayWorkbooksOptions,
+  ): Promise<Result<OverlayWorkerValue, DiffError>> {
+    const ready = this.ensureNotTerminated();
+    if (!ready.ok) {
+      return Promise.resolve(ready);
+    }
+
+    this.cancelInFlight();
+
+    const correlationId = this.allocateCorrelationId();
+    const request: MessageRequest = {
+      type: 'overlay',
+      correlationId,
+      base,
+      overlay: overlayWorkbook,
+      options: toSerializableOverlayOptions(options),
+    };
+
+    return this.enqueue(correlationId, () => {
+      this.postRequest(request);
+    }) as Promise<Result<OverlayWorkerValue, DiffError>>;
+  }
+
+  /**
    * Cancel one in-flight request by id, or the current in-flight request when
    * `correlationId` is omitted.
    */
@@ -292,11 +330,11 @@ export class WorkerClient {
     }
   };
 
-  private readonly handleWorkerError = (_event: ErrorEvent): void => {
+  private readonly handleWorkerError = (): void => {
     this.failAllWithCrash('Worker threw an unhandled error.');
   };
 
-  private readonly handleMessageError = (_event: MessageEvent): void => {
+  private readonly handleMessageError = (): void => {
     this.failAllWithCrash('Worker failed to deserialize a message.');
   };
 

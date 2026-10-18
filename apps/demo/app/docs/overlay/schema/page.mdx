@@ -1,0 +1,75 @@
+import { OverlaySchemaDemo } from '@/components/docs/overlay-schema-demo';
+
+# Overlay schema
+
+`OverlaySchema` is the full contract for `overlayWorkbooks` /
+`useExcelOverlay` / `<ExcelOverlayViewer>`.
+
+## Shape
+
+```ts
+type OverlaySchema = {
+  join: {
+    base: readonly string[];      // exact header names in base
+    overlay: readonly string[];   // paired positionally with base
+    wildcardOnEmpty?: 'overlay' | 'none'; // default 'overlay'
+  };
+  compose:
+    | { kind: 'rules'; rules: readonly OverlayRule[] }
+    | { kind: 'fn'; fn: ComposeFn };
+  passthrough?: readonly string[] | 'all'; // default 'all'
+};
+```
+
+Header names use **exact string equality** — no case folding, no trimming.
+
+## Ops (rules)
+
+| op | formula | overlay means |
+| --- | --- | --- |
+| `add` | `target = base + overlay` | amount to add |
+| `percentIncrease` | `target = base * (1 + overlay/100)` | percent (5 → +5%) |
+| `multiply` | `target = base * overlay` | raw multiplier (1.05 → +5%) |
+| `replace` | `target = overlay` | new value |
+| `passthrough` | `target = source` from base or overlay | copy |
+
+Rule evaluation order is array order. Targets must be distinct. A `target` may
+equal a passthrough column — the rule overwrites that cell for the row.
+
+`defaultWhenMissing` (numeric ops): used when there is no matching overlay row
+or the overlay cell is empty; otherwise the target is `null`.
+
+## Wildcard-on-empty
+
+With `wildcardOnEmpty: 'overlay'` (default), an empty overlay join cell matches
+any base value for that column. Base join cells are always literal.
+
+Example: overlay row `{ Vehicle Type: null, Fuel Pct: 1 }` matches every base
+row. Under **rules** compose that often becomes
+`OVERLAY_AMBIGUOUS_MATCH` when a specific row also matches — use `fn` compose
+or `wildcardOnEmpty: 'none'` when you need strict 1:1 joins.
+
+## Ambiguous matches
+
+Under `rules`, 2+ overlay matches for one base row fail the whole overlay with
+`OVERLAY_AMBIGUOUS_MATCH`. Details carry `baseKey`, `baseRowIndex`, and
+`overlayRowIndices`. Under `fn`, all matches are passed to your function.
+
+## NamedRow materialization (`fn` only)
+
+Workbook storage stays dense (`Row = CellValue[]`). At the `ComposeFn`
+boundary the engine materializes `NamedRow` object views **per chunk** in the
+main-thread rAF loop and releases them when the chunk completes. `rules`
+compose never materializes — column name → index is resolved at validation
+time and arithmetic runs on dense arrays.
+
+## Validation errors
+
+Missing join / rule / passthrough columns surface as `INVALID_SCHEMA` with the
+offending field and sheet name, e.g.:
+
+`INVALID_SCHEMA: Join column 'Vehicle Type' not found in overlay workbook sheet 'Surcharge'. Available headers: [...]`
+
+## Live preview
+
+<OverlaySchemaDemo />

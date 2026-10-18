@@ -17,6 +17,8 @@ const SUGGESTIONS: Record<DiffErrorCode, string> = {
     'Check required key fields in the file, or mark blank keys as optional in the schema.',
   DUPLICATE_KEYS:
     'Deduplicate rows that share the same business key, or adjust `schema.keyFields`.',
+  OVERLAY_AMBIGUOUS_MATCH:
+    'Under rules compose each base row may match at most one overlay row. Disambiguate the overlay, or switch to fn compose.',
   WORKER_UNAVAILABLE:
     'Ensure the app runs in an environment with Web Workers (not blocked SSR or restricted iframes).',
   WORKER_CRASHED:

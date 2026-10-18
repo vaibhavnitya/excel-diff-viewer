@@ -83,3 +83,45 @@ Goal: parse a file and diff two files from Node, with full tests.
 - [ ] First release: `0.1.0` (treat as beta)
 - [ ] Dogfood in your own rate card feature
 - [ ] Announce after real-world usage shakes out bugs
+
+## Phase 7a — Overlay (current)
+
+- [x] overlayWorkbooks + overlayWorkbooksAsync (rules + fn compose)
+- [x] useExcelOverlay hook with main-thread chunking for fn
+- [x] `<ExcelOverlayViewer>` + /overlay demo page
+- [x] Real + synthetic fixtures
+- [x] Docs under /docs/overlay/
+
+## Phase 7b — Analytics primitives
+
+- [ ] summarizeWorkbook, summarizeDiff, summarizeOverlay in core
+- [ ] DiffResult.summary and OverlayResult.summary expanded with field-level aggregates
+- [ ] useWorkbookSummary / useDiffSummary / useOverlaySummary hooks
+- [ ] `<RateCardSummary>` / `<DiffSummary>` / `<OverlaySummary>` components (no chart lib)
+- [ ] Summary cache ownership in react layer
+- [ ] Docs under /docs/analytics/
+
+## Phase 7c — In-grid editing + Excel export
+
+- [ ] (previously Phase 7b in earlier roadmap)
+
+## Phase 7a — Overlay (current)
+
+- [x] overlayWorkbooks + overlayWorkbooksAsync (rules + fn compose)
+- [x] useExcelOverlay hook with main-thread chunking for fn
+- [x] `<ExcelOverlayViewer>` + /overlay demo page
+- [x] Real + synthetic fixtures
+- [x] Docs under /docs/overlay/
+
+## Phase 7b — Analytics primitives
+
+- [ ] summarizeWorkbook, summarizeDiff, summarizeOverlay in core
+- [ ] DiffResult.summary and OverlayResult.summary expanded with field-level aggregates
+- [ ] useWorkbookSummary / useDiffSummary / useOverlaySummary hooks
+- [ ] `<RateCardSummary>` / `<DiffSummary>` / `<OverlaySummary>` components (no chart lib)
+- [ ] Summary cache ownership in react layer
+- [ ] Docs under /docs/analytics/
+
+## Phase 7c — In-grid editing + Excel export
+
+- [ ] (previously Phase 7b in earlier roadmap)

@@ -1,7 +1,10 @@
+import type { OverlayFnPairsResult } from '../overlay/fn-pairs.js';
+import type { SerializableOverlayOptions } from '../overlay/serializable-schema.js';
 import type {
   DiffError,
   DiffResult,
   DiffSchema,
+  OverlayResult,
   ParseFileOptions,
   Result,
   Workbook,
@@ -28,10 +31,27 @@ export type MessageRequest =
       readonly schema: DiffSchema;
     }
   | {
+      readonly type: 'overlay';
+      readonly correlationId: string;
+      readonly base: Workbook;
+      readonly overlay: Workbook;
+      /** Fn body stripped; Worker builds pairs for `kind: 'fn'`. */
+      readonly options: SerializableOverlayOptions;
+    }
+  | {
       readonly type: 'cancel';
       /** Cancel this in-flight request if the Worker is still working on it. */
       readonly correlationId: string;
     };
+
+/** Wire-safe fn-pairs payload (no ComposeFn). */
+export type OverlayFnPairsWire = Omit<OverlayFnPairsResult, 'schema'> & {
+  readonly kind: 'fn-pairs';
+};
+
+export type OverlayWorkerValue =
+  | { readonly kind: 'result'; readonly value: OverlayResult }
+  | OverlayFnPairsWire;
 
 /** Worker → main thread. All fields structured-clone safe. */
 export type MessageResponse =
@@ -46,9 +66,13 @@ export type MessageResponse =
       readonly correlationId: string;
       /**
        * Engine outcome (including DiffError codes such as CANCELLED).
-       * Narrow by the matching request: Workbook for parse, DiffResult for diff.
+       * Narrow by the matching request: Workbook for parse, DiffResult for diff,
+       * OverlayWorkerValue for overlay.
        */
-      readonly value: Result<Workbook | DiffResult, DiffError>;
+      readonly value: Result<
+        Workbook | DiffResult | OverlayWorkerValue,
+        DiffError
+      >;
     }
   | {
       readonly type: 'error';

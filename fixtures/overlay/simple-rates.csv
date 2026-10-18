@@ -1,0 +1,6 @@
+Lane,Vehicle Type,Base Rate
+L1,Van,100
+L2,Van,120
+L3,Truck,200
+L4,Truck,220
+L5,Bike,40

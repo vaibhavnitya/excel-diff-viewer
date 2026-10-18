@@ -5,6 +5,7 @@ import type {
   DiffResult,
   DiffSchema,
   Limits,
+  OverlayWorkbooksOptions,
   ParseFileOptions,
 } from '@mojro/excel-diff-core';
 import type { Theme } from './theme.js';
@@ -86,6 +87,14 @@ export type ExcelSplitViewerProps = CommonProps & {
   labelA?: string;
   labelB?: string;
   onDiffComplete?: (diff: DiffResult) => void;
+  enableCSVExport?: boolean;
+  exportFilename?: string;
+};
+
+export type ExcelOverlayViewerProps = CommonProps & {
+  baseFile: File | ArrayBuffer | null;
+  overlayFile: File | ArrayBuffer | null;
+  options: OverlayWorkbooksOptions | null;
   enableCSVExport?: boolean;
   exportFilename?: string;
 };

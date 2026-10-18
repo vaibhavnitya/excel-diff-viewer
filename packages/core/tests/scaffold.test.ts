@@ -12,6 +12,8 @@ import {
   isErr,
   isOk,
   ok,
+  overlayWorkbooks,
+  overlayWorkbooksAsync,
   parseFile,
 } from '../src/index.js';
 
@@ -20,6 +22,8 @@ describe('@mojro/excel-diff-core public API', () => {
     expect(typeof parseFile).toBe('function');
     expect(typeof diffWorkbooks).toBe('function');
     expect(typeof diffWorkbooksAsync).toBe('function');
+    expect(typeof overlayWorkbooks).toBe('function');
+    expect(typeof overlayWorkbooksAsync).toBe('function');
     expect(typeof inferSchema).toBe('function');
     expect(typeof createWorker).toBe('function');
     expect(typeof ok).toBe('function');

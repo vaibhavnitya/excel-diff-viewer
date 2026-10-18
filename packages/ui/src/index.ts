@@ -1,6 +1,7 @@
 export { ExcelViewer } from './excel-viewer.js';
 export { ExcelDiffViewer } from './excel-diff-viewer.js';
 export { ExcelSplitViewer } from './excel-split-viewer.js';
+export { ExcelOverlayViewer } from './excel-overlay-viewer.js';
 export { diffToCSV } from './csv/diff-to-csv.js';
 
 export type {
@@ -8,6 +9,7 @@ export type {
   ClassNameSlot,
   CommonProps,
   ExcelDiffViewerProps,
+  ExcelOverlayViewerProps,
   ExcelSplitViewerProps,
   ExcelViewerProps,
   Theme,
@@ -19,7 +21,14 @@ export type {
   DiffResult,
   DiffSchema,
   Limits,
+  OverlaySchema,
+  OverlaySummary,
+  OverlayWorkbooksOptions,
   Workbook,
 } from '@mojro/excel-diff-core';
 
-export type { DiffState, FileState } from '@mojro/excel-diff-react';
+export type {
+  DiffState,
+  FileState,
+  OverlayState,
+} from '@mojro/excel-diff-react';

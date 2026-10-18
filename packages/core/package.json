@@ -31,6 +31,7 @@
     "test:node": "vitest run --project node --coverage",
     "test:browser": "vitest run --project browser",
     "test:watch": "vitest",
+    "bench": "vitest bench --run --config vitest.bench.config.ts",
     "lint": "eslint .",
     "typecheck": "tsc -b --pretty false",
     "clean": "rimraf dist .tsbuild",

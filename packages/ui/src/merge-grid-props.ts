@@ -46,6 +46,8 @@ export function mergeGridProps<TData>(
     ...libraryRest
   } = libraryDefaults;
   const { defaultColDef: _userDefaultColDef, ...userRest } = user;
+  void _libraryDefaultColDef;
+  void _userDefaultColDef;
 
   return {
     ...libraryRest,
